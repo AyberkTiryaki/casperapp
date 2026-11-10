@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:caspertrainingstudio/data/demo_data.dart';
-import 'package:caspertrainingstudio/data/studio_store.dart';
-import 'package:caspertrainingstudio/main.dart';
-import 'package:caspertrainingstudio/models/models.dart';
-import 'package:caspertrainingstudio/screens/workouts_screen.dart';
+import 'package:caspertrainingstudio/demo/data/demo_data.dart';
+import 'package:caspertrainingstudio/demo/data/studio_store.dart';
+import 'package:caspertrainingstudio/demo/demo_main.dart';
+import 'package:caspertrainingstudio/demo/models/models.dart';
+import 'package:caspertrainingstudio/demo/screens/workouts_screen.dart';
 
 void main() {
   group('StudioStore', () {
