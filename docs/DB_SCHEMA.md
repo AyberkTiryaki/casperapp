@@ -490,6 +490,58 @@ where id = (select id from auth.users where email = 'yonetici@ornek.com');
 
 Bundan sonra roller yalnızca `admin_set_role` RPC'si ile değiştirilir.
 
+## Referans sistemi (adım 3b)
+
+Kaynak: `20261111100000_referrals.sql`. Kurallar: `docs/BUSINESS_RULES.md` §13 (F-*).
+
+**Enum:** `referral_status` = `pending`, `approved`, `rejected`.
+
+**Değişen tablolar**
+
+| tablo | sütun | tip | kural |
+|---|---|---|---|
+| profiles | referral_code | text | NOT NULL, UNIQUE (`profiles_referral_code_key`), CHECK `profiles_referral_code_format` (7 karakter, `ABCDEFGHJKMNPQRSTUVWXYZ23456789`); istemci yazamaz |
+| member_packages | list_price | numeric(12,2) | NOT NULL, ≥ 0; atama anındaki liste fiyatı |
+| member_packages | discount_percent | integer | NOT NULL, varsayılan 0, CHECK 0–50; uygulanan referans indirimi |
+| member_packages | price_paid | numeric(12,2) | artık indirimli fiyat: `list_price × (100 − discount_percent) / 100` |
+
+### referrals
+
+Kim kimi getirdi ve yönetici kararı.
+
+| sütun | tip | kural/varsayılan |
+|---|---|---|
+| id | uuid | PK, `gen_random_uuid()` |
+| referrer_id | uuid | NOT NULL, FK profiles ON DELETE CASCADE (getiren / kod sahibi) |
+| referred_id | uuid | NOT NULL, FK profiles ON DELETE CASCADE (getirilen) |
+| code_used | text | NOT NULL |
+| status | referral_status | NOT NULL, varsayılan `pending` |
+| created_at | timestamptz | NOT NULL, `now()` |
+| decided_at | timestamptz | |
+| decided_by | uuid | FK profiles |
+| decision_note | text | |
+
+- Kısıtlar: `referrals_no_self` CHECK (`referrer_id <> referred_id`); `referrals_referred_once` UNIQUE (`referred_id`) — bir kişi bir kez referans alır.
+- İndeksler: `referrals_referrer_idx` (referrer_id, status); `referrals_status_idx` (status, created_at desc).
+- RLS: SELECT yalnızca admin (`referrals_select_admin`); yazma yalnızca RPC / kayıt tetikleyicisi. Üyeler yalnızca `my_referrals` ve `referral_summary` RPC'lerini kullanır.
+
+**Fonksiyonlar**
+
+| fonksiyon | kim | ne yapar |
+|---|---|---|
+| `referral_summary(p_user_id uuid default null)` → jsonb | kendi özeti herkes; başka kullanıcı için admin | `referral_code`, `active_count`, `discount_percent`, `approved_count`, `pending_count`, `was_referred` |
+| `my_referrals()` → table(referral_id, display_name, status, counts_now, created_at) | giriş yapmış kullanıcı | Getirdiği kişiler; yalnızca "Ad S.", durum, şu an sayılıyor mu |
+| `admin_list_referrals(p_status referral_status default null)` → table | admin | Panel listesi: getiren (ad, kod, güncel oran), getirilen (ad, aktif paketi var mı), durum, tarihler; en fazla 500 satır, bekleyenler önce |
+| `admin_decide_referral(p_referral_id uuid, p_approve boolean, p_note text default null)` → referrals | admin | Onay / ret; aynı karar tekrarında mevcut kaydı döndürür; denetim kaydı yazar |
+| `assign_package(p_member_id, p_definition_id, p_idempotency_key, p_replace_existing default false, p_discount_percent integer default 0)` → member_packages | admin | **İmza değişti** (eski 4 parametreli sürüm kaldırıldı). Oran 0–50 ve üyenin o anki hakkından büyük olamaz; `list_price`, `discount_percent`, `price_paid` kaydedilir |
+| `private.generate_referral_code()` | — | 7 karakterlik rastgele kod |
+| `private.has_usable_package(member_id)` | — | Üyenin şu an kullanılabilir (aktif, süresi dolmamış, dondurulmamış) paketi var mı |
+| `private.active_referral_count(user_id)` / `private.referral_discount_percent(user_id)` | — | Sayılan referans sayısı / hak edilen oran (`least(sayı × 5, 50)`) |
+| `private.short_name(full_name)` | — | "Ad S." gösterimi |
+| `private.handle_new_user()` | — | **Güncellendi**: profil oluştururken referans kodu üretir (çakışmada yeniden dener); metadata içindeki `referral_code` geçerliyse `pending` referans ekler, geçersizse kaydı engellemez |
+
+**Yeni hata kodları:** `INVALID_DISCOUNT` (oran 0–50 dışında), `DISCOUNT_EXCEEDS_ENTITLEMENT` (oran üyenin o anki hakkından büyük), `REFERRAL_NOT_FOUND`, `DECISION_REQUIRED`.
+
 ## Migration dosyaları
 
 | dosya | içerik |
@@ -499,3 +551,4 @@ Bundan sonra roller yalnızca `admin_set_role` RPC'si ile değiştirilir.
 | `20261110120200_rpc_packages_classes_reservations.sql` | paket atama/yenileme, dondurma, ders, rezervasyon, iptal |
 | `20261110120300_rpc_wallet.sql` | cüzdan ve ürün satışı |
 | `20261111090000_package_read_policies.sql` | adım 3: üyenin kendi paketine bağlı pasif tanım/kategoriyi okuyabilmesi (`package_definitions_select_own_used`, `categories_select_own_used`), `member_packages_member_status_idx` indeksi |
+| `20261111100000_referrals.sql` | adım 3b: referans kodu, `referrals` tablosu, sayım/indirim fonksiyonları, kayıt tetikleyicisi güncellemesi, `assign_package` indirim parametresi |

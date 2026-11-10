@@ -19,7 +19,7 @@ Yol haritasındaki açık kararlar 10 Kasım 2026'da stüdyo tarafından aşağ�
 | b | Dondurma süresi bitişe eklenir mi? | **Evet.** Dondurulan gün sayısı paketin bitiş tarihine eklenir. | D-04 | `freeze_package` |
 | c | Yenilemede/aktarımda rezervasyonlar | Gelecek rezervasyon yalnızca yeni paket **aynı kategorideyse, hakkı kaldıysa ve ders tarihinde geçerliyse** aktarılır. Aksi halde iptal edilir ve hak **eski paketin** hareketlerine iade edilir. | P-08, P-09 | `assign_package` |
 
-Yol haritasında açıkça yazmayan ek kararlar 11. bölümdedir (10 Kasım 2026'da onaylandı). Henüz onaylanmamış yeni varsayımlar 12. bölümde ayrıca listelenir.
+Yol haritasında açıkça yazmayan ek kararlar 11. bölümdedir (10 Kasım 2026'da onaylandı). Adım 3 ek kararları 12. bölümdedir (onaylandı). Referans sistemi kuralları 13. bölümde, henüz onaylanmamış yeni varsayımlar 14. bölümdedir.
 
 ## 1. Kayıt, profil, KVKK (K)
 
@@ -179,7 +179,9 @@ Yol haritasında açıkça yazmayan aşağıdaki kararlar 10 Kasım 2026'da stü
 
 **Yapılacak iş (karar değil):** Uygulamadaki KVKK aydınlatma metni taslaktır (`lib/core/config/legal.dart`); yayından önce hukuki metinle değiştirilmeli ve sürüm numarası güncellenmelidir.
 
-## 12. Yeni varsayımlar — onay bekliyor (adım 3: paket yönetimi)
+## 12. Onaylanan ek kararlar — adım 3: paket yönetimi
+
+Aşağıdaki kararlar 10 Kasım 2026'da stüdyo tarafından onaylandı.
 
 1. Kategori ve paket tanımı **silinmez**, pasife alınır (geçmiş atamalar tanıma bağlı kalır). Pasif tanım yeni atamada seçilemez.
 2. Paket tanımındaki değişiklikler (fiyat, ad, ders sayısı) yalnızca sonraki atamaları etkiler; atanmış paketin fiyatı, toplam hakkı ve bitiş tarihi atama anındaki değerlerle saklanır (P-06 kapsamının genişletilmesi).
@@ -188,3 +190,52 @@ Yol haritasında açıkça yazmayan aşağıdaki kararlar 10 Kasım 2026'da stü
 5. Yönetici, süresi dolmamış aktif paketi olan üyeye aynı kategoride paket atamak istediğinde uygulama önce uyarır; yönetici onaylarsa yenileme yapılır.
 6. Ekranda, durumu `active` olup bitiş tarihi geçmiş paket "Süresi doldu" olarak gösterilir (yalnızca gösterim; kural sunucudadır).
 7. Dondurma tek seferde en fazla 365 gün olabilir; aynı paket birden çok kez (çakışmayan aralıklarla) dondurulabilir.
+
+## 13. Referans sistemi (F)
+
+Kaynak: `docs/ROADMAP.md` §15 (10 Kasım 2026, stüdyo onaylı). Sunucu karşılığı: `supabase/migrations/20261111100000_referrals.sql`.
+
+| Kimlik | Kural | Hata kodu |
+|---|---|---|
+| F-01 | Her kullanıcının benzersiz bir referans kodu vardır; kayıt anında sunucuda otomatik üretilir. Kod 7 karakterdir, yalnızca `ABCDEFGHJKMNPQRSTUVWXYZ23456789` karakterlerini içerir (karışan I, L, O, 0, 1 yoktur). Kullanıcı kodunu değiştiremez. | — |
+| F-02 | Kod üretimi çakışmaya dayanıklıdır: benzersizlik kısıtı ihlalinde yeni kodla yeniden denenir (en fazla 10 deneme). | — |
+| F-03 | Kayıt formunda referans kodu **isteğe bağlıdır**. Geçerli bir kod girilirse `pending` (beklemede) bir referans oluşur. | — |
+| F-04 | Kendi koduyla referans oluşmaz. Bir kişi yalnızca **bir kez** referans alabilir (getirilen başına tek kayıt). | — |
+| F-05 | Her yeni referans yönetici paneline beklemede düşer; yönetici **onaylar** veya **reddeder**. Yalnızca yönetici karar verebilir. | `FORBIDDEN`, `REFERRAL_NOT_FOUND`, `DECISION_REQUIRED` |
+| F-06 | Bir referans **sayılır** ancak ve ancak: durumu `approved` **ve** getirilen kişinin şu an kullanılabilir bir paketi varsa (durumu aktif, `activated_at ≤ şimdi < ends_at`, şu an bir dondurma aralığında değil). Herhangi bir kategorideki tek paket yeterlidir. | — |
+| F-07 | Sayım anlık hesaplanır: getirilenin paketi bitince/dondurulunca referans sayımdan düşer; yeniden paket alınca veya dondurma bitince geri gelir. | — |
+| F-08 | İndirim oranı = sayılan referans sayısı × %5, **en fazla %50**. | — |
+| F-09 | İndirim uygulamada **otomatik düşülmez**. Ödemeyi yönetici fiziksel olarak alır; paket atarken uygulanan oranı (0 olabilir) kaydeder. | — |
+| F-10 | Paket atamasında liste fiyatı (`list_price`), uygulanan oran (`discount_percent`) ve indirimli fiyat (`price_paid = liste × (100 − oran) / 100`, 2 ondalık) saklanır. | — |
+| F-11 | Sunucu, kaydedilen oranın 0–50 aralığında ve atanan üyenin **o anki** hak ettiği orandan büyük olmamasını zorunlu kılar. Yönetici hak edilenden az verebilir. | `INVALID_DISCOUNT`, `DISCOUNT_EXCEEDS_ENTITLEMENT` |
+| F-12 | Tekrarlanan paket atama isteği (aynı idempotency anahtarı), indirim hakkı o arada değişmiş olsa bile ilk sonucu döndürür. | — |
+| F-13 | Üye kendi kodunu, sayılan referans sayısını, güncel indirim oranını ve bekleyen referans sayısını görür. Getirdiği kişiler için yalnızca **"Ad S."** (ad + soyadın baş harfi), durum ve şu an sayılıp sayılmadığı görünür; başka hiçbir kişisel veri görünmez. | — |
+| F-14 | Yönetici paneli: tüm referanslar (getiren, getirilen, tarih, durum, getirilenin aktif paketi var mı), duruma göre filtre, bekleyenler için onay/ret, getirenin güncel indirim oranı. | — |
+| F-15 | Referans kararları `audit_log` tablosuna yazılır. | — |
+
+**Test senaryoları**
+
+| Senaryo | Beklenen | Kurallar |
+|---|---|---|
+| Geçerli kodla kayıt | `pending` referans oluşur; getirenin oranı değişmez | F-03, F-06 |
+| Geçersiz / kendi koduyla kayıt | Kayıt tamamlanır, referans oluşmaz, kullanıcıya uyarı gösterilir | F-04, §14-1 |
+| Onaylı referans, getirilenin paketi yok | Sayılmaz; oran %0 | F-06 |
+| Onaylı 3 referans, üçünün de aktif paketi var | Oran %15 | F-08 |
+| Onaylı 12 referans, hepsinin aktif paketi var | Oran %50 (tavan) | F-08 |
+| Getirilenin paketi dondurulur / süresi biter | O referans sayımdan düşer; oran %5 azalır | F-07 |
+| Hak %10 iken yönetici %15 ile paket atar | `DISCOUNT_EXCEEDS_ENTITLEMENT`; paket oluşmaz | F-11 |
+| Hak %10 iken yönetici %0 veya %5 ile atar | Başarılı; `discount_percent` ve `price_paid` kaydedilir | F-09, F-10 |
+| Üye `referrals` tablosunu doğrudan sorgular | Boş sonuç (RLS) | F-13 |
+| Eğitmen/üye `admin_decide_referral` çağırır | `FORBIDDEN` | F-05 |
+
+## 14. Yeni varsayımlar — onay bekliyor (adım 3b: referans sistemi)
+
+1. **Geçersiz referans kodu kaydı engellemez**: kod bulunamazsa, sahibi pasifse veya kendi koduysa kayıt tamamlanır, yalnızca referans oluşmaz. Uygulama, girişten sonra kullanıcıya "girdiğiniz kod geçerli değildi" uyarısı gösterir. (Kod doğrulaması kayıt öncesi yapılmaz; giriş yapmamış istemciye kod sorgulama açılmamıştır.)
+2. Referans kodu yalnızca **kayıt sırasında** girilebilir; sonradan kod girme veya yöneticinin elle referans ekleme ekranı yoktur. Gerekirse sonraki adımda eklenebilir.
+3. Yönetici, verdiği kararı sonradan değiştirebilir (onaylı ↔ reddedilmiş); her değişiklik denetim kaydına yazılır.
+4. Sayım için getirilenin **herhangi bir kategoride** kullanılabilir tek paketi yeterlidir; paketin kalan hakkının 0 olması sayımı etkilemez (süresi dolana kadar aktif sayılır).
+5. Gelecekte başlayacak bir dondurma sayımı etkilemez; referans yalnızca dondurma aralığı içindeyken sayımdan düşer.
+6. İndirim, paketi **alan üyenin kendi** referans oranıdır (kod sahibi = paket atanan üye). Uygulanan oran 0 ile hak edilen oran arasında herhangi bir tam sayı olabilir; ekranda %5 adımlarıyla seçilir.
+7. Daha önce atanmış paketlerin fiyatı, referans sayısı sonradan değişse de değişmez (atama anındaki oran saklanır).
+8. Her rolden kullanıcının (eğitmen/yönetici dahil) referans kodu vardır; ancak indirim yalnızca paket atanabilen üyeler için anlamlıdır.
+9. Getiren veya getirilen hesabın silinmesi halinde referans kaydı da silinir.

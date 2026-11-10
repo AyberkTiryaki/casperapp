@@ -108,6 +108,16 @@ Rezervasyon onayı, ders iptali, ders hatırlatması, paket bitiş uyarısı. Ci
 ## 14. Yayın hazırlığı
 İkon, açılış ekranı, mağaza metni ve ekran görüntüleri; gizlilik politikası, kullanıcı metinleri, hesap silme; canlı ortam, yedekleme, hata takibi, e-posta ayarları; iOS/Android imzalama, test dağıtımı, mağaza başvurusu; yönetici kullanım kılavuzu.
 
+## 15. Referans sistemi (10.11.2026'da eklendi, stüdyo onaylı)
+- Her kullanıcıya benzersiz bir referans kodu atanır (kayıtta otomatik).
+- Kayıt formunda isteğe bağlı "Referans kodu" alanı. Kendi koduyla kayıt olunamaz; bir kişi yalnızca bir kez referans alabilir.
+- Her yeni referans yönetici paneline **beklemede** düşer; yönetici **onaylar** veya **reddeder**. Sadece onaylı referanslar sayılır.
+- Referans sayılması için getirilen kişinin **aktif paketi** olmalı (süresi dolmamış, dondurulmamış). Paketi bitince sayımdan düşer, yeniden paket alınca geri gelir.
+- İndirim = aktif ve onaylı referans sayısı × %5, **en fazla %50**.
+- İndirim uygulamada otomatik düşülmez. Ödemeyi yönetici fiziksel olarak alır ve indirimi kendisi uygular. Uygulama, yöneticiye kod sahibinin o anki indirim oranını gösterir. Yönetici paket atarken indirim uygulayıp uygulamadığını ve uygulanan oranı kaydeder; isterse indirim vermeyebilir.
+- Yönetici referans paneli: tüm referanslar (getiren, getirilen, tarih, durum, getirilenin aktif paketi var mı), bekleyenleri onay/ret, kullanıcı bazında güncel indirim oranı.
+- Üye kendi referans kodunu, kaç aktif referansı olduğunu ve güncel indirim oranını görür; getirdiği kişilerin kişisel verilerini görmez (en fazla ad, soyadın baş harfi ve durum).
+
 ## Teslim sırası
 1. Ekran akışları, kesin iş kuralları, veritabanı tasarımı
 2. Altyapı, kayıt, giriş, roller
