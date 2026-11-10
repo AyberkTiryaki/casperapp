@@ -542,6 +542,21 @@ Kim kimi getirdi ve yönetici kararı.
 
 **Yeni hata kodları:** `INVALID_DISCOUNT` (oran 0–50 dışında), `DISCOUNT_EXCEEDS_ENTITLEMENT` (oran üyenin o anki hakkından büyük), `REFERRAL_NOT_FOUND`, `DECISION_REQUIRED`.
 
+## Takvim okuma RPC'leri ve elle referans (adım 4)
+
+Kaynak: `20261111110000_referral_manual_and_schedule_views.sql`. Tablo değişikliği yoktur.
+
+| fonksiyon | kim | ne yapar |
+|---|---|---|
+| `list_classes(p_from timestamptz, p_to timestamptz, p_category_id uuid default null, p_trainer_id uuid default null, p_include_cancelled boolean default false)` → table | giriş yapmış aktif kullanıcı | Aralıktaki (en fazla 93 gün) dersler; eğitmen adı, kategori adı, kapasite, `booked_count`, çağıranın o dersteki canlı rezervasyonu (`my_reservation_id`); en fazla 1000 satır |
+| `my_reservations()` → table | giriş yapmış kullanıcı | Kendi rezervasyonları (gelecek + geçmiş + iptal) ders, kategori ve eğitmen adıyla; en fazla 300 satır |
+| `admin_class_reservations(p_class_id uuid)` → table | admin | Dersin tüm rezervasyonları (iptaller dahil): üye adı, durum, iade bilgisi, iptal nedeni |
+| `admin_create_referral(p_referrer_id uuid, p_referred_id uuid, p_note text default null)` → referrals | admin | Elle referans ekler; doğrudan `approved`; `SELF_REFERRAL`, `REFERRAL_ALREADY_EXISTS`, `USER_NOT_FOUND`; denetim kaydı yazar |
+| `admin_search_users(p_query text default '')` → table(id, full_name, role, referral_code) | admin | Aktif kullanıcıları ada veya tam referans koduna göre arar (en fazla 50) |
+| `private.short_name(text)` | — | **Düzeltme:** `IMMUTABLE` yerine `STABLE` (lint uyarısı) |
+
+Rezervasyon ve ders yazma işlemleri mevcut RPC'lerle yapılır: `create_class`, `cancel_class`, `book_class`, `cancel_reservation`, `class_participants`.
+
 ## Migration dosyaları
 
 | dosya | içerik |
@@ -552,3 +567,4 @@ Kim kimi getirdi ve yönetici kararı.
 | `20261110120300_rpc_wallet.sql` | cüzdan ve ürün satışı |
 | `20261111090000_package_read_policies.sql` | adım 3: üyenin kendi paketine bağlı pasif tanım/kategoriyi okuyabilmesi (`package_definitions_select_own_used`, `categories_select_own_used`), `member_packages_member_status_idx` indeksi |
 | `20261111100000_referrals.sql` | adım 3b: referans kodu, `referrals` tablosu, sayım/indirim fonksiyonları, kayıt tetikleyicisi güncellemesi, `assign_package` indirim parametresi |
+| `20261111110000_referral_manual_and_schedule_views.sql` | `short_name` STABLE düzeltmesi; elle referans (`admin_create_referral`, `admin_search_users`); takvim okuma RPC'leri (`list_classes`, `my_reservations`, `admin_class_reservations`) |

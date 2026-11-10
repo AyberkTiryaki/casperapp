@@ -19,7 +19,7 @@ Yol haritasındaki açık kararlar 10 Kasım 2026'da stüdyo tarafından aşağ�
 | b | Dondurma süresi bitişe eklenir mi? | **Evet.** Dondurulan gün sayısı paketin bitiş tarihine eklenir. | D-04 | `freeze_package` |
 | c | Yenilemede/aktarımda rezervasyonlar | Gelecek rezervasyon yalnızca yeni paket **aynı kategorideyse, hakkı kaldıysa ve ders tarihinde geçerliyse** aktarılır. Aksi halde iptal edilir ve hak **eski paketin** hareketlerine iade edilir. | P-08, P-09 | `assign_package` |
 
-Yol haritasında açıkça yazmayan ek kararlar 11. bölümdedir (10 Kasım 2026'da onaylandı). Adım 3 ek kararları 12. bölümdedir (onaylandı). Referans sistemi kuralları 13. bölümde, henüz onaylanmamış yeni varsayımlar 14. bölümdedir.
+Yol haritasında açıkça yazmayan ek kararlar 11. bölümdedir (10 Kasım 2026'da onaylandı). Adım 3 ek kararları 12. bölümdedir (onaylandı). Referans sistemi kuralları 13. bölümde, onaylanan referans kararları 14. bölümde, henüz onaylanmamış yeni varsayımlar 15. bölümdedir.
 
 ## 1. Kayıt, profil, KVKK (K)
 
@@ -212,6 +212,7 @@ Kaynak: `docs/ROADMAP.md` §15 (10 Kasım 2026, stüdyo onaylı). Sunucu karşı
 | F-13 | Üye kendi kodunu, sayılan referans sayısını, güncel indirim oranını ve bekleyen referans sayısını görür. Getirdiği kişiler için yalnızca **"Ad S."** (ad + soyadın baş harfi), durum ve şu an sayılıp sayılmadığı görünür; başka hiçbir kişisel veri görünmez. | — |
 | F-14 | Yönetici paneli: tüm referanslar (getiren, getirilen, tarih, durum, getirilenin aktif paketi var mı), duruma göre filtre, bekleyenler için onay/ret, getirenin güncel indirim oranı. | — |
 | F-15 | Referans kararları `audit_log` tablosuna yazılır. | — |
+| F-16 | Yönetici bir kullanıcıya **elle referans ekleyebilir**: getireni ve getirileni seçer. Getirilenin zaten bir referansı varsa eklenemez; kişi kendi kendine referans olamaz. Kayıt doğrudan **onaylı** oluşur ve denetim kaydına yazılır (`admin_create_referral`). | `REFERRAL_ALREADY_EXISTS`, `SELF_REFERRAL`, `USER_NOT_FOUND`, `FORBIDDEN` |
 
 **Test senaryoları**
 
@@ -228,7 +229,9 @@ Kaynak: `docs/ROADMAP.md` §15 (10 Kasım 2026, stüdyo onaylı). Sunucu karşı
 | Üye `referrals` tablosunu doğrudan sorgular | Boş sonuç (RLS) | F-13 |
 | Eğitmen/üye `admin_decide_referral` çağırır | `FORBIDDEN` | F-05 |
 
-## 14. Yeni varsayımlar — onay bekliyor (adım 3b: referans sistemi)
+## 14. Onaylanan ek kararlar — adım 3b: referans sistemi
+
+Aşağıdaki kararlar stüdyo tarafından onaylandı. 2. madde sonradan F-16 ile genişletildi (yönetici elle referans ekleyebilir).
 
 1. **Geçersiz referans kodu kaydı engellemez**: kod bulunamazsa, sahibi pasifse veya kendi koduysa kayıt tamamlanır, yalnızca referans oluşmaz. Uygulama, girişten sonra kullanıcıya "girdiğiniz kod geçerli değildi" uyarısı gösterir. (Kod doğrulaması kayıt öncesi yapılmaz; giriş yapmamış istemciye kod sorgulama açılmamıştır.)
 2. Referans kodu yalnızca **kayıt sırasında** girilebilir; sonradan kod girme veya yöneticinin elle referans ekleme ekranı yoktur. Gerekirse sonraki adımda eklenebilir.
@@ -239,3 +242,13 @@ Kaynak: `docs/ROADMAP.md` §15 (10 Kasım 2026, stüdyo onaylı). Sunucu karşı
 7. Daha önce atanmış paketlerin fiyatı, referans sayısı sonradan değişse de değişmez (atama anındaki oran saklanır).
 8. Her rolden kullanıcının (eğitmen/yönetici dahil) referans kodu vardır; ancak indirim yalnızca paket atanabilen üyeler için anlamlıdır.
 9. Getiren veya getirilen hesabın silinmesi halinde referans kaydı da silinir.
+
+## 15. Yeni varsayımlar — onay bekliyor (adım 4: ders takvimi ve rezervasyon)
+
+1. Giriş yapmış her aktif kullanıcı tüm planlanmış dersleri (kategori, eğitmen adı, kalan kontenjan) görür; üye ekranı bugünden itibaren **14 günü** listeler (yalnızca ekran sınırı; sunucu daha ileri tarihli derse rezervasyonu engellemez, paket geçerliliği kuralları geçerlidir).
+2. Açılmış bir dersin saati/kategorisi/türü **düzenlenemez**; değişiklik için ders iptal edilip yeniden açılır.
+3. Yönetici, ders detayından bir üyeyi derse **ekleyebilir** (üye adına rezervasyon; aynı kurallar ve hak düşümü uygulanır) (R-01).
+4. Eğitmen katılımcıların yalnızca adını görür; rezervasyonları tek tek iptal edemez (yalnızca dersin tamamını iptal edebilir, S-06).
+5. "Geldi / gelmedi" işaretleme (yoklama) bu adımda yoktur; adım 5 kapsamında ele alınacak (I-06).
+6. Elle eklenen referansta getiren ve getirilen herhangi bir aktif kullanıcı olabilir (rol kısıtı yok); yönetici bu kaydı da sonradan reddedebilir (F-16, §14-3).
+7. Üye "Geçmiş" sekmesinde iptal edilmiş rezervasyonlarını da görür; liste en son 300 rezervasyonla sınırlıdır.
