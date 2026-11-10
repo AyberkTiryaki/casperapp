@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/widgets/async_value_view.dart';
 import '../../../../core/widgets/empty_view.dart';
+import '../../../referrals/data/referral_repository.dart';
 import '../../data/package_repository.dart';
 import '../../domain/package_models.dart';
 import '../shared/package_widgets.dart';
@@ -46,10 +47,11 @@ class AdminMemberPackagesScreen extends ConsumerWidget {
                 : ListView.separated(
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
                     physics: const AlwaysScrollableScrollPhysics(),
-                    itemCount: sorted.length,
+                    itemCount: sorted.length + 1,
                     separatorBuilder: (_, _) => const SizedBox(height: 12),
                     itemBuilder: (_, i) {
-                      final p = sorted[i];
+                      if (i == 0) return _ReferralHeader(memberId: member.id);
+                      final p = sorted[i - 1];
                       return PackageCard(
                         package: p,
                         showPrice: true,
@@ -75,6 +77,25 @@ class AdminMemberPackagesScreen extends ConsumerWidget {
                   ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _ReferralHeader extends ConsumerWidget {
+  const _ReferralHeader({required this.memberId});
+  final String memberId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final s = ref.watch(referralSummaryProvider(memberId)).value;
+    if (s == null) return const SizedBox.shrink();
+    return Card(
+      child: ListTile(
+        leading: const Icon(Icons.group_add_outlined),
+        title: Text('Referans kodu: ${s.referralCode ?? '-'}'),
+        subtitle: Text(
+            'Güncel indirim hakkı: %${s.discountPercent} (${s.activeCount} aktif referans)'),
       ),
     );
   }

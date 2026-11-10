@@ -31,6 +31,7 @@ class Profile {
     this.birthDate,
     this.heightCm,
     this.weightKg,
+    this.referralCode,
   });
 
   final String id;
@@ -40,6 +41,7 @@ class Profile {
   final double? weightKg;
   final UserRole role;
   final bool isActive;
+  final String? referralCode;
 
   factory Profile.fromJson(Map<String, dynamic> json) {
     return Profile(
@@ -52,6 +54,7 @@ class Profile {
       weightKg: (json['weight_kg'] as num?)?.toDouble(),
       role: UserRole.fromString(json['role'] as String?),
       isActive: (json['is_active'] as bool?) ?? true,
+      referralCode: json['referral_code'] as String?,
     );
   }
 }

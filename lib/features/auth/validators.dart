@@ -59,3 +59,19 @@ String? validateWeight(String? v) {
   if (w < 30 || w > 300) return 'Kilo 30-300 kg arasında olmalı.';
   return null;
 }
+
+const referralCodeAlphabet = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+
+/// Boşlukları siler, büyük harfe çevirir.
+String normalizeReferralCode(String? v) =>
+    (v ?? '').replaceAll(RegExp(r'\s+'), '').toUpperCase();
+
+/// İsteğe bağlı alan: boşsa geçerli; doluysa 7 karakter ve geçerli alfabe.
+String? validateReferralCode(String? v) {
+  final c = normalizeReferralCode(v);
+  if (c.isEmpty) return null;
+  if (c.length != 7 || c.split('').any((ch) => !referralCodeAlphabet.contains(ch))) {
+    return 'Referans kodu 7 karakter olmalı ve geçerli karakterlerden oluşmalı.';
+  }
+  return null;
+}

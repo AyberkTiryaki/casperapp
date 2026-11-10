@@ -2,9 +2,11 @@ import 'package:caspertrainingstudio/features/packages/data/package_repository.d
 import 'package:caspertrainingstudio/features/packages/domain/package_models.dart';
 
 class AssignCall {
-  AssignCall(this.memberId, this.definitionId, this.key, this.replace);
+  AssignCall(this.memberId, this.definitionId, this.key, this.replace,
+      [this.discount = 0]);
   final String memberId, definitionId, key;
   final bool replace;
+  final int discount;
 }
 
 class FakePackageRepository implements PackageRepository {
@@ -71,9 +73,11 @@ class FakePackageRepository implements PackageRepository {
     required String definitionId,
     required String idempotencyKey,
     required bool replaceExisting,
+    int discountPercent = 0,
   }) async {
     assignCalls.add(
-        AssignCall(memberId, definitionId, idempotencyKey, replaceExisting));
+        AssignCall(
+        memberId, definitionId, idempotencyKey, replaceExisting, discountPercent));
     if (assignCalls.length == 1 && assignErrorOnFirst != null) {
       throw assignErrorOnFirst!;
     }

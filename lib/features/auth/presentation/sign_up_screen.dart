@@ -24,6 +24,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   final _birth = TextEditingController();
   final _height = TextEditingController();
   final _weight = TextEditingController();
+  final _referral = TextEditingController();
   DateTime? _birthDate;
   bool _kvkk = false;
   bool _kvkkTouched = false;
@@ -32,7 +33,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
 
   @override
   void dispose() {
-    for (final c in [_name, _email, _password, _password2, _birth, _height, _weight]) {
+    for (final c in [_name, _email, _password, _password2, _birth, _height, _weight, _referral]) {
       c.dispose();
     }
     super.dispose();
@@ -106,6 +107,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             birthDate: _birthDate!,
             heightCm: parseHeight(_height.text)!,
             weightKg: parseWeight(_weight.text)!,
+            referralCode: normalizeReferralCode(_referral.text),
           ));
       if (!mounted) return;
       if (res.session == null) {
@@ -211,6 +213,19 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                           ),
                         ),
                       ],
+                    ),
+                    gap,
+                    TextFormField(
+                      controller: _referral,
+                      textCapitalization: TextCapitalization.characters,
+                      autocorrect: false,
+                      decoration: const InputDecoration(
+                        labelText: 'Referans kodu (isteğe bağlı)',
+                        helperText:
+                            'Kod geçersizse kaydınız yine tamamlanır, ancak referans oluşmaz.',
+                        helperMaxLines: 2,
+                      ),
+                      validator: validateReferralCode,
                     ),
                     gap,
                     CheckboxListTile(

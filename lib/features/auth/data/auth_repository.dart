@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/config/legal.dart';
 import '../../../core/config/supabase.dart';
+import '../validators.dart';
 
 class SignUpData {
   const SignUpData({
@@ -11,6 +12,7 @@ class SignUpData {
     required this.birthDate,
     required this.heightCm,
     required this.weightKg,
+    this.referralCode,
   });
 
   final String email;
@@ -19,6 +21,24 @@ class SignUpData {
   final DateTime birthDate;
   final int heightCm;
   final double weightKg;
+  final String? referralCode;
+}
+
+/// signUp `data` (kullanıcı metadata) haritası; referans kodu boşsa eklenmez.
+Map<String, Object?> buildSignUpMetadata(SignUpData d) {
+  final b = d.birthDate;
+  final birth =
+      '${b.year.toString().padLeft(4, '0')}-${b.month.toString().padLeft(2, '0')}-${b.day.toString().padLeft(2, '0')}';
+  final ref = normalizeReferralCode(d.referralCode);
+  return {
+    'full_name': d.fullName,
+    'birth_date': birth,
+    'height_cm': d.heightCm,
+    'weight_kg': d.weightKg,
+    'kvkk_accepted': true,
+    'kvkk_version': kvkkTextVersion,
+    if (ref.isNotEmpty) 'referral_code': ref,
+  };
 }
 
 class AuthRepository {
@@ -27,24 +47,12 @@ class AuthRepository {
   Future<void> signIn(String email, String password) =>
       _auth.signInWithPassword(email: email, password: password);
 
-  Future<AuthResponse> signUp(SignUpData d) {
-    final b = d.birthDate;
-    final birth =
-        '${b.year.toString().padLeft(4, '0')}-${b.month.toString().padLeft(2, '0')}-${b.day.toString().padLeft(2, '0')}';
-    return _auth.signUp(
-      email: d.email,
-      password: d.password,
-      emailRedirectTo: authRedirectUrl,
-      data: {
-        'full_name': d.fullName,
-        'birth_date': birth,
-        'height_cm': d.heightCm,
-        'weight_kg': d.weightKg,
-        'kvkk_accepted': true,
-        'kvkk_version': kvkkTextVersion,
-      },
-    );
-  }
+  Future<AuthResponse> signUp(SignUpData d) => _auth.signUp(
+        email: d.email,
+        password: d.password,
+        emailRedirectTo: authRedirectUrl,
+        data: buildSignUpMetadata(d),
+      );
 
   Future<void> resendSignup(String email) =>
       _auth.resend(type: OtpType.signup, email: email);

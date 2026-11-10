@@ -7,6 +7,8 @@ import '../../../../core/utils/formatters.dart';
 import '../../../../core/utils/uuid.dart';
 import '../../../../core/widgets/async_value_view.dart' show isNetworkError;
 import '../../data/package_repository.dart';
+import '../../../referrals/data/referral_repository.dart';
+import '../../../referrals/domain/referral_models.dart';
 import '../../domain/package_models.dart';
 
 Future<bool> _confirm(BuildContext context, String title, String message,
@@ -65,12 +67,12 @@ Future<void> runAssignFlow(
     ),
   );
   if (picked == null || !context.mounted) return;
-  final ok = await _confirm(
-    context,
-    'Paket ata',
-    '${member.fullName} adlı üyeye "${picked.name}" paketi (${picked.sessionCount} ders, ${formatTl(picked.price)}) atanacak.',
+  final discount = await showDialog<int>(
+    context: context,
+    barrierDismissible: false,
+    builder: (_) => _AssignDialog(member: member, definition: picked),
   );
-  if (!ok || !context.mounted) return;
+  if (discount == null || !context.mounted) return;
 
   final key = generateUuidV4();
   final repo = ref.read(packageRepositoryProvider);
@@ -82,6 +84,7 @@ Future<void> runAssignFlow(
         definitionId: picked.id,
         idempotencyKey: key,
         replaceExisting: replace,
+        discountPercent: discount,
       );
       ref.invalidate(memberPackagesProvider(member.id));
       messenger.showSnackBar(const SnackBar(content: Text('Paket atandı.')));
@@ -105,6 +108,9 @@ Future<void> runAssignFlow(
             ok: 'Tekrar dene');
         if (retry && context.mounted) continue;
         return;
+      }
+      if (_isCode(e, 'DISCOUNT_EXCEEDS_ENTITLEMENT')) {
+        ref.invalidate(referralSummaryProvider(member.id));
       }
       messenger.showSnackBar(SnackBar(content: Text(friendlyError(e))));
       return;
@@ -172,5 +178,112 @@ Future<void> runFreezeFlow(
     messenger.showSnackBar(const SnackBar(content: Text('Paket donduruldu.')));
   } catch (e) {
     messenger.showSnackBar(SnackBar(content: Text(friendlyError(e))));
+  }
+}
+
+/// Paket atama onayı: referans indirimi hakkını yükler; seçilen indirimi (0 olabilir) döndürür.
+class _AssignDialog extends ConsumerStatefulWidget {
+  const _AssignDialog({required this.member, required this.definition});
+  final MemberSummary member;
+  final PackageDefinition definition;
+
+  @override
+  ConsumerState<_AssignDialog> createState() => _AssignDialogState();
+}
+
+class _AssignDialogState extends ConsumerState<_AssignDialog> {
+  ReferralSummary? _summary;
+  Object? _error;
+  bool _apply = false;
+  int _percent = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    setState(() => _error = null);
+    try {
+      final s = await ref
+          .read(referralRepositoryProvider)
+          .summary(userId: widget.member.id);
+      if (!mounted) return;
+      setState(() {
+        _summary = s;
+        _percent = s.discountPercent;
+      });
+    } catch (e) {
+      if (mounted) setState(() => _error = e);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final d = widget.definition;
+    final s = _summary;
+    final entitlement = s?.discountPercent ?? 0;
+    final applied = (_apply && entitlement > 0) ? _percent : 0;
+    final result =
+        double.parse((d.price * (100 - applied) / 100).toStringAsFixed(2));
+    return AlertDialog(
+      title: const Text('Paket ata'),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+                '${widget.member.fullName} adlı üyeye "${d.name}" paketi (${d.sessionCount} ders) atanacak.'),
+            const SizedBox(height: 12),
+            if (_error != null)
+              Text(friendlyError(_error!),
+                  style: TextStyle(color: Theme.of(context).colorScheme.error))
+            else if (s == null)
+              const LinearProgressIndicator()
+            else if (entitlement == 0)
+              const Text('Bu üyenin referans indirimi hakkı yok.')
+            else ...[
+              Text(
+                  'Referans indirimi hakkı: %$entitlement (${s.activeCount} aktif referans)'),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text('İndirim uygula'),
+                value: _apply,
+                onChanged: (v) => setState(() => _apply = v),
+              ),
+              if (_apply)
+                DropdownButtonFormField<int>(
+                  initialValue: _percent,
+                  decoration:
+                      const InputDecoration(labelText: 'İndirim oranı (%)'),
+                  items: [
+                    for (var p = 5; p <= entitlement; p += 5)
+                      DropdownMenuItem(value: p, child: Text('%$p')),
+                  ],
+                  onChanged: (v) => setState(() => _percent = v ?? _percent),
+                ),
+            ],
+            const SizedBox(height: 12),
+            Text('Liste fiyatı: ${formatTl(d.price)}'),
+            Text('İndirim: %$applied'),
+            Text('Ödenecek tutar: ${formatTl(result)}'),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Vazgeç')),
+        if (_error != null)
+          TextButton(onPressed: _load, child: const Text('Tekrar dene')),
+        FilledButton(
+          onPressed:
+              s == null ? null : () => Navigator.of(context).pop(applied),
+          child: const Text('Onayla'),
+        ),
+      ],
+    );
   }
 }

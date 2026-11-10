@@ -40,6 +40,7 @@ abstract class PackageRepository {
     required String definitionId,
     required String idempotencyKey,
     required bool replaceExisting,
+    int discountPercent = 0,
   });
   Future<void> freezePackage({
     required String packageId,
@@ -171,12 +172,14 @@ class SupabasePackageRepository implements PackageRepository {
     required String definitionId,
     required String idempotencyKey,
     required bool replaceExisting,
+    int discountPercent = 0,
   }) async {
     await supabase.rpc('assign_package', params: {
       'p_member_id': memberId,
       'p_definition_id': definitionId,
       'p_idempotency_key': idempotencyKey,
       'p_replace_existing': replaceExisting,
+      'p_discount_percent': discountPercent,
     });
   }
 

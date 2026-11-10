@@ -88,6 +88,10 @@ class PackageCard extends StatelessWidget {
               Text(active
                   ? 'Bitiş: ${formatDate(package.endsAt)} (${package.daysLeft(now)} gün kaldı)'
                   : 'Bitiş: ${formatDate(package.endsAt)}'),
+              if (showPrice && package.discountPercent > 0) ...[
+                Text('Liste fiyatı: ${formatTl(package.listPrice)}'),
+                Text('İndirim: %${package.discountPercent}'),
+              ],
               if (showPrice) Text('Ödenen: ${formatTl(package.pricePaid)}'),
               for (final f in upcomingFreezes)
                 Padding(

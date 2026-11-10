@@ -5,6 +5,7 @@ import '../../packages/presentation/admin/categories_screen.dart';
 import '../../packages/presentation/admin/definitions_screen.dart';
 import '../../packages/presentation/admin/members_screen.dart';
 import '../../profile/profile.dart';
+import '../../referrals/presentation/admin_referrals_screen.dart';
 
 class AdminHomeScreen extends StatelessWidget {
   const AdminHomeScreen({super.key, required this.profile});
@@ -23,6 +24,8 @@ class AdminHomeScreen extends StatelessWidget {
           onTap: () => _go(context, const DefinitionsScreen())),
       ComingModule('Kategoriler', Icons.category_outlined,
           onTap: () => _go(context, const CategoriesScreen())),
+      ComingModule('Referanslar', Icons.group_add_outlined,
+          onTap: () => _go(context, const AdminReferralsScreen())),
       const ComingModule(
           'Kullanıcı ve rol yönetimi', Icons.manage_accounts_outlined),
       const ComingModule(

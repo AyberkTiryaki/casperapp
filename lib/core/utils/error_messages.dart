@@ -19,6 +19,11 @@ const _serverCodeMessages = <String, String>{
       'Dondurma aralığı paketin geçerlilik süresi dışında kalıyor.',
   'FREEZE_OVERLAP': 'Bu tarihlerde zaten bir dondurma var.',
   'USER_NOT_FOUND': 'Kullanıcı bulunamadı.',
+  'INVALID_DISCOUNT': 'İndirim oranı geçersiz.',
+  'DISCOUNT_EXCEEDS_ENTITLEMENT':
+      'İndirim, üyenin güncel referans indirimi hakkını aşıyor. Lütfen oranı yenileyip tekrar deneyin.',
+  'REFERRAL_NOT_FOUND': 'Referans kaydı bulunamadı.',
+  'DECISION_REQUIRED': 'Bu işlem için bir karar (onay/ret) belirtilmeli.',
 };
 
 String friendlyError(Object e) {

@@ -119,7 +119,9 @@ class MemberPackage {
     this.definitionName,
     this.categoryName,
     this.freezes = const [],
-  });
+    double? listPrice,
+    this.discountPercent = 0,
+  }) : listPrice = listPrice ?? pricePaid;
   final String id;
   final String memberId;
   final String definitionId;
@@ -129,6 +131,10 @@ class MemberPackage {
   final int totalCredits;
   final int remainingCredits;
   final double pricePaid;
+
+  /// İndirimsiz liste fiyatı (yoksa ödenen fiyat).
+  final double listPrice;
+  final int discountPercent;
   final DateTime activatedAt;
   final DateTime endsAt;
 
@@ -153,6 +159,8 @@ class MemberPackage {
       activatedAt: _dt(j['activated_at']),
       endsAt: _dt(j['ends_at']),
       status: (j['status'] as String?) ?? 'active',
+      listPrice: (j['list_price'] as num?)?.toDouble(),
+      discountPercent: (j['discount_percent'] as num?)?.toInt() ?? 0,
       freezes: fr is List
           ? fr
               .map((e) =>
