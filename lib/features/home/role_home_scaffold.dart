@@ -24,9 +24,12 @@ Future<void> confirmAndSignOut(BuildContext context, WidgetRef ref) async {
 }
 
 class ComingModule {
-  const ComingModule(this.title, this.icon);
+  const ComingModule(this.title, this.icon, {this.onTap});
   final String title;
   final IconData icon;
+
+  /// Verilirse kart çalışır durumdadır; verilmezse "Yakında" olarak devre dışıdır.
+  final VoidCallback? onTap;
 }
 
 /// Rol ana ekranları için ortak iskelet: başlık, karşılama, yakında gelecek modüller.
@@ -61,19 +64,22 @@ class RoleHomeScaffold extends ConsumerWidget {
             Text('Merhaba, ${profile.fullName}',
                 style: t.textTheme.headlineSmall),
             const SizedBox(height: 8),
-            Text('Yakında gelecek modüller', style: t.textTheme.bodyMedium),
+            Text('Modüller', style: t.textTheme.bodyMedium),
             const SizedBox(height: 16),
             for (final m in modules)
               Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: Opacity(
-                  opacity: 0.5,
+                  opacity: m.onTap == null ? 0.5 : 1,
                   child: Card(
                     child: ListTile(
-                      enabled: false,
+                      enabled: m.onTap != null,
+                      onTap: m.onTap,
                       leading: Icon(m.icon),
                       title: Text(m.title),
-                      trailing: const Text('Yakında'),
+                      trailing: m.onTap == null
+                          ? const Text('Yakında')
+                          : const Icon(Icons.chevron_right),
                     ),
                   ),
                 ),

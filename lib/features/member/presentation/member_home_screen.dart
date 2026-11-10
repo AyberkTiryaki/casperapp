@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../home/role_home_scaffold.dart';
+import '../../packages/presentation/member/my_packages_screen.dart';
 import '../../profile/profile.dart';
 
 class MemberHomeScreen extends StatelessWidget {
@@ -10,11 +11,13 @@ class MemberHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RoleHomeScaffold(profile: profile, modules: const [
-      ComingModule('Seans randevuları', Icons.event_available_outlined),
-      ComingModule('Paketlerim ve seans hakkım', Icons.confirmation_number_outlined),
-      ComingModule('Antrenman programım', Icons.fitness_center),
-      ComingModule('Ölçümlerim ve ilerleme', Icons.monitor_weight_outlined),
+    return RoleHomeScaffold(profile: profile, modules: [
+      ComingModule('Paketlerim', Icons.confirmation_number_outlined,
+          onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const MyPackagesScreen()))),
+      const ComingModule('Seans randevuları', Icons.event_available_outlined),
+      const ComingModule('Antrenman programım', Icons.fitness_center),
+      const ComingModule('Ölçümlerim ve ilerleme', Icons.monitor_weight_outlined),
     ]);
   }
 }

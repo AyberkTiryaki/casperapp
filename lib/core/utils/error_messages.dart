@@ -2,6 +2,25 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../widgets/async_value_view.dart' show isNetworkError;
 
+const _serverCodeMessages = <String, String>{
+  'FORBIDDEN': 'Bu işlem için yetkiniz yok.',
+  'UNAUTHENTICATED': 'Oturumunuz sona ermiş. Lütfen tekrar giriş yapın.',
+  'IDEMPOTENCY_KEY_REQUIRED': 'İşlem anahtarı eksik. Lütfen tekrar deneyin.',
+  'IDEMPOTENCY_KEY_REUSED':
+      'Bu işlem anahtarı farklı bir işlemde kullanılmış. Lütfen işlemi baştan başlatın.',
+  'MEMBER_NOT_ELIGIBLE': 'Bu üyeye paket tanımlanamaz (aktif bir üye değil).',
+  'DEFINITION_NOT_FOUND': 'Paket tanımı bulunamadı veya pasif.',
+  'ACTIVE_PACKAGE_EXISTS': 'Bu kategoride zaten aktif bir paket var.',
+  'PACKAGE_NOT_FOUND': 'Paket bulunamadı.',
+  'PACKAGE_NOT_ACTIVE': 'Paket aktif değil.',
+  'INVALID_FREEZE_RANGE': 'Dondurma tarih aralığı geçersiz.',
+  'FREEZE_IN_PAST': 'Dondurma başlangıcı geçmişte olamaz.',
+  'FREEZE_OUTSIDE_PACKAGE':
+      'Dondurma aralığı paketin geçerlilik süresi dışında kalıyor.',
+  'FREEZE_OVERLAP': 'Bu tarihlerde zaten bir dondurma var.',
+  'USER_NOT_FOUND': 'Kullanıcı bulunamadı.',
+};
+
 String friendlyError(Object e) {
   if (isNetworkError(e)) {
     return 'İnternet bağlantısı kurulamadı. Lütfen bağlantınızı kontrol edip tekrar deneyin.';
@@ -34,6 +53,10 @@ String friendlyError(Object e) {
     return 'İşlem gerçekleştirilemedi. Lütfen tekrar deneyin.';
   }
   if (e is PostgrestException) {
+    final known = _serverCodeMessages[e.message.trim()];
+    if (known != null) return known;
+    if (e.code == '23505') return 'Bu kayıt zaten var.';
+    if (e.code == '23514') return 'Girilen değerler kurallara uymuyor.';
     if (e.code == '42501') return 'Bu işlem için yetkiniz yok.';
     return 'Sunucu hatası oluştu. Lütfen tekrar deneyin.';
   }
