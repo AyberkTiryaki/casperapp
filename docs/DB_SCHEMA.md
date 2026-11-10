@@ -355,8 +355,8 @@ Tüm tablolarda RLS açıktır. `anon` rolü hiçbir tabloya, dizinin kullanım�
 | profiles | kendi satırı veya admin | UPDATE: kendi satırı veya admin (yalnızca 4 kolon); INSERT/DELETE yok (yalnızca tetikleyici) |
 | consents | kendi satırı veya admin | yalnızca RPC (`accept_kvkk`, kayıt tetikleyicisi) |
 | account_deletion_requests | kendi satırı veya admin | INSERT: kendi adına, `pending` ve işlem alanları boş; UPDATE: yalnızca admin (status, note, processed_at, processed_by); DELETE yok |
-| categories | aktif olanlar herkese, tümü admin | INSERT/UPDATE/DELETE: yalnızca admin |
-| package_definitions | aktif olanlar herkese, tümü admin | INSERT/UPDATE/DELETE: yalnızca admin |
+| categories | aktif olanlar herkese, tümü admin; üye ayrıca kendi paketinin kategorisini (pasif olsa da) | INSERT/UPDATE/DELETE: yalnızca admin |
+| package_definitions | aktif olanlar herkese, tümü admin; üye ayrıca kendi paketinin tanımını (pasif olsa da) | INSERT/UPDATE/DELETE: yalnızca admin |
 | products | aktif olanlar herkese, tümü admin | INSERT/UPDATE/DELETE: yalnızca admin |
 | member_packages | kendi satırı veya admin | yalnızca RPC |
 | package_freezes | admin veya paketin sahibi | yalnızca RPC |
@@ -489,3 +489,13 @@ where id = (select id from auth.users where email = 'yonetici@ornek.com');
 ```
 
 Bundan sonra roller yalnızca `admin_set_role` RPC'si ile değiştirilir.
+
+## Migration dosyaları
+
+| dosya | içerik |
+|---|---|
+| `20261110120000_schema.sql` | enumlar, tablolar, kısıtlar, indeksler |
+| `20261110120100_auth_roles_rls.sql` | kayıt tetikleyicisi, rol yardımcıları ve RPC'leri, RLS, yetkiler |
+| `20261110120200_rpc_packages_classes_reservations.sql` | paket atama/yenileme, dondurma, ders, rezervasyon, iptal |
+| `20261110120300_rpc_wallet.sql` | cüzdan ve ürün satışı |
+| `20261111090000_package_read_policies.sql` | adım 3: üyenin kendi paketine bağlı pasif tanım/kategoriyi okuyabilmesi (`package_definitions_select_own_used`, `categories_select_own_used`), `member_packages_member_status_idx` indeksi |

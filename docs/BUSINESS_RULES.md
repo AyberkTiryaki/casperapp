@@ -19,7 +19,7 @@ Yol haritasındaki açık kararlar 10 Kasım 2026'da stüdyo tarafından aşağ�
 | b | Dondurma süresi bitişe eklenir mi? | **Evet.** Dondurulan gün sayısı paketin bitiş tarihine eklenir. | D-04 | `freeze_package` |
 | c | Yenilemede/aktarımda rezervasyonlar | Gelecek rezervasyon yalnızca yeni paket **aynı kategorideyse, hakkı kaldıysa ve ders tarihinde geçerliyse** aktarılır. Aksi halde iptal edilir ve hak **eski paketin** hareketlerine iade edilir. | P-08, P-09 | `assign_package` |
 
-Belgede ayrıca yol haritasında açıkça yazmayan, uygulama sırasında yapılan **varsayımlar** vardır; bunlar ilgili kuralda "(varsayım)" ile işaretlidir ve 11. bölümde listelenmiştir.
+Yol haritasında açıkça yazmayan ek kararlar 11. bölümdedir (10 Kasım 2026'da onaylandı). Henüz onaylanmamış yeni varsayımlar 12. bölümde ayrıca listelenir.
 
 ## 1. Kayıt, profil, KVKK (K)
 
@@ -54,7 +54,7 @@ Belgede ayrıca yol haritasında açıkça yazmayan, uygulama sırasında yapıl
 |---|---|
 | P-01 | Paket tanımı: kategori, ders sayısı, geçerlilik günü, fiyat. Ders sayısı 8, 12, 16 veya 20 olur. |
 | P-02 | Geçerlilik: 8 ve 12 derslik paket **30 gün**, 16 ve 20 derslik paket **40 gün**. Süre aktivasyon anından başlar; bitiş = aktivasyon + gün sayısı (bitiş anı dahil değildir). |
-| P-03 | Paketi yalnızca yönetici atar; paket atandığı anda aktifleşir (varsayım). |
+| P-03 | Paketi yalnızca yönetici atar; paket atandığı anda aktifleşir. |
 | P-04 | Paket yalnızca kendi kategorisindeki derslerde kullanılır. |
 | P-05 | Bir üyenin aynı kategoride en fazla **bir** aktif paketi olur. Farklı kategorilerde aynı anda aktif paket olabilir. |
 | P-06 | Atama anındaki fiyat pakete kopyalanır (`price_paid`). Sonradan yapılan fiyat değişikliği atanmış paketleri etkilemez. |
@@ -70,10 +70,10 @@ Belgede ayrıca yol haritasında açıkça yazmayan, uygulama sırasında yapıl
 |---|---|
 | S-01 | Eğitmen yalnızca kendi adına ders açar; yönetici herhangi bir eğitmen adına açabilir. |
 | S-02 | Bireysel ders kapasitesi **1**, grup dersi kapasitesi **6** olur; başka değer olamaz. |
-| S-03 | Ders gelecekte olmalıdır; süre 15–240 dakikadır (varsayım; varsayılan 60 dk). |
-| S-04 | Aynı eğitmenin zaman olarak çakışan iki dersi olamaz (`TRAINER_BUSY`) (varsayım). |
+| S-03 | Ders gelecekte olmalıdır; süre 15–240 dakikadır (varsayılan 60 dk). |
+| S-04 | Aynı eğitmenin zaman olarak çakışan iki dersi olamaz (`TRAINER_BUSY`). |
 | S-05 | Giriş yapmış herkes takvimi, kategoriyi, eğitmeni ve kalan kontenjanı (`capacity − booked_count`) görür. |
-| S-06 | Dersi eğitmeni (başlamadan önce, haklar her zaman iade edilerek) veya yönetici (her zaman, iadeyi seçerek) iptal eder; tüm rezervasyonlar iptal edilir (varsayım: eğitmenin kendi dersini iptal edebilmesi). |
+| S-06 | Dersi eğitmeni (başlamadan önce, haklar her zaman iade edilerek) veya yönetici (her zaman, iadeyi seçerek) iptal eder; tüm rezervasyonlar iptal edilir. |
 
 ## 5. Rezervasyon (R)
 
@@ -163,7 +163,9 @@ Tüm kontroller ve hak düşümü `book_class` içinde tek transaction olarak ya
 | Eğitmen `assign_package` / `admin_wallet_topup` çağırır | `FORBIDDEN` | Y-05 |
 | Üye `profiles.role` alanını güncellemeye çalışır | Yetki hatası | Y-02, K-07 |
 
-## 11. Varsayımlar (yol haritasında açıkça yazmayan, onaya sunulan)
+## 11. Onaylanan ek kararlar
+
+Yol haritasında açıkça yazmayan aşağıdaki kararlar 10 Kasım 2026'da stüdyo tarafından onaylandı.
 
 1. Paket atandığı anda aktifleşir; ileri tarihli aktivasyon yoktur (P-03).
 2. Eğitmen kendi dersini (başlamadan önce) iptal edebilir; haklar her zaman iade edilir (S-06).
@@ -172,3 +174,17 @@ Tüm kontroller ve hak düşümü `book_class` içinde tek transaction olarak ya
 5. Yönetici ve eğitmen hesapları rezervasyon yapamaz; yalnızca üye rolü yapar (R-01).
 6. Süresi dolan paketin durumu şimdilik yeni atama sırasında `expired` yapılır; geçerlilik her işlemde `ends_at` üzerinden anlık kontrol edilir. Zamanlanmış görev adım 5 kapsamında eklenecek.
 7. Dondurmayı erken bitirme ve manuel hak düzeltme (`admin_adjust_credits`) adım 5 kapsamına bırakıldı.
+8. Tam 2 saat kala iptal serbesttir (I-01); yönetici iptalinde iade seçimi zorunludur (I-03).
+9. Kayıt verisinde KVKK onayı yoksa (ör. panelden açılan hesap) profil yine oluşur, onay kaydı yazılmaz.
+
+**Yapılacak iş (karar değil):** Uygulamadaki KVKK aydınlatma metni taslaktır (`lib/core/config/legal.dart`); yayından önce hukuki metinle değiştirilmeli ve sürüm numarası güncellenmelidir.
+
+## 12. Yeni varsayımlar — onay bekliyor (adım 3: paket yönetimi)
+
+1. Kategori ve paket tanımı **silinmez**, pasife alınır (geçmiş atamalar tanıma bağlı kalır). Pasif tanım yeni atamada seçilemez.
+2. Paket tanımındaki değişiklikler (fiyat, ad, ders sayısı) yalnızca sonraki atamaları etkiler; atanmış paketin fiyatı, toplam hakkı ve bitiş tarihi atama anındaki değerlerle saklanır (P-06 kapsamının genişletilmesi).
+3. Üye, pasife alınmış olsa bile kendi paketinin bağlı olduğu paket tanımının ve kategorinin adını görebilir.
+4. Erken sonlandırma tek başına yapılamaz; yalnızca aynı kategoride yeni paket atanırken ("yenile") yapılır (P-07).
+5. Yönetici, süresi dolmamış aktif paketi olan üyeye aynı kategoride paket atamak istediğinde uygulama önce uyarır; yönetici onaylarsa yenileme yapılır.
+6. Ekranda, durumu `active` olup bitiş tarihi geçmiş paket "Süresi doldu" olarak gösterilir (yalnızca gösterim; kural sunucudadır).
+7. Dondurma tek seferde en fazla 365 gün olabilir; aynı paket birden çok kez (çakışmayan aralıklarla) dondurulabilir.
