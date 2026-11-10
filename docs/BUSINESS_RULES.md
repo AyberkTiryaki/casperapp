@@ -9,11 +9,11 @@ Kaynak: `docs/ROADMAP.md`. Bu belge kuralları test edilebilir biçimde kesinle�
 - "Şimdi" = isteğin sunucuya ulaştığı an (transaction başlangıcı).
 - Hak ve cüzdan hareketleri silinmez ve değiştirilmez; düzeltme yeni hareketle yapılır.
 
-## Onay bekleyen varsayılanlar
+## Onaylanan kararlar
 
-Yol haritasındaki açık kararlar için aşağıdaki varsayılanlar uygulanmıştır. Değişirse ilgili kural ve fonksiyon güncellenir.
+Yol haritasındaki açık kararlar 10 Kasım 2026'da stüdyo tarafından aşağıdaki gibi onaylandı. Değişirse ilgili kural ve fonksiyon güncellenir.
 
-| # | Karar | **VARSAYILAN – onay bekliyor** | Kural | Uygulandığı yer |
+| # | Karar | **ONAYLANDI** | Kural | Uygulandığı yer |
 |---|---|---|---|---|
 | a | Paket geçerliliği neyi kapsar? | Rezervasyon, paket hem **rezervasyon anında** hem **ders tarihinde** geçerliyse yapılabilir. | R-04, R-05 | `book_class` |
 | b | Dondurma süresi bitişe eklenir mi? | **Evet.** Dondurulan gün sayısı paketin bitiş tarihine eklenir. | D-04 | `freeze_package` |

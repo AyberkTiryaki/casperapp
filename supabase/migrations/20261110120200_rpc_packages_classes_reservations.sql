@@ -293,7 +293,7 @@ begin
     perform private.cancel_reservation_core(v_r.id, true, v_admin, 'Paket donduruldu');
   end loop;
 
-  -- VARSAYILAN (onay bekliyor): dondurma süresi bitiş tarihine eklenir
+  -- ONAYLANDI (10.11.2026): dondurma süresi bitiş tarihine eklenir
   update public.member_packages
   set ends_at = ends_at + make_interval(days => v_days)
   where id = p_package_id;
@@ -527,7 +527,7 @@ begin
   if v_now < v_pkg.activated_at or v_now >= v_pkg.ends_at then
     raise exception 'PACKAGE_EXPIRED' using errcode = 'P0001';
   end if;
-  -- VARSAYILAN (onay bekliyor): ders tarihi de paket geçerliliği içinde olmalı
+  -- ONAYLANDI (10.11.2026): ders tarihi de paket geçerliliği içinde olmalı
   if v_class.starts_at >= v_pkg.ends_at then
     raise exception 'CLASS_AFTER_PACKAGE_END' using errcode = 'P0001';
   end if;
