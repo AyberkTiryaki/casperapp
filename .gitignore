@@ -46,3 +46,14 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Ortam degerleri (anahtarlar asla commit edilmez)
+/env/*.json
+!/env/*.example.json
+.env
+.env.*
+!.env.example
+
+# Supabase CLI yerel dosyalari
+/supabase/.branches/
+/supabase/.temp/

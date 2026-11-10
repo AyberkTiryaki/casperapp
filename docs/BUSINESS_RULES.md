@@ -1,0 +1,174 @@
+# İş Kuralları
+
+Kaynak: `docs/ROADMAP.md`. Bu belge kuralları test edilebilir biçimde kesinleştirir. Her kuralın bir kimliği vardır; testler ve hata kodları bu kimliklere bağlanır. Kuralların sunucudaki karşılığı `supabase/migrations/` içindeki RPC fonksiyonlarıdır (özet: `docs/DB_SCHEMA.md`).
+
+**Genel ilkeler**
+
+- Tüm kurallar sunucuda (PostgreSQL fonksiyonları, tek transaction) uygulanır. Ekrandaki kontroller yalnızca kullanıcı deneyimi içindir.
+- Zamanlar `timestamptz` (UTC) saklanır. Gün bazlı kurallar (dondurma) `Europe/Istanbul` gününe göre hesaplanır.
+- "Şimdi" = isteğin sunucuya ulaştığı an (transaction başlangıcı).
+- Hak ve cüzdan hareketleri silinmez ve değiştirilmez; düzeltme yeni hareketle yapılır.
+
+## Onay bekleyen varsayılanlar
+
+Yol haritasındaki açık kararlar için aşağıdaki varsayılanlar uygulanmıştır. Değişirse ilgili kural ve fonksiyon güncellenir.
+
+| # | Karar | **VARSAYILAN – onay bekliyor** | Kural | Uygulandığı yer |
+|---|---|---|---|---|
+| a | Paket geçerliliği neyi kapsar? | Rezervasyon, paket hem **rezervasyon anında** hem **ders tarihinde** geçerliyse yapılabilir. | R-04, R-05 | `book_class` |
+| b | Dondurma süresi bitişe eklenir mi? | **Evet.** Dondurulan gün sayısı paketin bitiş tarihine eklenir. | D-04 | `freeze_package` |
+| c | Yenilemede/aktarımda rezervasyonlar | Gelecek rezervasyon yalnızca yeni paket **aynı kategorideyse, hakkı kaldıysa ve ders tarihinde geçerliyse** aktarılır. Aksi halde iptal edilir ve hak **eski paketin** hareketlerine iade edilir. | P-08, P-09 | `assign_package` |
+
+Belgede ayrıca yol haritasında açıkça yazmayan, uygulama sırasında yapılan **varsayımlar** vardır; bunlar ilgili kuralda "(varsayım)" ile işaretlidir ve 11. bölümde listelenmiştir.
+
+## 1. Kayıt, profil, KVKK (K)
+
+| Kimlik | Kural |
+|---|---|
+| K-01 | Kayıt e-posta + şifre ile yapılır; şifre en az 8 karakterdir. E-posta doğrulanmadan oturum açılamaz. |
+| K-02 | Kayıtta ad soyad, doğum tarihi, boy (cm), kilo (kg) alınır. **Kronik rahatsızlık / sağlık alanı yoktur.** |
+| K-03 | Doğum tarihi geçmişte olmalıdır. Sunucu boy için 50–260 cm, kilo için 20–400 kg kabul eder (uygulama formu 100–250 cm ve 30–300 kg ister). Aralık dışı değer sunucuda boş kaydedilir. |
+| K-04 | Kayıt, KVKK onay kutusu işaretlenmeden tamamlanamaz. Onay, **metin sürümü + onay zamanı** ile `consents` tablosuna yazılır. Metin değişince yeni sürüm ayrıca onaylanır (`accept_kvkk`). |
+| K-05 | Profilde yalnızca **güncel** kilo tutulur; kilo geçmişi tutulmaz. |
+| K-06 | Her yeni hesabın rolü **üye**dir. Kayıt verisindeki hiçbir alan rolü değiştiremez. |
+| K-07 | Üye kendi profilinde yalnızca ad soyad, doğum tarihi, boy ve kiloyu değiştirebilir. |
+| K-08 | Üye hesap silme talebi oluşturabilir; aynı anda tek bekleyen talep olur. Talebi yönetici sonuçlandırır (süreç adım 8). |
+
+## 2. Roller ve yetki (Y)
+
+| Kimlik | Kural |
+|---|---|
+| Y-01 | Üç rol vardır: üye (`member`), eğitmen (`trainer`), yönetici (`admin`). Rol yalnızca sunucudaki `profiles.role` alanından okunur. |
+| Y-02 | Rolü yalnızca yönetici, `admin_set_role` ile değiştirir. Üye/eğitmen kendi rolünü değiştiremez. Yönetici kendi rolünü düşüremez ve kendini pasifleştiremez. |
+| Y-03 | İlk yönetici bir kez Supabase SQL Editor üzerinden atanır (bkz. `docs/KURULUM.md`). |
+| Y-04 | Üye yalnızca kendi profilini, paketlerini, hak hareketlerini, rezervasyonlarını, cüzdanını ve satışlarını görür. Başka üyenin hiçbir verisini göremez. |
+| Y-05 | Eğitmen: takvimi, kendi derslerinin katılımcılarını (yalnızca ad), üye aramayı (yalnızca ad) ve kendi yaptığı satışları görür. Üyelerin boy/kilo/doğum tarihi, paket ve cüzdan bilgilerini göremez; yönetici işlemlerini çağıramaz. |
+| Y-06 | Yönetici tüm verileri görür; paket, dondurma, cüzdan, rol ve tanım yönetimi yapar. |
+| Y-07 | Pasif hesap (`is_active = false`) hiçbir role sahip sayılmaz; işlem yapamaz. |
+| Y-08 | Giriş yapmamış istemci (anon) hiçbir tabloya ve fonksiyona erişemez. `service_role` anahtarı mobil uygulamada bulunmaz. |
+| Y-09 | Yöneticinin yaptığı kritik işlemler (rol, paket atama, dondurma, iptal, cüzdan) `audit_log` tablosuna yazılır. |
+
+## 3. Paketler (P)
+
+| Kimlik | Kural |
+|---|---|
+| P-01 | Paket tanımı: kategori, ders sayısı, geçerlilik günü, fiyat. Ders sayısı 8, 12, 16 veya 20 olur. |
+| P-02 | Geçerlilik: 8 ve 12 derslik paket **30 gün**, 16 ve 20 derslik paket **40 gün**. Süre aktivasyon anından başlar; bitiş = aktivasyon + gün sayısı (bitiş anı dahil değildir). |
+| P-03 | Paketi yalnızca yönetici atar; paket atandığı anda aktifleşir (varsayım). |
+| P-04 | Paket yalnızca kendi kategorisindeki derslerde kullanılır. |
+| P-05 | Bir üyenin aynı kategoride en fazla **bir** aktif paketi olur. Farklı kategorilerde aynı anda aktif paket olabilir. |
+| P-06 | Atama anındaki fiyat pakete kopyalanır (`price_paid`). Sonradan yapılan fiyat değişikliği atanmış paketleri etkilemez. |
+| P-07 | Süresi dolmamış aktif paket varken aynı kategoride yeni paket atanamaz (`ACTIVE_PACKAGE_EXISTS`); yönetici **yenileme** seçerse (`p_replace_existing`) eski paket erken bitirilir (`terminated`) ve yenisi aktif olur. Süresi dolmuş eski paket otomatik `expired` yapılır. |
+| P-08 | **(Varsayılan c)** Yenilemede eski paketin gelecek rezervasyonları ders tarihi sırasıyla işlenir: yeni pakette hak varsa **ve** ders, yeni paketin bitişinden önceyse rezervasyon yeni pakete aktarılır (eski pakete +1 `transfer_out`, yeni paketten −1 `transfer_in`). |
+| P-09 | **(Varsayılan c)** Aktarılamayan rezervasyon iptal edilir ve hak eski paketin hareketlerine iade edilir. Eski paket kapalı olduğu için bu hak kullanılamaz; kayıt amaçlıdır. |
+| P-10 | Eski paketin kalan hakları yenilemeyle biter (kapalı paketle rezervasyon yapılamaz). |
+| P-11 | Paket atama tekrarlanan istekte (aynı idempotency anahtarı) ikinci paket yaratmaz. |
+
+## 4. Dersler (S)
+
+| Kimlik | Kural |
+|---|---|
+| S-01 | Eğitmen yalnızca kendi adına ders açar; yönetici herhangi bir eğitmen adına açabilir. |
+| S-02 | Bireysel ders kapasitesi **1**, grup dersi kapasitesi **6** olur; başka değer olamaz. |
+| S-03 | Ders gelecekte olmalıdır; süre 15–240 dakikadır (varsayım; varsayılan 60 dk). |
+| S-04 | Aynı eğitmenin zaman olarak çakışan iki dersi olamaz (`TRAINER_BUSY`) (varsayım). |
+| S-05 | Giriş yapmış herkes takvimi, kategoriyi, eğitmeni ve kalan kontenjanı (`capacity − booked_count`) görür. |
+| S-06 | Dersi eğitmeni (başlamadan önce, haklar her zaman iade edilerek) veya yönetici (her zaman, iadeyi seçerek) iptal eder; tüm rezervasyonlar iptal edilir (varsayım: eğitmenin kendi dersini iptal edebilmesi). |
+
+## 5. Rezervasyon (R)
+
+Tüm kontroller ve hak düşümü `book_class` içinde tek transaction olarak yapılır.
+
+| Kimlik | Kural | Hata kodu |
+|---|---|---|
+| R-01 | Yalnızca aktif **üye** rezervasyon yapar (yönetici, üye adına yapabilir). | `MEMBER_NOT_ELIGIBLE` |
+| R-02 | Ders planlanmış olmalı ve başlamamış olmalıdır. | `CLASS_CANCELLED`, `CLASS_ALREADY_STARTED` |
+| R-03 | Üyenin dersin **kategorisinde** aktif paketi olmalıdır. | `NO_ACTIVE_PACKAGE` |
+| R-04 | **(Varsayılan a)** Paket rezervasyon anında geçerli olmalıdır: `activated_at ≤ şimdi < ends_at`. | `PACKAGE_EXPIRED` |
+| R-05 | **(Varsayılan a)** Ders başlangıcı paketin bitişinden önce olmalıdır: `starts_at < ends_at`. | `CLASS_AFTER_PACKAGE_END` |
+| R-06 | Rezervasyon anı veya ders başlangıcı paketin bir dondurma aralığına denk geliyorsa rezervasyon yapılamaz. | `PACKAGE_FROZEN` |
+| R-07 | Pakette en az 1 hak kalmış olmalıdır; rezervasyon 1 hak düşer. Hak asla eksiye düşmez. | `NO_CREDITS` |
+| R-08 | Aynı üye aynı derse ikinci (iptal edilmemiş) rezervasyon yapamaz. İptalden sonra yeniden rezervasyon yapabilir. | `ALREADY_BOOKED` |
+| R-09 | Kontenjan dolmuşsa rezervasyon yapılamaz. Eşzamanlı isteklerde son kontenjan **tek** üyeye verilir; diğerleri `CLASS_FULL` alır. | `CLASS_FULL` |
+| R-10 | Her istek bir idempotency anahtarı (UUID) taşır. Aynı anahtarla tekrarlanan istek ikinci rezervasyon veya ikinci düşüm yaratmaz; ilk sonucu döndürür. Aynı anahtar başka ders için kullanılamaz. | `IDEMPOTENCY_KEY_REUSED` |
+| R-11 | Her rezervasyon için en fazla bir `booking` (−1) ve en fazla bir `refund` (+1) hak hareketi olur. | — |
+| R-12 | Üye aktif paketlerini, kalan haklarını, gelecek ve geçmiş rezervasyonlarını görür. | — |
+
+## 6. İptal (I)
+
+| Kimlik | Kural | Hata kodu |
+|---|---|---|
+| I-01 | Üye yalnızca kendi rezervasyonunu, derse **en az 2 saat** varken iptal edebilir: `şimdi ≤ starts_at − 2 saat`. **Tam 2 saat kala iptal edilebilir**; 2 saatten 1 saniye az kaldıysa edilemez. | `CANCEL_WINDOW_CLOSED` |
+| I-02 | Üyenin zamanında iptalinde hak her zaman iade edilir. | — |
+| I-03 | Yönetici her zaman iptal edebilir ve hak iadesini **açıkça seçmek zorundadır** (evet/hayır). | `REFUND_CHOICE_REQUIRED` |
+| I-04 | Tekrarlanan iptal isteği ikinci iade yaratmaz; mevcut iptal kaydını döndürür. | — |
+| I-05 | İptal, dersin dolu kontenjanını 1 azaltır (yer açılır). | — |
+| I-06 | Üye derse gelmezse otomatik ek düşüm yapılmaz; düşülmüş hak kalır. Gerekirse yönetici manuel hak düzeltmesi girer (adım 5). | — |
+| I-07 | Üye başkasının rezervasyonunu iptal etmeye çalışırsa "bulunamadı" yanıtı alır (varlığı sızdırılmaz). | `RESERVATION_NOT_FOUND` |
+
+## 7. Dondurma (D)
+
+| Kimlik | Kural | Hata kodu |
+|---|---|---|
+| D-01 | Paketi yalnızca yönetici dondurur. Aralık başlangıç ve bitiş **günü** ile verilir (her iki gün dahil, İstanbul saati). | `FORBIDDEN` |
+| D-02 | Başlangıç bugünden önce olamaz; bitiş başlangıçtan önce olamaz; aralık paket bitişinden önce başlamalıdır; paket aktif ve süresi dolmamış olmalıdır. | `FREEZE_IN_PAST`, `INVALID_FREEZE_RANGE`, `FREEZE_OUTSIDE_PACKAGE`, `PACKAGE_NOT_ACTIVE` |
+| D-03 | Aynı paketin dondurma aralıkları çakışamaz. | `FREEZE_OVERLAP` |
+| D-04 | **(Varsayılan b)** Dondurulan gün sayısı paketin bitiş tarihine eklenir. | — |
+| D-05 | Dondurma aralığına denk gelen (ve henüz başlamamış) rezervasyonlar iptal edilir, hakları iade edilir. Aralık dışındaki rezervasyonlar korunur. | — |
+| D-06 | Dondurma süresince ve dondurma aralığındaki derslere rezervasyon yapılamaz (R-06). | `PACKAGE_FROZEN` |
+
+## 8. Cüzdan ve ürün satışı (C)
+
+| Kimlik | Kural | Hata kodu |
+|---|---|---|
+| C-01 | Bakiyeyi yalnızca yönetici yükler. Tutar pozitif ve en fazla 2 ondalıklıdır. **Ödeme yöntemi kaydı tutulmaz.** | `INVALID_AMOUNT` |
+| C-02 | Üye kendi bakiyesini ve hareketlerini görür. | — |
+| C-03 | Satışı eğitmen veya yönetici yapar: üye + ürün + adet (1–100). | `FORBIDDEN`, `INVALID_QUANTITY` |
+| C-04 | Birim fiyat sunucuda, **işlem anındaki** ürün fiyatından alınır ve satışa kopyalanır; istemciden fiyat kabul edilmez. | — |
+| C-05 | Bakiye yetersizse satış yapılmaz. Bakiye hiçbir koşulda eksiye düşmez; eşzamanlı harcamalarda da geçerlidir. | `INSUFFICIENT_BALANCE` |
+| C-06 | Aynı idempotency anahtarıyla tekrarlanan satış/yükleme ikinci kez işlenmez. | `IDEMPOTENCY_KEY_REUSED` |
+| C-07 | Her bakiye değişiminin bir hareket kaydı vardır (`topup`, `purchase`, `reversal`, `adjustment`) ve hareket, işlem sonrası bakiyeyi içerir. | — |
+| C-08 | Hatalı işlem silinmez. Yönetici **ters kayıt** (bir hareket en fazla bir kez; ters kaydın tersi alınamaz) veya açıklamalı **düzeltme** hareketi girer. | `ALREADY_REVERSED`, `CANNOT_REVERSE_REVERSAL`, `NOTE_REQUIRED` |
+| C-09 | Ters kayıt bakiyeyi eksiye düşürecekse yapılmaz. | `INSUFFICIENT_BALANCE` |
+| C-10 | Cüzdan paketten bağımsızdır: üyelik/paket bitse de bakiye kullanılabilir. | — |
+| C-11 | Kapsam dışı: stok takibi, QR, üye onayı. | — |
+
+## 9. Bildirimler (B) — adım 7
+
+| Kimlik | Kural |
+|---|---|
+| B-01 | Bildirim türleri: rezervasyon onayı, ders iptali, ders hatırlatması, paket bitiş uyarısı. |
+| B-02 | Her bildirimin benzersiz bir `dedupe_key` değeri vardır; aynı bildirim iki kez gönderilmez. |
+| B-03 | Gönderim sonucu (`sent` / `failed` + hata) saklanır. Cihaz bağlantısını yalnızca sahibi yönetir. |
+
+## 10. Test senaryoları (yol haritası §13 ile eşleşme)
+
+| Senaryo | Beklenen | Kurallar |
+|---|---|---|
+| Kapasitesi 1 kalan derse 2 üye aynı anda rezervasyon yapar | Biri başarılı, diğeri `CLASS_FULL`; `booked_count = capacity`; toplam 1 hak düşer | R-09 |
+| Aynı istek bağlantı kopunca tekrar gönderilir (aynı anahtar) | Tek rezervasyon, tek `booking` hareketi, aynı yanıt | R-10, R-11 |
+| Derse tam 2 saat kala iptal | Başarılı, +1 iade | I-01, I-02 |
+| Derse 1 sa 59 dk 59 sn kala iptal | `CANCEL_WINDOW_CLOSED`, hak değişmez | I-01 |
+| Süresi dolmuş paketle rezervasyon | `PACKAGE_EXPIRED` | R-04 |
+| Paket bitişinden sonraki derse rezervasyon | `CLASS_AFTER_PACKAGE_END` | R-05 |
+| Hakkı bitmiş paketle rezervasyon | `NO_CREDITS` | R-07 |
+| Yanlış kategorideki derse rezervasyon | `NO_ACTIVE_PACKAGE` | P-04, R-03 |
+| Dondurma aralığında 2, dışında 1 gelecek rezervasyon varken dondurma | 2 iptal + 2 iade, 1 korunur, bitiş gün sayısı kadar uzar | D-04, D-05 |
+| 3 gelecek rezervasyonu olan üyenin paketi yenilenir (yeni pakette hak var, dersler geçerlilik içinde) | 3 rezervasyon da yeni pakete aktarılır; yeni paket hakkı 3 azalır | P-08 |
+| Yenilemede bir ders yeni paket bitişinden sonra | O rezervasyon iptal, hak eski pakete iade | P-09 |
+| Aynı üyeye eşzamanlı 2 satış, bakiye yalnızca birine yeter | Biri başarılı, diğeri `INSUFFICIENT_BALANCE`; bakiye ≥ 0 | C-05 |
+| Aynı satış isteği iki kez gönderilir | Tek satış, tek `purchase` hareketi | C-06 |
+| Hatalı satış ters kayıtla düzeltilir | Bakiye geri gelir; satış `reversed_at` ile işaretlenir; ikinci ters kayıt `ALREADY_REVERSED` | C-08 |
+| Üye başka üyenin profilini/paketini/cüzdanını sorgular | Boş sonuç (RLS) | Y-04 |
+| Eğitmen `assign_package` / `admin_wallet_topup` çağırır | `FORBIDDEN` | Y-05 |
+| Üye `profiles.role` alanını güncellemeye çalışır | Yetki hatası | Y-02, K-07 |
+
+## 11. Varsayımlar (yol haritasında açıkça yazmayan, onaya sunulan)
+
+1. Paket atandığı anda aktifleşir; ileri tarihli aktivasyon yoktur (P-03).
+2. Eğitmen kendi dersini (başlamadan önce) iptal edebilir; haklar her zaman iade edilir (S-06).
+3. Aynı eğitmenin çakışan dersi açılamaz; ders süresi 15–240 dk (S-03, S-04).
+4. Dondurma süresince, dondurma sonrası tarihli derslere de rezervasyon yapılamaz (R-06).
+5. Yönetici ve eğitmen hesapları rezervasyon yapamaz; yalnızca üye rolü yapar (R-01).
+6. Süresi dolan paketin durumu şimdilik yeni atama sırasında `expired` yapılır; geçerlilik her işlemde `ends_at` üzerinden anlık kontrol edilir. Zamanlanmış görev adım 5 kapsamında eklenecek.
+7. Dondurmayı erken bitirme ve manuel hak düzeltme (`admin_adjust_credits`) adım 5 kapsamına bırakıldı.
