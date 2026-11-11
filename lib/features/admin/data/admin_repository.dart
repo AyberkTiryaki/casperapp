@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/config/supabase.dart';
 import '../../profile/profile.dart';
@@ -17,6 +18,15 @@ abstract class AdminRepository {
     String? action,
   });
   Future<Map<String, String>> names(Iterable<String> ids);
+
+  /// Yönetici, e-postası doğrulanmış yeni bir hesap açar (geçici şifreyle).
+  /// Sunucu tarafı: supabase/functions/admin-create-user. Yeni kullanıcının id'sini döndürür.
+  Future<String> createUser({
+    required String email,
+    required String password,
+    required String fullName,
+    required UserRole role,
+  });
 }
 
 class SupabaseAdminRepository implements AdminRepository {
@@ -71,6 +81,41 @@ class SupabaseAdminRepository implements AdminRepository {
       for (final m in _rows(r))
         m['id'] as String: (m['full_name'] as String?) ?? '',
     };
+  }
+
+  @override
+  Future<String> createUser({
+    required String email,
+    required String password,
+    required String fullName,
+    required UserRole role,
+  }) async {
+    try {
+      final res = await supabase.functions.invoke(
+        'admin-create-user',
+        body: {
+          'email': email.trim(),
+          'password': password,
+          'full_name': fullName.trim(),
+          'role': role.name,
+        },
+      );
+      final data = res.data;
+      if (data is Map && data['user_id'] is String) {
+        return data['user_id'] as String;
+      }
+      throw const PostgrestException(message: 'CREATE_USER_FAILED');
+    } on FunctionException catch (e) {
+      // Sunucunun hata kodunu friendlyError'ın tanıdığı biçime çevir
+      final d = e.details;
+      final code = d is Map && d['error'] is String
+          ? d['error'] as String
+          : null;
+      throw PostgrestException(
+        message: code ?? 'CREATE_USER_FAILED',
+        code: e.status == 403 ? '42501' : null,
+      );
+    }
   }
 }
 

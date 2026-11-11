@@ -12,6 +12,7 @@ import '../../wallet/presentation/shared/wallet_widgets.dart'
     show confirmDialog;
 import '../data/admin_repository.dart';
 import '../domain/admin_models.dart';
+import 'create_user_dialog.dart';
 
 class UsersScreen extends ConsumerStatefulWidget {
   const UsersScreen({super.key});
@@ -109,6 +110,14 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
     final me = ref.watch(currentUserIdProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Kullanıcı ve rol yönetimi')),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () async {
+          final id = await showCreateUserDialog(context);
+          if (id != null && mounted) await _search(_controller.text);
+        },
+        icon: const Icon(Icons.person_add_alt_1),
+        label: const Text('Kullanıcı ekle'),
+      ),
       body: Column(
         children: [
           Padding(

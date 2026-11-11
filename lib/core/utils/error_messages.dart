@@ -58,6 +58,13 @@ const _serverCodeMessages = <String, String>{
   'CANNOT_DEMOTE_SELF': 'Kendi rolünüzü değiştiremezsiniz.',
   'CANNOT_DEACTIVATE_SELF': 'Kendi hesabınızı pasif yapamazsınız.',
   'RESERVATION_NOT_ACTIVE': 'Rezervasyonun durumu bu işleme uygun değil.',
+  'EMAIL_ALREADY_REGISTERED': 'Bu e-posta adresiyle zaten bir hesap var.',
+  'INVALID_EMAIL': 'Geçerli bir e-posta girin.',
+  'WEAK_PASSWORD': 'Şifre en az 8 karakter olmalı.',
+  'INVALID_FULL_NAME': 'Ad soyad geçersiz.',
+  'INVALID_INPUT': 'Girilen bilgiler geçersiz.',
+  'CREATE_USER_FAILED': 'Hesap oluşturulamadı. Lütfen tekrar deneyin.',
+  'ROLE_UPDATE_FAILED': 'Hesap açıldı ancak rol atanamadı. Rolü kullanıcı listesinden değiştirin.',
 };
 
 String friendlyError(Object e) {

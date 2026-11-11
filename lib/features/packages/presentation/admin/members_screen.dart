@@ -7,6 +7,7 @@ import '../../../../core/widgets/async_value_view.dart';
 import '../../../../core/widgets/empty_view.dart';
 import '../../data/package_repository.dart';
 import '../../domain/package_models.dart';
+import '../../../admin/presentation/create_user_dialog.dart';
 import 'member_packages_screen.dart';
 
 class MembersScreen extends ConsumerStatefulWidget {
@@ -59,6 +60,14 @@ class _MembersScreenState extends ConsumerState<MembersScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Üyeler')),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () async {
+          final id = await showCreateUserDialog(context, allowTrainer: false);
+          if (id != null && mounted) await _search(_controller.text);
+        },
+        icon: const Icon(Icons.person_add_alt_1),
+        label: const Text('Üye ekle'),
+      ),
       body: Column(
         children: [
           Padding(
