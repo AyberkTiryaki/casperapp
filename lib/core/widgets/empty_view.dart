@@ -25,12 +25,18 @@ class EmptyView extends StatelessWidget {
           children: [
             Icon(icon, size: 56, color: t.colorScheme.primary),
             const SizedBox(height: 16),
-            Text(title,
-                style: t.textTheme.titleLarge, textAlign: TextAlign.center),
+            Text(
+              title,
+              style: t.textTheme.titleLarge,
+              textAlign: TextAlign.center,
+            ),
             if (message != null) ...[
               const SizedBox(height: 8),
-              Text(message!,
-                  style: t.textTheme.bodyMedium, textAlign: TextAlign.center),
+              Text(
+                message!,
+                style: t.textTheme.bodyMedium,
+                textAlign: TextAlign.center,
+              ),
             ],
             if (action != null) ...[const SizedBox(height: 24), action!],
           ],

@@ -65,9 +65,10 @@ class _MissingConfigApp extends StatelessWidget {
                 children: [
                   Icon(Icons.settings_suggest_outlined, size: 56),
                   SizedBox(height: 16),
-                  Text('Yapılandırma eksik',
-                      style:
-                          TextStyle(fontSize: 22, fontWeight: FontWeight.w700)),
+                  Text(
+                    'Yapılandırma eksik',
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+                  ),
                   SizedBox(height: 12),
                   Text(
                     'Supabase bilgileri bulunamadı. Uygulamayı şu komutla çalıştırın:',

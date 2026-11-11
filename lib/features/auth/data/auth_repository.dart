@@ -48,11 +48,11 @@ class AuthRepository {
       _auth.signInWithPassword(email: email, password: password);
 
   Future<AuthResponse> signUp(SignUpData d) => _auth.signUp(
-        email: d.email,
-        password: d.password,
-        emailRedirectTo: authRedirectUrl,
-        data: buildSignUpMetadata(d),
-      );
+    email: d.email,
+    password: d.password,
+    emailRedirectTo: authRedirectUrl,
+    data: buildSignUpMetadata(d),
+  );
 
   Future<void> resendSignup(String email) =>
       _auth.resend(type: OtpType.signup, email: email);

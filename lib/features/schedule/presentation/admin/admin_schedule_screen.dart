@@ -31,9 +31,11 @@ class _AdminScheduleScreenState extends ConsumerState<AdminScheduleScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Ders ve Rezervasyon Yönetimi')),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-            builder: (_) =>
-                CreateClassScreen(asAdmin: true, initialDay: _day))),
+        onPressed: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => CreateClassScreen(asAdmin: true, initialDay: _day),
+          ),
+        ),
         icon: const Icon(Icons.add),
         label: const Text('Ders aç'),
       ),
@@ -57,10 +59,14 @@ class _AdminScheduleScreenState extends ConsumerState<AdminScheduleScreen> {
                     decoration: const InputDecoration(labelText: 'Antrenör'),
                     items: [
                       const DropdownMenuItem<String?>(
-                          value: null, child: Text('Tümü')),
+                        value: null,
+                        child: Text('Tümü'),
+                      ),
                       for (final t in trainers)
                         DropdownMenuItem<String?>(
-                            value: t.id, child: Text(t.fullName)),
+                          value: t.id,
+                          child: Text(t.fullName),
+                        ),
                     ],
                     onChanged: (v) => setState(() => _trainerId = v),
                   ),
@@ -82,8 +88,11 @@ class _AdminScheduleScreenState extends ConsumerState<AdminScheduleScreen> {
           Expanded(
             child: ClassListView(
               query: query,
-              onTap: (c) => Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) => AdminClassDetailScreen(item: c))),
+              onTap: (c) => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => AdminClassDetailScreen(item: c),
+                ),
+              ),
             ),
           ),
         ],

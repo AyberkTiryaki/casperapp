@@ -12,10 +12,10 @@ class StudioStore extends ChangeNotifier {
     List<Member>? members,
     List<StudioClass>? classes,
     List<WorkoutProgram>? programs,
-  })  : trainers = trainers ?? [],
-        members = members ?? [],
-        classes = classes ?? [],
-        programs = programs ?? [];
+  }) : trainers = trainers ?? [],
+       members = members ?? [],
+       classes = classes ?? [],
+       programs = programs ?? [];
 
   final List<Trainer> trainers;
   final List<Member> members;
@@ -32,13 +32,16 @@ class StudioStore extends ChangeNotifier {
   WorkoutProgram? programById(String? id) => _find(programs, (p) => p.id == id);
 
   List<StudioClass> classesOn(DateTime day) {
-    final list = classes
-        .where((c) =>
-            c.start.year == day.year &&
-            c.start.month == day.month &&
-            c.start.day == day.day)
-        .toList()
-      ..sort((a, b) => a.start.compareTo(b.start));
+    final list =
+        classes
+            .where(
+              (c) =>
+                  c.start.year == day.year &&
+                  c.start.month == day.month &&
+                  c.start.day == day.day,
+            )
+            .toList()
+          ..sort((a, b) => a.start.compareTo(b.start));
     return list;
   }
 
@@ -188,8 +191,11 @@ class StudioStore extends ChangeNotifier {
 
 /// Depoyu widget ağacına yerleştirir.
 class StoreScope extends InheritedNotifier<StudioStore> {
-  const StoreScope({super.key, required StudioStore store, required super.child})
-      : super(notifier: store);
+  const StoreScope({
+    super.key,
+    required StudioStore store,
+    required super.child,
+  }) : super(notifier: store);
 
   /// Depoyu okur ve değiştiğinde widget'ı yeniden çizer.
   static StudioStore of(BuildContext context) =>

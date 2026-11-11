@@ -53,27 +53,28 @@ class StudioClass {
   final String status;
   final String? myReservationId;
 
-  int get remainingSpots => (capacity - bookedCount) < 0 ? 0 : capacity - bookedCount;
+  int get remainingSpots =>
+      (capacity - bookedCount) < 0 ? 0 : capacity - bookedCount;
   bool get isFull => bookedCount >= capacity;
   bool get isCancelled => status == 'cancelled';
   bool get isBookedByMe => myReservationId != null;
   bool hasStarted(DateTime now) => !startsAt.isAfter(now);
 
   factory StudioClass.fromJson(Map<String, dynamic> j) => StudioClass(
-        id: j['id'] as String,
-        trainerId: (j['trainer_id'] as String?) ?? '',
-        trainerName: (j['trainer_name'] as String?) ?? '',
-        categoryId: (j['category_id'] as String?) ?? '',
-        categoryName: (j['category_name'] as String?) ?? '',
-        classType: ClassType.fromString(j['class_type'] as String?),
-        capacity: (j['capacity'] as num).toInt(),
-        bookedCount: (j['booked_count'] as num?)?.toInt() ?? 0,
-        title: j['title'] as String?,
-        startsAt: _dt(j['starts_at']),
-        endsAt: _dt(j['ends_at']),
-        status: (j['status'] as String?) ?? 'scheduled',
-        myReservationId: j['my_reservation_id'] as String?,
-      );
+    id: j['id'] as String,
+    trainerId: (j['trainer_id'] as String?) ?? '',
+    trainerName: (j['trainer_name'] as String?) ?? '',
+    categoryId: (j['category_id'] as String?) ?? '',
+    categoryName: (j['category_name'] as String?) ?? '',
+    classType: ClassType.fromString(j['class_type'] as String?),
+    capacity: (j['capacity'] as num).toInt(),
+    bookedCount: (j['booked_count'] as num?)?.toInt() ?? 0,
+    title: j['title'] as String?,
+    startsAt: _dt(j['starts_at']),
+    endsAt: _dt(j['ends_at']),
+    status: (j['status'] as String?) ?? 'scheduled',
+    myReservationId: j['my_reservation_id'] as String?,
+  );
 }
 
 class MyReservation {
@@ -124,19 +125,19 @@ class MyReservation {
   }
 
   factory MyReservation.fromJson(Map<String, dynamic> j) => MyReservation(
-        reservationId: j['reservation_id'] as String,
-        status: (j['status'] as String?) ?? 'booked',
-        classId: (j['class_id'] as String?) ?? '',
-        classStatus: (j['class_status'] as String?) ?? 'scheduled',
-        classType: ClassType.fromString(j['class_type'] as String?),
-        title: j['title'] as String?,
-        startsAt: _dt(j['starts_at']),
-        endsAt: _dt(j['ends_at']),
-        categoryName: (j['category_name'] as String?) ?? '',
-        trainerName: (j['trainer_name'] as String?) ?? '',
-        creditRefunded: (j['credit_refunded'] as bool?) ?? false,
-        cancelledAt: _dtOrNull(j['cancelled_at']),
-      );
+    reservationId: j['reservation_id'] as String,
+    status: (j['status'] as String?) ?? 'booked',
+    classId: (j['class_id'] as String?) ?? '',
+    classStatus: (j['class_status'] as String?) ?? 'scheduled',
+    classType: ClassType.fromString(j['class_type'] as String?),
+    title: j['title'] as String?,
+    startsAt: _dt(j['starts_at']),
+    endsAt: _dt(j['ends_at']),
+    categoryName: (j['category_name'] as String?) ?? '',
+    trainerName: (j['trainer_name'] as String?) ?? '',
+    creditRefunded: (j['credit_refunded'] as bool?) ?? false,
+    cancelledAt: _dtOrNull(j['cancelled_at']),
+  );
 }
 
 class ClassParticipant {
@@ -152,11 +153,11 @@ class ClassParticipant {
   final String status;
 
   factory ClassParticipant.fromJson(Map<String, dynamic> j) => ClassParticipant(
-        reservationId: j['reservation_id'] as String,
-        memberId: (j['member_id'] as String?) ?? '',
-        fullName: (j['full_name'] as String?) ?? '',
-        status: (j['status'] as String?) ?? 'booked',
-      );
+    reservationId: j['reservation_id'] as String,
+    memberId: (j['member_id'] as String?) ?? '',
+    fullName: (j['full_name'] as String?) ?? '',
+    status: (j['status'] as String?) ?? 'booked',
+  );
 }
 
 class AdminClassReservation {
@@ -192,9 +193,9 @@ class TrainerSummary {
   final String fullName;
 
   factory TrainerSummary.fromJson(Map<String, dynamic> j) => TrainerSummary(
-        id: j['id'] as String,
-        fullName: (j['full_name'] as String?) ?? '',
-      );
+    id: j['id'] as String,
+    fullName: (j['full_name'] as String?) ?? '',
+  );
 }
 
 /// Rezervasyon işlem anahtarı tutucu: ağ hatasında aynı anahtar yeniden kullanılır;

@@ -12,8 +12,9 @@ class DefinitionsScreen extends ConsumerWidget {
   const DefinitionsScreen({super.key});
 
   void _open(BuildContext context, PackageDefinition? d) {
-    Navigator.of(context).push(MaterialPageRoute(
-        builder: (_) => DefinitionFormScreen(definition: d)));
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => DefinitionFormScreen(definition: d)),
+    );
   }
 
   @override
@@ -33,17 +34,22 @@ class DefinitionsScreen extends ConsumerWidget {
         data: (items) {
           final groups = <String, List<PackageDefinition>>{};
           for (final d in items) {
-            groups.putIfAbsent(d.categoryName ?? 'Kategorisiz', () => []).add(d);
+            groups
+                .putIfAbsent(d.categoryName ?? 'Kategorisiz', () => [])
+                .add(d);
           }
           return RefreshIndicator(
             onRefresh: () async => ref.invalidate(definitionsProvider),
             child: items.isEmpty
-                ? ListView(children: const [
-                    SizedBox(height: 120),
-                    EmptyView(
+                ? ListView(
+                    children: const [
+                      SizedBox(height: 120),
+                      EmptyView(
                         title: 'Paket tanımı yok',
-                        icon: Icons.inventory_2_outlined),
-                  ])
+                        icon: Icons.inventory_2_outlined,
+                      ),
+                    ],
+                  )
                 : ListView(
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
                     physics: const AlwaysScrollableScrollPhysics(),
@@ -58,7 +64,8 @@ class DefinitionsScreen extends ConsumerWidget {
                               child: ListTile(
                                 title: Text(d.name),
                                 subtitle: Text(
-                                    '${d.sessionCount} ders - ${d.validityDays} gün - ${formatTl(d.price)} - ${d.isActive ? 'Aktif' : 'Pasif'}'),
+                                  '${d.sessionCount} ders - ${d.validityDays} gün - ${formatTl(d.price)} - ${d.isActive ? 'Aktif' : 'Pasif'}',
+                                ),
                                 trailing: const Icon(Icons.edit_outlined),
                                 onTap: () => _open(context, d),
                               ),
@@ -88,9 +95,10 @@ class _DefinitionFormScreenState extends ConsumerState<DefinitionFormScreen> {
   final _formKey = GlobalKey<FormState>();
   late final _name = TextEditingController(text: widget.definition?.name ?? '');
   late final _price = TextEditingController(
-      text: widget.definition == null
-          ? ''
-          : widget.definition!.price.toString().replaceAll('.', ','));
+    text: widget.definition == null
+        ? ''
+        : widget.definition!.price.toString().replaceAll('.', ','),
+  );
   String? _categoryId;
   late int _sessionCount = widget.definition?.sessionCount ?? 8;
   late bool _active = widget.definition?.isActive ?? true;
@@ -141,7 +149,8 @@ class _DefinitionFormScreenState extends ConsumerState<DefinitionFormScreen> {
       }
       ref.invalidate(definitionsProvider);
       messenger.showSnackBar(
-          const SnackBar(content: Text('Paket tanımı kaydedildi.')));
+        const SnackBar(content: Text('Paket tanımı kaydedildi.')),
+      );
       nav.pop();
     } catch (e) {
       messenger.showSnackBar(SnackBar(content: Text(friendlyError(e))));
@@ -154,9 +163,12 @@ class _DefinitionFormScreenState extends ConsumerState<DefinitionFormScreen> {
     final cats = ref.watch(categoriesProvider);
     return Scaffold(
       appBar: AppBar(
-          title: Text(widget.definition == null
+        title: Text(
+          widget.definition == null
               ? 'Paket tanımı ekle'
-              : 'Paket tanımı düzenle')),
+              : 'Paket tanımı düzenle',
+        ),
+      ),
       body: AsyncValueView<List<Category>>(
         value: cats,
         onRetry: () => ref.invalidate(categoriesProvider),
@@ -200,17 +212,20 @@ class _DefinitionFormScreenState extends ConsumerState<DefinitionFormScreen> {
                         setState(() => _sessionCount = v ?? _sessionCount),
                   ),
                   const SizedBox(height: 8),
-                  Text('Geçerlilik: ${validityDaysFor(_sessionCount)} gün (ders sayısına göre belirlenir)'),
+                  Text(
+                    'Geçerlilik: ${validityDaysFor(_sessionCount)} gün (ders sayısına göre belirlenir)',
+                  ),
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _price,
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     decoration: const InputDecoration(
-                        labelText: 'Fiyat (TL)',
-                        helperText:
-                            'Fiyat değişikliği, daha önce atanmış paketleri etkilemez.',
-                        helperMaxLines: 2),
+                      labelText: 'Fiyat (TL)',
+                      helperText: 'Fiyat değişikliği, daha önce atanmış paketleri etkilemez.',
+                      helperMaxLines: 2,
+                    ),
                     validator: (v) {
                       final p = parseDecimal(v);
                       if ((v ?? '').trim().isEmpty) return 'Fiyat gerekli.';

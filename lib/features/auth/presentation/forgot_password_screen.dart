@@ -34,7 +34,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       _error = null;
     });
     try {
-      await ref.read(authRepositoryProvider).sendPasswordReset(_email.text.trim());
+      await ref
+          .read(authRepositoryProvider)
+          .sendPasswordReset(_email.text.trim());
       if (mounted) setState(() => _sent = true);
     } catch (e) {
       if (isNetworkError(e)) {
@@ -63,8 +65,11 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Icon(Icons.mark_email_read_outlined,
-                            size: 64, color: t.colorScheme.primary),
+                        Icon(
+                          Icons.mark_email_read_outlined,
+                          size: 64,
+                          color: t.colorScheme.primary,
+                        ),
                         const SizedBox(height: 24),
                         const Text(
                           'Bu e-posta adresi kayıtlıysa, şifre sıfırlama bağlantısı gönderildi. Lütfen gelen kutunuzu kontrol edin.',
@@ -83,20 +88,24 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           const Text(
-                              'E-posta adresinizi girin, şifrenizi sıfırlamanız için bir bağlantı gönderelim.'),
+                            'E-posta adresinizi girin, şifrenizi sıfırlamanız için bir bağlantı gönderelim.',
+                          ),
                           const SizedBox(height: 24),
                           TextFormField(
                             controller: _email,
                             keyboardType: TextInputType.emailAddress,
                             onFieldSubmitted: (_) => _submit(),
-                            decoration:
-                                const InputDecoration(labelText: 'E-posta'),
+                            decoration: const InputDecoration(
+                              labelText: 'E-posta',
+                            ),
                             validator: validateEmail,
                           ),
                           if (_error != null) ...[
                             const SizedBox(height: 12),
-                            Text(_error!,
-                                style: TextStyle(color: t.colorScheme.error)),
+                            Text(
+                              _error!,
+                              style: TextStyle(color: t.colorScheme.error),
+                            ),
                           ],
                           const SizedBox(height: 24),
                           FilledButton(
@@ -106,7 +115,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                                     width: 22,
                                     height: 22,
                                     child: CircularProgressIndicator(
-                                        strokeWidth: 2),
+                                      strokeWidth: 2,
+                                    ),
                                   )
                                 : const Text('Bağlantı gönder'),
                           ),

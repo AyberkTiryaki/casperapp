@@ -55,8 +55,9 @@ class PackageCard extends StatelessWidget {
     final active = package.isCurrentlyActive(now);
     final total = package.totalCredits;
     final remaining = package.remainingCredits;
-    final upcomingFreezes =
-        package.freezes.where((f) => f.endsAt.isAfter(now)).toList();
+    final upcomingFreezes = package.freezes
+        .where((f) => f.endsAt.isAfter(now))
+        .toList();
     return Card(
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
@@ -69,14 +70,18 @@ class PackageCard extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: Text(package.categoryName ?? 'Kategori',
-                        style: t.textTheme.labelMedium),
+                    child: Text(
+                      package.categoryName ?? 'Kategori',
+                      style: t.textTheme.labelMedium,
+                    ),
                   ),
                   PackageStatusChip(status),
                 ],
               ),
-              Text(package.definitionName ?? 'Paket',
-                  style: t.textTheme.titleMedium),
+              Text(
+                package.definitionName ?? 'Paket',
+                style: t.textTheme.titleMedium,
+              ),
               const SizedBox(height: 12),
               Text('Kalan hak: $remaining / $total'),
               const SizedBox(height: 6),
@@ -85,9 +90,11 @@ class PackageCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(4),
               ),
               const SizedBox(height: 8),
-              Text(active
-                  ? 'Bitiş: ${formatDate(package.endsAt)} (${package.daysLeft(now)} gün kaldı)'
-                  : 'Bitiş: ${formatDate(package.endsAt)}'),
+              Text(
+                active
+                    ? 'Bitiş: ${formatDate(package.endsAt)} (${package.daysLeft(now)} gün kaldı)'
+                    : 'Bitiş: ${formatDate(package.endsAt)}',
+              ),
               if (showPrice && package.discountPercent > 0) ...[
                 Text('Liste fiyatı: ${formatTl(package.listPrice)}'),
                 Text('İndirim: %${package.discountPercent}'),
@@ -135,7 +142,9 @@ class LedgerList extends ConsumerWidget {
       data: (items) {
         if (items.isEmpty) {
           return const EmptyView(
-              title: 'Hak hareketi yok', icon: Icons.receipt_long_outlined);
+            title: 'Hak hareketi yok',
+            icon: Icons.receipt_long_outlined,
+          );
         }
         return ListView.separated(
           physics: const NeverScrollableScrollPhysics(),
@@ -149,19 +158,25 @@ class LedgerList extends ConsumerWidget {
               contentPadding: EdgeInsets.zero,
               title: Text(e.label),
               subtitle: Text(
-                  '${formatDate(e.createdAt)}${e.note == null ? '' : ' - ${e.note}'}'),
+                '${formatDate(e.createdAt)}${e.note == null ? '' : ' - ${e.note}'}',
+              ),
               trailing: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(sign,
-                      style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          color: e.delta >= 0
-                              ? AppColors.success
-                              : AppColors.danger)),
-                  Text('Bakiye: ${e.balanceAfter}',
-                      style: Theme.of(context).textTheme.bodySmall),
+                  Text(
+                    sign,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      color: e.delta >= 0
+                          ? AppColors.success
+                          : AppColors.danger,
+                    ),
+                  ),
+                  Text(
+                    'Bakiye: ${e.balanceAfter}',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
                 ],
               ),
             );

@@ -7,8 +7,11 @@ import '../domain/package_models.dart';
 abstract class PackageRepository {
   Future<List<Category>> categories();
   Future<void> createCategory({required String name, required bool isActive});
-  Future<void> updateCategory(
-      {required String id, required String name, required bool isActive});
+  Future<void> updateCategory({
+    required String id,
+    required String name,
+    required bool isActive,
+  });
 
   Future<List<PackageDefinition>> definitions();
   Future<void> createDefinition({
@@ -72,11 +75,14 @@ class SupabasePackageRepository implements PackageRepository {
       supabase.from('categories').insert({'name': name, 'is_active': isActive});
 
   @override
-  Future<void> updateCategory(
-          {required String id, required String name, required bool isActive}) =>
-      supabase
-          .from('categories')
-          .update({'name': name, 'is_active': isActive}).eq('id', id);
+  Future<void> updateCategory({
+    required String id,
+    required String name,
+    required bool isActive,
+  }) => supabase
+      .from('categories')
+      .update({'name': name, 'is_active': isActive})
+      .eq('id', id);
 
   @override
   Future<List<PackageDefinition>> definitions() async {
@@ -87,16 +93,21 @@ class SupabasePackageRepository implements PackageRepository {
     return _rows(r).map(PackageDefinition.fromJson).toList();
   }
 
-  Map<String, dynamic> _defBody(String categoryId, String name,
-          int sessionCount, int validityDays, double price, bool isActive) =>
-      {
-        'category_id': categoryId,
-        'name': name,
-        'session_count': sessionCount,
-        'validity_days': validityDays,
-        'price': price,
-        'is_active': isActive,
-      };
+  Map<String, dynamic> _defBody(
+    String categoryId,
+    String name,
+    int sessionCount,
+    int validityDays,
+    double price,
+    bool isActive,
+  ) => {
+    'category_id': categoryId,
+    'name': name,
+    'session_count': sessionCount,
+    'validity_days': validityDays,
+    'price': price,
+    'is_active': isActive,
+  };
 
   @override
   Future<void> createDefinition({
@@ -106,9 +117,11 @@ class SupabasePackageRepository implements PackageRepository {
     required int validityDays,
     required double price,
     required bool isActive,
-  }) =>
-      supabase.from('package_definitions').insert(_defBody(
-          categoryId, name, sessionCount, validityDays, price, isActive));
+  }) => supabase
+      .from('package_definitions')
+      .insert(
+        _defBody(categoryId, name, sessionCount, validityDays, price, isActive),
+      );
 
   @override
   Future<void> updateDefinition({
@@ -119,12 +132,12 @@ class SupabasePackageRepository implements PackageRepository {
     required int validityDays,
     required double price,
     required bool isActive,
-  }) =>
-      supabase
-          .from('package_definitions')
-          .update(_defBody(
-              categoryId, name, sessionCount, validityDays, price, isActive))
-          .eq('id', id);
+  }) => supabase
+      .from('package_definitions')
+      .update(
+        _defBody(categoryId, name, sessionCount, validityDays, price, isActive),
+      )
+      .eq('id', id);
 
   @override
   Future<List<MemberSummary>> searchMembers(String query) async {
@@ -178,13 +191,16 @@ class SupabasePackageRepository implements PackageRepository {
     required bool replaceExisting,
     int discountPercent = 0,
   }) async {
-    await supabase.rpc('assign_package', params: {
-      'p_member_id': memberId,
-      'p_definition_id': definitionId,
-      'p_idempotency_key': idempotencyKey,
-      'p_replace_existing': replaceExisting,
-      'p_discount_percent': discountPercent,
-    });
+    await supabase.rpc(
+      'assign_package',
+      params: {
+        'p_member_id': memberId,
+        'p_definition_id': definitionId,
+        'p_idempotency_key': idempotencyKey,
+        'p_replace_existing': replaceExisting,
+        'p_discount_percent': discountPercent,
+      },
+    );
   }
 
   @override
@@ -194,34 +210,44 @@ class SupabasePackageRepository implements PackageRepository {
     required DateTime endDate,
     String? note,
   }) async {
-    await supabase.rpc('freeze_package', params: {
-      'p_package_id': packageId,
-      'p_start_date': isoDate(startDate),
-      'p_end_date': isoDate(endDate),
-      'p_note': (note == null || note.trim().isEmpty) ? null : note.trim(),
-    });
+    await supabase.rpc(
+      'freeze_package',
+      params: {
+        'p_package_id': packageId,
+        'p_start_date': isoDate(startDate),
+        'p_end_date': isoDate(endDate),
+        'p_note': (note == null || note.trim().isEmpty) ? null : note.trim(),
+      },
+    );
   }
 
   @override
   Future<void> endFreeze(String freezeId, {DateTime? lastDay}) async {
-    await supabase.rpc('admin_end_freeze', params: {
-      'p_freeze_id': freezeId,
-      'p_last_day': lastDay == null ? null : isoDate(lastDay),
-    });
+    await supabase.rpc(
+      'admin_end_freeze',
+      params: {
+        'p_freeze_id': freezeId,
+        'p_last_day': lastDay == null ? null : isoDate(lastDay),
+      },
+    );
   }
 
   @override
   Future<void> adjustCredits(String packageId, int delta, String note) async {
-    await supabase.rpc('admin_adjust_credits', params: {
-      'p_package_id': packageId,
-      'p_delta': delta,
-      'p_note': note.trim(),
-    });
+    await supabase.rpc(
+      'admin_adjust_credits',
+      params: {
+        'p_package_id': packageId,
+        'p_delta': delta,
+        'p_note': note.trim(),
+      },
+    );
   }
 }
 
-final packageRepositoryProvider =
-    Provider<PackageRepository>((ref) => SupabasePackageRepository());
+final packageRepositoryProvider = Provider<PackageRepository>(
+  (ref) => SupabasePackageRepository(),
+);
 
 final categoriesProvider = FutureProvider<List<Category>>(
   (ref) => ref.watch(packageRepositoryProvider).categories(),
@@ -240,10 +266,10 @@ final myPackagesProvider = FutureProvider<List<MemberPackage>>(
 
 final memberPackagesProvider =
     FutureProvider.family<List<MemberPackage>, String>(
-  (ref, memberId) =>
-      ref.watch(packageRepositoryProvider).memberPackages(memberId),
-  retry: (_, _) => null,
-);
+      (ref, memberId) =>
+          ref.watch(packageRepositoryProvider).memberPackages(memberId),
+      retry: (_, _) => null,
+    );
 
 final freezesProvider = FutureProvider.family<List<PackageFreeze>, String>(
   (ref, id) => ref.watch(packageRepositoryProvider).freezes(id),

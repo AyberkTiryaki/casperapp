@@ -21,7 +21,10 @@ class _ClassCalendarScreenState extends ConsumerState<ClassCalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final cats = ref.watch(categoriesProvider).value
+    final cats =
+        ref
+            .watch(categoriesProvider)
+            .value
             ?.where((c) => c.isActive)
             .toList() ??
         const [];
@@ -36,15 +39,16 @@ class _ClassCalendarScreenState extends ConsumerState<ClassCalendarScreen> {
       body: Column(
         children: [
           const SizedBox(height: 8),
-          DayStrip(
-              selected: _day, onSelected: (d) => setState(() => _day = d)),
+          DayStrip(selected: _day, onSelected: (d) => setState(() => _day = d)),
           if (cats.isNotEmpty)
             SizedBox(
               height: 52,
               child: ListView(
                 scrollDirection: Axis.horizontal,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 children: [
                   ChoiceChip(
                     label: const Text('Tümü'),
@@ -101,9 +105,12 @@ class ClassDetailSheet extends ConsumerWidget {
             onPressed: canCancel
                 ? () async {
                     final nav = Navigator.of(context);
-                    final done = await runMemberCancelFlow(context, ref,
-                        reservationId: item.myReservationId!,
-                        startsAt: item.startsAt);
+                    final done = await runMemberCancelFlow(
+                      context,
+                      ref,
+                      reservationId: item.myReservationId!,
+                      startsAt: item.startsAt,
+                    );
                     if (done) nav.pop();
                   }
                 : null,
@@ -113,9 +120,7 @@ class ClassDetailSheet extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.only(top: 6),
               child: Text(
-                started
-                    ? 'Ders başladığı için iptal edilemez.'
-                    : 'Dersin başlamasına 2 saatten az kaldığı için iptal edilemez.',
+                started ? 'Ders başladığı için iptal edilemez.' : 'Dersin başlamasına 2 saatten az kaldığı için iptal edilemez.',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             ),
@@ -141,11 +146,7 @@ class ClassDetailSheet extends ConsumerWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            ClassInfo(item),
-            const SizedBox(height: 16),
-            action,
-          ],
+          children: [ClassInfo(item), const SizedBox(height: 16), action],
         ),
       ),
     );

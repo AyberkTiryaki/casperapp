@@ -60,8 +60,7 @@ class AuthGate extends ConsumerWidget {
           return Scaffold(
             body: ErrorView(
               title: 'Profil bulunamadı',
-              message:
-                  'Hesabınıza ait profil kaydı bulunamadı. Lütfen tekrar deneyin veya stüdyo yönetimiyle iletişime geçin.',
+              message: 'Hesabınıza ait profil kaydı bulunamadı. Lütfen tekrar deneyin veya stüdyo yönetimiyle iletişime geçin.',
               onRetry: () => ref.invalidate(currentProfileProvider),
               extra: _LogoutButton(ref: ref),
             ),
@@ -72,8 +71,7 @@ class AuthGate extends ConsumerWidget {
             body: EmptyView(
               icon: Icons.block,
               title: 'Hesabınız pasif',
-              message:
-                  'Hesabınız şu anda pasif durumda. Lütfen stüdyo yönetimiyle iletişime geçin.',
+              message: 'Hesabınız şu anda pasif durumda. Lütfen stüdyo yönetimiyle iletişime geçin.',
               action: _LogoutButton(ref: ref),
             ),
           );
@@ -94,8 +92,7 @@ class _LogoutButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => OutlinedButton(
-        onPressed: () => confirmAndSignOut(context, ref),
-        child: const Text('Çıkış yap'),
-      );
+    onPressed: () => confirmAndSignOut(context, ref),
+    child: const Text('Çıkış yap'),
+  );
 }
-

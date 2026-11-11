@@ -17,8 +17,10 @@ class DashboardScreen extends StatelessWidget {
     final now = DateTime.now();
     final todayClasses = store.classesOn(now);
     final expiring = store.expiringMembers();
-    final todayBookings =
-        todayClasses.fold<int>(0, (sum, c) => sum + c.attendeeIds.length);
+    final todayBookings = todayClasses.fold<int>(
+      0,
+      (sum, c) => sum + c.attendeeIds.length,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -125,8 +127,10 @@ class DashboardScreen extends StatelessWidget {
                                   onPressed: () {
                                     StoreScope.read(context)
                                         .renewMembership(m.id);
-                                    showMessage(context,
-                                        '${m.name} üyeliği yenilendi.');
+                                    showMessage(
+                                      context,
+                                      '${m.name} üyeliği yenilendi.',
+                                    );
                                   },
                                   child: const Text('Yenile'),
                                 ),

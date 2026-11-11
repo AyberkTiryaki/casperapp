@@ -8,14 +8,15 @@ class AppTheme {
 
   static ThemeData _build(Brightness b) {
     final isDark = b == Brightness.dark;
-    final scheme = ColorScheme.fromSeed(
-      seedColor: AppColors.accent,
-      brightness: b,
-    ).copyWith(
-      surface: isDark ? AppColors.charcoal : AppColors.ghostWhite,
-      onSurface: isDark ? AppColors.ghostWhite : AppColors.charcoal,
-      error: AppColors.danger,
-    );
+    final scheme =
+        ColorScheme.fromSeed(
+          seedColor: AppColors.accent,
+          brightness: b,
+        ).copyWith(
+          surface: isDark ? AppColors.charcoal : AppColors.ghostWhite,
+          onSurface: isDark ? AppColors.ghostWhite : AppColors.charcoal,
+          error: AppColors.danger,
+        );
     final outline = isDark ? AppColors.outlineDark : AppColors.outlineLight;
     final border = OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
@@ -47,22 +48,26 @@ class AppTheme {
         focusedBorder: border.copyWith(
           borderSide: BorderSide(color: scheme.primary, width: 2),
         ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           minimumSize: const Size.fromHeight(52),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           minimumSize: const Size.fromHeight(52),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           side: BorderSide(color: outline),
         ),
       ),

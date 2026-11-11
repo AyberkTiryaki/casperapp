@@ -2,8 +2,13 @@ import 'package:caspertrainingstudio/features/packages/data/package_repository.d
 import 'package:caspertrainingstudio/features/packages/domain/package_models.dart';
 
 class AssignCall {
-  AssignCall(this.memberId, this.definitionId, this.key, this.replace,
-      [this.discount = 0]);
+  AssignCall(
+    this.memberId,
+    this.definitionId,
+    this.key,
+    this.replace, [
+    this.discount = 0,
+  ]);
   final String memberId, definitionId, key;
   final bool replace;
   final int discount;
@@ -20,13 +25,16 @@ class FakePackageRepository implements PackageRepository {
   @override
   Future<List<Category>> categories() async => cats;
   @override
-  Future<void> createCategory(
-      {required String name, required bool isActive}) async {}
+  Future<void> createCategory({
+    required String name,
+    required bool isActive,
+  }) async {}
   @override
-  Future<void> updateCategory(
-      {required String id,
-      required String name,
-      required bool isActive}) async {}
+  Future<void> updateCategory({
+    required String id,
+    required String name,
+    required bool isActive,
+  }) async {}
   @override
   Future<List<PackageDefinition>> definitions() async => defs;
   @override
@@ -76,8 +84,14 @@ class FakePackageRepository implements PackageRepository {
     int discountPercent = 0,
   }) async {
     assignCalls.add(
-        AssignCall(
-        memberId, definitionId, idempotencyKey, replaceExisting, discountPercent));
+      AssignCall(
+        memberId,
+        definitionId,
+        idempotencyKey,
+        replaceExisting,
+        discountPercent,
+      ),
+    );
     if (assignCalls.length == 1 && assignErrorOnFirst != null) {
       throw assignErrorOnFirst!;
     }

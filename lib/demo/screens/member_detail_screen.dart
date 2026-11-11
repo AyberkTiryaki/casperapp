@@ -90,13 +90,17 @@ class MemberDetailScreen extends StatelessWidget {
                       ListTile(
                         leading: const Icon(Icons.card_membership),
                         title: Text(m.membership.label),
-                        subtitle: Text('Bitiş: ${tarih(m.membershipEnd)} '
-                            '(${kalanGunMetni(m.daysLeft())})'),
+                        subtitle: Text(
+                          'Bitiş: ${tarih(m.membershipEnd)} '
+                          '(${kalanGunMetni(m.daysLeft())})',
+                        ),
                         trailing: FilledButton.tonal(
                           onPressed: () {
                             StoreScope.read(context).renewMembership(m.id);
-                            showMessage(context,
-                                'Üyelik ${m.membership.days} gün uzatıldı.');
+                            showMessage(
+                              context,
+                              'Üyelik ${m.membership.days} gün uzatıldı.',
+                            );
                           },
                           child: const Text('Yenile'),
                         ),
@@ -104,9 +108,11 @@ class MemberDetailScreen extends StatelessWidget {
                       ListTile(
                         leading: const Icon(Icons.sports),
                         title: const Text('Antrenör'),
-                        subtitle: Text(trainer == null
-                            ? 'Atanmadı'
-                            : '${trainer.name} • ${trainer.specialty}'),
+                        subtitle: Text(
+                          trainer == null
+                              ? 'Atanmadı'
+                              : '${trainer.name} • ${trainer.specialty}',
+                        ),
                       ),
                     ],
                   ),
@@ -116,14 +122,16 @@ class MemberDetailScreen extends StatelessWidget {
                   child: program == null
                       ? const EmptyState(
                           icon: Icons.fitness_center,
-                          message:
-                              'Program atanmadı. Düzenle düğmesiyle program atayabilirsiniz.',
+                          message: 'Program atanmadı. Düzenle düğmesiyle program atayabilirsiniz.',
                         )
                       : Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             ListTile(
-                              title: Text(program.name, style: text.titleMedium),
+                              title: Text(
+                                program.name,
+                                style: text.titleMedium,
+                              ),
                               subtitle: Text(program.goal),
                             ),
                             for (final (i, e) in program.exercises.indexed)
@@ -131,8 +139,10 @@ class MemberDetailScreen extends StatelessWidget {
                                 dense: true,
                                 leading: CircleAvatar(
                                   radius: 12,
-                                  child: Text('${i + 1}',
-                                      style: const TextStyle(fontSize: 11)),
+                                  child: Text(
+                                    '${i + 1}',
+                                    style: const TextStyle(fontSize: 11),
+                                  ),
                                 ),
                                 title: Text(e.name),
                                 trailing: Text('${e.sets} × ${e.reps}'),
@@ -160,8 +170,9 @@ class MemberDetailScreen extends StatelessWidget {
                                 trailing: IconButton(
                                   tooltip: 'Rezervasyonu iptal et',
                                   icon: const Icon(Icons.close),
-                                  onPressed: () => StoreScope.read(context)
-                                      .toggleBooking(c.id, m.id),
+                                  onPressed: () =>
+                                      StoreScope.read(context)
+                                          .toggleBooking(c.id, m.id),
                                 ),
                               ),
                           ],

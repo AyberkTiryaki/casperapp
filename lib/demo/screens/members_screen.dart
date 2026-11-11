@@ -25,7 +25,8 @@ class _MembersScreenState extends State<MembersScreen> {
     final store = StoreScope.of(context);
     final q = _query.trim().toLowerCase();
     final members = store.members.where((m) {
-      final matches = q.isEmpty ||
+      final matches =
+          q.isEmpty ||
           m.name.toLowerCase().contains(q) ||
           m.phone.replaceAll(' ', '').contains(q.replaceAll(' ', ''));
       final status = switch (_filter) {
@@ -34,8 +35,7 @@ class _MembersScreenState extends State<MembersScreen> {
         _Filter.bitenler => m.daysLeft() <= 7,
       };
       return matches && status;
-    }).toList()
-      ..sort((a, b) => a.name.compareTo(b.name));
+    }).toList()..sort((a, b) => a.name.compareTo(b.name));
 
     return Scaffold(
       appBar: AppBar(title: const Text('Üyeler')),
@@ -68,7 +68,9 @@ class _MembersScreenState extends State<MembersScreen> {
                     ButtonSegment(value: _Filter.tumu, label: Text('Tümü')),
                     ButtonSegment(value: _Filter.aktif, label: Text('Aktif')),
                     ButtonSegment(
-                        value: _Filter.bitenler, label: Text('Yenilenecek')),
+                      value: _Filter.bitenler,
+                      label: Text('Yenilenecek'),
+                    ),
                   ],
                   selected: {_filter},
                   onSelectionChanged: (s) => setState(() => _filter = s.first),

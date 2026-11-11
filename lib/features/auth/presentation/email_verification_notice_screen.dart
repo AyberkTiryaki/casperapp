@@ -29,8 +29,7 @@ class _EmailVerificationNoticeScreenState
     }
     if (!mounted) return;
     setState(() => _sending = false);
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(msg)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 
   @override
@@ -47,12 +46,17 @@ class _EmailVerificationNoticeScreenState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Icon(Icons.mark_email_unread_outlined,
-                      size: 64, color: t.colorScheme.primary),
+                  Icon(
+                    Icons.mark_email_unread_outlined,
+                    size: 64,
+                    color: t.colorScheme.primary,
+                  ),
                   const SizedBox(height: 24),
-                  Text('E-postanızı doğrulayın',
-                      style: t.textTheme.headlineSmall,
-                      textAlign: TextAlign.center),
+                  Text(
+                    'E-postanızı doğrulayın',
+                    style: t.textTheme.headlineSmall,
+                    textAlign: TextAlign.center,
+                  ),
                   const SizedBox(height: 12),
                   Text(
                     '${widget.email} adresine bir doğrulama bağlantısı gönderdik. Gelen kutunuzu (ve gerekirse spam klasörünü) kontrol edip bağlantıya dokunun.',

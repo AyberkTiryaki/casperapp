@@ -31,8 +31,9 @@ class PackageDetailScreen extends ConsumerWidget {
             const SizedBox(height: 8),
             freezes.when(
               loading: () => const Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Center(child: CircularProgressIndicator())),
+                padding: EdgeInsets.all(16),
+                child: Center(child: CircularProgressIndicator()),
+              ),
               error: (_, _) => const Text('Dondurma bilgisi yüklenemedi.'),
               data: (items) => items.isEmpty
                   ? const Text('Dondurma kaydı yok.')
@@ -43,7 +44,8 @@ class PackageDetailScreen extends ConsumerWidget {
                           Padding(
                             padding: const EdgeInsets.only(bottom: 4),
                             child: Text(
-                                '${freezeRangeText(f)}${f.note == null ? '' : ' - ${f.note}'}'),
+                              '${freezeRangeText(f)}${f.note == null ? '' : ' - ${f.note}'}',
+                            ),
                           ),
                       ],
                     ),

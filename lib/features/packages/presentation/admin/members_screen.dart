@@ -39,7 +39,9 @@ class _MembersScreenState extends ConsumerState<MembersScreen> {
     final seq = ++_seq;
     setState(() => _result = const AsyncLoading());
     try {
-      final r = await ref.read(packageRepositoryProvider).searchMembers(q.trim());
+      final r = await ref
+          .read(packageRepositoryProvider)
+          .searchMembers(q.trim());
       if (mounted && seq == _seq) setState(() => _result = AsyncData(r));
     } catch (e, st) {
       if (mounted && seq == _seq) {
@@ -76,7 +78,9 @@ class _MembersScreenState extends ConsumerState<MembersScreen> {
               onRetry: () => _search(_controller.text),
               data: (items) => items.isEmpty
                   ? const EmptyView(
-                      title: 'Üye bulunamadı', icon: Icons.person_search)
+                      title: 'Üye bulunamadı',
+                      icon: Icons.person_search,
+                    )
                   : ListView.separated(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       itemCount: items.length,
@@ -89,9 +93,11 @@ class _MembersScreenState extends ConsumerState<MembersScreen> {
                             title: Text(m.fullName),
                             trailing: const Icon(Icons.chevron_right),
                             onTap: () => Navigator.of(context).push(
-                                MaterialPageRoute(
-                                    builder: (_) =>
-                                        AdminMemberPackagesScreen(member: m))),
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    AdminMemberPackagesScreen(member: m),
+                              ),
+                            ),
                           ),
                         );
                       },

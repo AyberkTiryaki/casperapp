@@ -57,20 +57,39 @@ void main() {
   });
 
   test('friendlyError', () {
-    expect(friendlyError(const AuthException('Invalid login credentials', code: 'invalid_credentials')),
-        'E-posta veya şifre hatalı.');
-    expect(friendlyError(const AuthException('x', code: 'email_not_confirmed')),
-        contains('doğrulanmamış'));
-    expect(friendlyError(const AuthException('User already registered')),
-        contains('zaten'));
-    expect(friendlyError(const AuthException('x', code: 'weak_password')),
-        contains('zayıf'));
-    expect(friendlyError(const AuthException('x', code: 'over_request_rate_limit')),
-        contains('Çok fazla'));
-    expect(friendlyError(AuthRetryableFetchException(message: 'x')),
-        contains('İnternet'));
-    expect(friendlyError(const PostgrestException(message: 'x')),
-        contains('Sunucu'));
+    expect(
+      friendlyError(
+        const AuthException(
+          'Invalid login credentials',
+          code: 'invalid_credentials',
+        ),
+      ),
+      'E-posta veya şifre hatalı.',
+    );
+    expect(
+      friendlyError(const AuthException('x', code: 'email_not_confirmed')),
+      contains('doğrulanmamış'),
+    );
+    expect(
+      friendlyError(const AuthException('User already registered')),
+      contains('zaten'),
+    );
+    expect(
+      friendlyError(const AuthException('x', code: 'weak_password')),
+      contains('zayıf'),
+    );
+    expect(
+      friendlyError(const AuthException('x', code: 'over_request_rate_limit')),
+      contains('Çok fazla'),
+    );
+    expect(
+      friendlyError(AuthRetryableFetchException(message: 'x')),
+      contains('İnternet'),
+    );
+    expect(
+      friendlyError(const PostgrestException(message: 'x')),
+      contains('Sunucu'),
+    );
     expect(friendlyError(Exception('?')), contains('Beklenmeyen'));
   });
 }

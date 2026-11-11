@@ -16,8 +16,8 @@ class MembershipStatusChip extends StatelessWidget {
     final (Color bg, Color fg) = days < 0
         ? (scheme.errorContainer, scheme.onErrorContainer)
         : days <= 7
-            ? (const Color(0xFFFFE0B2), const Color(0xFF7A4100))
-            : (const Color(0xFFC8E6C9), const Color(0xFF1B5E20));
+        ? (const Color(0xFFFFE0B2), const Color(0xFF7A4100))
+        : (const Color(0xFFC8E6C9), const Color(0xFF1B5E20));
     final text = days > 7 ? 'Aktif' : kalanGunMetni(days);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -27,9 +27,7 @@ class MembershipStatusChip extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: Theme.of(context)
-            .textTheme
-            .labelMedium
+        style: Theme.of(context).textTheme.labelMedium
             ?.copyWith(color: fg, fontWeight: FontWeight.w600),
       ),
     );
@@ -92,7 +90,11 @@ class EmptyState extends StatelessWidget {
         children: [
           Icon(icon, size: 40, color: color),
           const SizedBox(height: 8),
-          Text(message, textAlign: TextAlign.center, style: TextStyle(color: color)),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: TextStyle(color: color),
+          ),
         ],
       ),
     );

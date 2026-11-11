@@ -41,8 +41,11 @@ class FakeReferralRepository implements ReferralRepository {
   }
 
   @override
-  Future<void> decide(
-      {required String referralId, required bool approve, String? note}) async {
+  Future<void> decide({
+    required String referralId,
+    required bool approve,
+    String? note,
+  }) async {
     decideCalls.add((referralId, approve));
   }
 }
@@ -99,14 +102,14 @@ void main() {
 
   test('kayıt metadata referans kodunu normalize eder', () {
     SignUpData d(String? code) => SignUpData(
-          email: 'a@b.co',
-          password: '12345678',
-          fullName: 'Ayşe Yılmaz',
-          birthDate: DateTime(1990, 5, 17),
-          heightCm: 170,
-          weightKg: 60,
-          referralCode: code,
-        );
+      email: 'a@b.co',
+      password: '12345678',
+      fullName: 'Ayşe Yılmaz',
+      birthDate: DateTime(1990, 5, 17),
+      heightCm: 170,
+      weightKg: 60,
+      referralCode: code,
+    );
     expect(buildSignUpMetadata(d(' abc defg '))['referral_code'], 'ABCDEFG');
     expect(buildSignUpMetadata(d('  ')).containsKey('referral_code'), false);
     expect(buildSignUpMetadata(d(null)).containsKey('referral_code'), false);
@@ -114,10 +117,22 @@ void main() {
   });
 
   test('geçersiz kod uyarısı kararı', () {
-    expect(shouldShowInvalidReferralWarning(signupCode: 'ABC', wasReferred: false), true);
-    expect(shouldShowInvalidReferralWarning(signupCode: 'ABC', wasReferred: true), false);
-    expect(shouldShowInvalidReferralWarning(signupCode: '', wasReferred: false), false);
-    expect(shouldShowInvalidReferralWarning(signupCode: null, wasReferred: false), false);
+    expect(
+      shouldShowInvalidReferralWarning(signupCode: 'ABC', wasReferred: false),
+      true,
+    );
+    expect(
+      shouldShowInvalidReferralWarning(signupCode: 'ABC', wasReferred: true),
+      false,
+    );
+    expect(
+      shouldShowInvalidReferralWarning(signupCode: '', wasReferred: false),
+      false,
+    );
+    expect(
+      shouldShowInvalidReferralWarning(signupCode: null, wasReferred: false),
+      false,
+    );
   });
 
   test('yeni hata kodları', () {
@@ -128,8 +143,9 @@ void main() {
     expect(m('DECISION_REQUIRED'), contains('karar'));
   });
 
-  testWidgets('Referanslarım kod, sayı, oran ve kısa adı gösterir',
-      (tester) async {
+  testWidgets('Referanslarım kod, sayı, oran ve kısa adı gösterir', (
+    tester,
+  ) async {
     final repo = FakeReferralRepository()
       ..summaryData = const ReferralSummary(
         userId: 'm1',
@@ -147,15 +163,17 @@ void main() {
           status: ReferralStatus.approved,
           countsNow: true,
           createdAt: DateTime(2026, 11, 1),
-        )
+        ),
       ];
-    await tester.pumpWidget(ProviderScope(
-      overrides: [
-        referralRepositoryProvider.overrideWithValue(repo),
-        signupReferralCodeProvider.overrideWithValue('ZZZZZZZ'),
-      ],
-      child: const MaterialApp(home: MyReferralsScreen()),
-    ));
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          referralRepositoryProvider.overrideWithValue(repo),
+          signupReferralCodeProvider.overrideWithValue('ZZZZZZZ'),
+        ],
+        child: const MaterialApp(home: MyReferralsScreen()),
+      ),
+    );
     await tester.pumpAndSettle();
     expect(find.text('ABCDEFG'), findsOneWidget);
     expect(find.text('Sayılan referans: 2'), findsOneWidget);
@@ -165,8 +183,9 @@ void main() {
     expect(find.text(invalidReferralWarningText), findsOneWidget);
   });
 
-  testWidgets('Admin referans onayı decide(approve=true) çağırır ve yeniler',
-      (tester) async {
+  testWidgets('Admin referans onayı decide(approve=true) çağırır ve yeniler', (
+    tester,
+  ) async {
     final repo = FakeReferralRepository()
       ..admin = const [
         AdminReferral(
@@ -179,26 +198,34 @@ void main() {
           referredName: 'Can Demir',
           referredHasActivePackage: true,
           status: ReferralStatus.pending,
-        )
+        ),
       ];
-    await tester.pumpWidget(ProviderScope(
-      overrides: [referralRepositoryProvider.overrideWithValue(repo)],
-      child: const MaterialApp(home: AdminReferralsScreen()),
-    ));
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [referralRepositoryProvider.overrideWithValue(repo)],
+        child: const MaterialApp(home: AdminReferralsScreen()),
+      ),
+    );
     await tester.pumpAndSettle();
     expect(find.textContaining('Ali Veli'), findsOneWidget);
     final before = repo.adminListCalls;
     await tester.tap(find.widgetWithText(FilledButton, 'Onayla'));
     await tester.pumpAndSettle();
-    await tester.tap(find.descendant(
-        of: find.byType(AlertDialog), matching: find.text('Onayla')));
+    await tester.tap(
+      find.descendant(
+        of: find.byType(AlertDialog),
+        matching: find.text('Onayla'),
+      ),
+    );
     await tester.pumpAndSettle();
     expect(repo.decideCalls, [('r1', true)]);
     expect(repo.adminListCalls, greaterThan(before));
   });
 
   Future<FakePackageRepository> pumpAssign(
-      WidgetTester tester, FakeReferralRepository refRepo) async {
+    WidgetTester tester,
+    FakeReferralRepository refRepo,
+  ) async {
     final pkgRepo = FakePackageRepository()
       ..defs = const [
         PackageDefinition(
@@ -210,17 +237,21 @@ void main() {
           validityDays: 30,
           price: 4000,
           isActive: true,
-        )
+        ),
       ];
-    await tester.pumpWidget(ProviderScope(
-      overrides: [
-        packageRepositoryProvider.overrideWithValue(pkgRepo),
-        referralRepositoryProvider.overrideWithValue(refRepo),
-      ],
-      child: const MaterialApp(
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          packageRepositoryProvider.overrideWithValue(pkgRepo),
+          referralRepositoryProvider.overrideWithValue(refRepo),
+        ],
+        child: const MaterialApp(
           home: AdminMemberPackagesScreen(
-              member: MemberSummary(id: 'm1', fullName: 'Ayşe Yılmaz'))),
-    ));
+            member: MemberSummary(id: 'm1', fullName: 'Ayşe Yılmaz'),
+          ),
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.text('Paket ata'));
     await tester.pumpAndSettle();
@@ -239,12 +270,15 @@ void main() {
     wasReferred: true,
   );
 
-  testWidgets('Paket ata: hak 15, anahtar açık -> indirim 15 gönderilir',
-      (tester) async {
+  testWidgets('Paket ata: hak 15, anahtar açık -> indirim 15 gönderilir', (
+    tester,
+  ) async {
     final refRepo = FakeReferralRepository()..summaryData = entitled15;
     final pkgRepo = await pumpAssign(tester, refRepo);
-    expect(find.textContaining('Referans indirimi hakkı: %15 (3 aktif referans)'),
-        findsOneWidget);
+    expect(
+      find.textContaining('Referans indirimi hakkı: %15 (3 aktif referans)'),
+      findsOneWidget,
+    );
     await tester.tap(find.byType(Switch));
     await tester.pumpAndSettle();
     expect(find.textContaining('3.400 ₺'), findsOneWidget);
@@ -253,8 +287,9 @@ void main() {
     expect(pkgRepo.assignCalls.single.discount, 15);
   });
 
-  testWidgets('Paket ata: anahtar kapalıyken indirim 0 gönderilir',
-      (tester) async {
+  testWidgets('Paket ata: anahtar kapalıyken indirim 0 gönderilir', (
+    tester,
+  ) async {
     final refRepo = FakeReferralRepository()..summaryData = entitled15;
     final pkgRepo = await pumpAssign(tester, refRepo);
     await tester.tap(find.text('Onayla'));
@@ -262,8 +297,9 @@ void main() {
     expect(pkgRepo.assignCalls.single.discount, 0);
   });
 
-  testWidgets('Paket ata: hak yoksa mesaj gösterilir ve 0 gönderilir',
-      (tester) async {
+  testWidgets('Paket ata: hak yoksa mesaj gösterilir ve 0 gönderilir', (
+    tester,
+  ) async {
     final pkgRepo = await pumpAssign(tester, FakeReferralRepository());
     expect(find.text('Bu üyenin referans indirimi hakkı yok.'), findsOneWidget);
     await tester.tap(find.text('Onayla'));

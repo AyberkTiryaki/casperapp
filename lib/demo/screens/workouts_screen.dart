@@ -62,7 +62,9 @@ class _ProgramCard extends StatelessWidget {
         shape: const Border(),
         leading: const Icon(Icons.fitness_center),
         title: Text(p.name),
-        subtitle: Text('${p.goal} • ${p.exercises.length} egzersiz • $count üye'),
+        subtitle: Text(
+          '${p.goal} • ${p.exercises.length} egzersiz • $count üye',
+        ),
         children: [
           for (final (i, e) in p.exercises.indexed)
             ListTile(
@@ -121,11 +123,13 @@ List<Exercise> parseExercises(String text) {
       final spec = line.substring(dash + 3).trim();
       final match = setRep.firstMatch(spec);
       if (match != null && name.isNotEmpty) {
-        result.add(Exercise(
-          name: name,
-          sets: int.parse(match.group(1)!),
-          reps: match.group(2)!.trim(),
-        ));
+        result.add(
+          Exercise(
+            name: name,
+            sets: int.parse(match.group(1)!),
+            reps: match.group(2)!.trim(),
+          ),
+        );
         continue;
       }
     }
@@ -151,7 +155,9 @@ class _ProgramFormDialogState extends State<_ProgramFormDialog> {
   late final _name = TextEditingController(text: widget.existing?.name);
   late final _goal = TextEditingController(text: widget.existing?.goal);
   late final _exercises = TextEditingController(
-    text: widget.existing == null ? '' : formatExercises(widget.existing!.exercises),
+    text: widget.existing == null
+        ? ''
+        : formatExercises(widget.existing!.exercises),
   );
 
   @override
@@ -186,7 +192,9 @@ class _ProgramFormDialogState extends State<_ProgramFormDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(widget.existing == null ? 'Yeni Program' : 'Programı Düzenle'),
+      title: Text(
+        widget.existing == null ? 'Yeni Program' : 'Programı Düzenle',
+      ),
       content: SizedBox(
         width: 460,
         child: Form(
@@ -199,8 +207,9 @@ class _ProgramFormDialogState extends State<_ProgramFormDialog> {
                   controller: _name,
                   autofocus: true,
                   decoration: const InputDecoration(labelText: 'Program adı'),
-                  validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? 'Program adı girin' : null,
+                  validator: (v) => (v == null || v.trim().isEmpty)
+                      ? 'Program adı girin'
+                      : null,
                 ),
                 const SizedBox(height: 12),
                 TextFormField(

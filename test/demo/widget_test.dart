@@ -44,8 +44,10 @@ void main() {
       final memberId = c.attendeeIds.first;
       store.deleteMember(memberId);
       expect(store.memberById(memberId), isNull);
-      expect(store.classes.any((c) => c.attendeeIds.contains(memberId)),
-          isFalse);
+      expect(
+        store.classes.any((c) => c.attendeeIds.contains(memberId)),
+        isFalse,
+      );
     });
 
     test('program silinince üyelerden kaldırılır', () {

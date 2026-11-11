@@ -36,8 +36,8 @@ class _UpdatePasswordScreenState extends ConsumerState<UpdatePasswordScreen> {
     try {
       await ref.read(authRepositoryProvider).updatePassword(_password.text);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Şifreniz güncellendi.')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Şifreniz güncellendi.')));
       ref.read(passwordRecoveryProvider.notifier).set(false);
     } catch (e) {
       if (mounted) setState(() => _error = friendlyError(e));
@@ -67,8 +67,9 @@ class _UpdatePasswordScreenState extends ConsumerState<UpdatePasswordScreen> {
                       obscureText: true,
                       textInputAction: TextInputAction.next,
                       decoration: const InputDecoration(
-                          labelText: 'Yeni şifre',
-                          helperText: 'En az 8 karakter'),
+                        labelText: 'Yeni şifre',
+                        helperText: 'En az 8 karakter',
+                      ),
                       validator: validatePassword,
                     ),
                     const SizedBox(height: 16),
@@ -77,14 +78,17 @@ class _UpdatePasswordScreenState extends ConsumerState<UpdatePasswordScreen> {
                       obscureText: true,
                       onFieldSubmitted: (_) => _submit(),
                       decoration: const InputDecoration(
-                          labelText: 'Yeni şifre tekrar'),
+                        labelText: 'Yeni şifre tekrar',
+                      ),
                       validator: (v) =>
                           validatePasswordConfirm(v, _password.text),
                     ),
                     if (_error != null) ...[
                       const SizedBox(height: 12),
-                      Text(_error!,
-                          style: TextStyle(color: t.colorScheme.error)),
+                      Text(
+                        _error!,
+                        style: TextStyle(color: t.colorScheme.error),
+                      ),
                     ],
                     const SizedBox(height: 24),
                     FilledButton(

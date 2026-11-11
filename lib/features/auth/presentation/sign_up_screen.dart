@@ -33,7 +33,16 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
 
   @override
   void dispose() {
-    for (final c in [_name, _email, _password, _password2, _birth, _height, _weight, _referral]) {
+    for (final c in [
+      _name,
+      _email,
+      _password,
+      _password2,
+      _birth,
+      _height,
+      _weight,
+      _referral,
+    ]) {
       c.dispose();
     }
     super.dispose();
@@ -73,11 +82,15 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
           controller: controller,
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
           children: [
-            Text('KVKK Aydınlatma Metni',
-                style: Theme.of(ctx).textTheme.titleLarge),
+            Text(
+              'KVKK Aydınlatma Metni',
+              style: Theme.of(ctx).textTheme.titleLarge,
+            ),
             const SizedBox(height: 4),
-            Text('Sürüm: $kvkkTextVersion',
-                style: Theme.of(ctx).textTheme.bodySmall),
+            Text(
+              'Sürüm: $kvkkTextVersion',
+              style: Theme.of(ctx).textTheme.bodySmall,
+            ),
             const SizedBox(height: 16),
             const Text(kvkkText),
             const SizedBox(height: 24),
@@ -100,19 +113,26 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     });
     final email = _email.text.trim();
     try {
-      final res = await ref.read(authRepositoryProvider).signUp(SignUpData(
-            email: email,
-            password: _password.text,
-            fullName: _name.text.trim(),
-            birthDate: _birthDate!,
-            heightCm: parseHeight(_height.text)!,
-            weightKg: parseWeight(_weight.text)!,
-            referralCode: normalizeReferralCode(_referral.text),
-          ));
+      final res = await ref
+          .read(authRepositoryProvider)
+          .signUp(
+            SignUpData(
+              email: email,
+              password: _password.text,
+              fullName: _name.text.trim(),
+              birthDate: _birthDate!,
+              heightCm: parseHeight(_height.text)!,
+              weightKg: parseWeight(_weight.text)!,
+              referralCode: normalizeReferralCode(_referral.text),
+            ),
+          );
       if (!mounted) return;
       if (res.session == null) {
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (_) => EmailVerificationNoticeScreen(email: email)));
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (_) => EmailVerificationNoticeScreen(email: email),
+          ),
+        );
       } else {
         // Oturum açıldı; AuthGate kökte yönlendirir.
         Navigator.of(context).popUntil((r) => r.isFirst);
@@ -162,7 +182,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       obscureText: true,
                       textInputAction: TextInputAction.next,
                       decoration: const InputDecoration(
-                          labelText: 'Şifre', helperText: 'En az 8 karakter'),
+                        labelText: 'Şifre',
+                        helperText: 'En az 8 karakter',
+                      ),
                       validator: validatePassword,
                     ),
                     gap,
@@ -170,8 +192,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       controller: _password2,
                       obscureText: true,
                       textInputAction: TextInputAction.next,
-                      decoration:
-                          const InputDecoration(labelText: 'Şifre tekrar'),
+                      decoration: const InputDecoration(
+                        labelText: 'Şifre tekrar',
+                      ),
                       validator: (v) =>
                           validatePasswordConfirm(v, _password.text),
                     ),
@@ -196,7 +219,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                             keyboardType: TextInputType.number,
                             textInputAction: TextInputAction.next,
                             decoration: const InputDecoration(
-                                labelText: 'Boy (cm)'),
+                              labelText: 'Boy (cm)',
+                            ),
                             validator: validateHeight,
                           ),
                         ),
@@ -205,10 +229,12 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                           child: TextFormField(
                             controller: _weight,
                             keyboardType: const TextInputType.numberWithOptions(
-                                decimal: true),
+                              decimal: true,
+                            ),
                             textInputAction: TextInputAction.done,
                             decoration: const InputDecoration(
-                                labelText: 'Kilo (kg)'),
+                              labelText: 'Kilo (kg)',
+                            ),
                             validator: validateWeight,
                           ),
                         ),
@@ -221,8 +247,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       autocorrect: false,
                       decoration: const InputDecoration(
                         labelText: 'Referans kodu (isteğe bağlı)',
-                        helperText:
-                            'Kod geçersizse kaydınız yine tamamlanır, ancak referans oluşmaz.',
+                        helperText: 'Kod geçersizse kaydınız yine tamamlanır, ancak referans oluşmaz.',
                         helperMaxLines: 2,
                       ),
                       validator: validateReferralCode,
@@ -237,13 +262,15 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         _kvkkTouched = true;
                       }),
                       title: const Text(
-                          'KVKK aydınlatma metnini okudum, kabul ediyorum.'),
+                        'KVKK aydınlatma metnini okudum, kabul ediyorum.',
+                      ),
                       subtitle: Align(
                         alignment: Alignment.centerLeft,
                         child: TextButton(
                           style: TextButton.styleFrom(
-                              padding: EdgeInsets.zero,
-                              minimumSize: const Size(0, 32)),
+                            padding: EdgeInsets.zero,
+                            minimumSize: const Size(0, 32),
+                          ),
                           onPressed: _showKvkk,
                           child: const Text('Metni oku'),
                         ),
@@ -252,14 +279,18 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     if (_kvkkTouched && !_kvkk)
                       Padding(
                         padding: const EdgeInsets.only(bottom: 8),
-                        child: Text('Devam etmek için KVKK metnini kabul etmelisiniz.',
-                            style: TextStyle(color: t.colorScheme.error)),
+                        child: Text(
+                          'Devam etmek için KVKK metnini kabul etmelisiniz.',
+                          style: TextStyle(color: t.colorScheme.error),
+                        ),
                       ),
                     if (_error != null)
                       Padding(
                         padding: const EdgeInsets.only(bottom: 8),
-                        child: Text(_error!,
-                            style: TextStyle(color: t.colorScheme.error)),
+                        child: Text(
+                          _error!,
+                          style: TextStyle(color: t.colorScheme.error),
+                        ),
                       ),
                     const SizedBox(height: 8),
                     FilledButton(

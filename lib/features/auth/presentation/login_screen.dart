@@ -61,13 +61,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text('Casper Training Studio',
-                        style: t.textTheme.headlineSmall,
-                        textAlign: TextAlign.center),
+                    Text(
+                      'Casper Training Studio',
+                      style: t.textTheme.headlineSmall,
+                      textAlign: TextAlign.center,
+                    ),
                     const SizedBox(height: 8),
-                    Text('Hesabınıza giriş yapın',
-                        style: t.textTheme.bodyMedium,
-                        textAlign: TextAlign.center),
+                    Text(
+                      'Hesabınıza giriş yapın',
+                      style: t.textTheme.bodyMedium,
+                      textAlign: TextAlign.center,
+                    ),
                     const SizedBox(height: 32),
                     TextFormField(
                       controller: _email,
@@ -87,11 +91,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       decoration: InputDecoration(
                         labelText: 'Şifre',
                         suffixIcon: IconButton(
-                          icon: Icon(_obscure
-                              ? Icons.visibility_outlined
-                              : Icons.visibility_off_outlined),
-                          onPressed: () =>
-                              setState(() => _obscure = !_obscure),
+                          icon: Icon(
+                            _obscure
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined,
+                          ),
+                          onPressed: () => setState(() => _obscure = !_obscure),
                         ),
                       ),
                       validator: (v) =>
@@ -99,8 +104,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     if (_error != null) ...[
                       const SizedBox(height: 12),
-                      Text(_error!,
-                          style: TextStyle(color: t.colorScheme.error)),
+                      Text(
+                        _error!,
+                        style: TextStyle(color: t.colorScheme.error),
+                      ),
                     ],
                     const SizedBox(height: 24),
                     FilledButton(
@@ -117,15 +124,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     TextButton(
                       onPressed: _loading
                           ? null
-                          : () => Navigator.of(context).push(MaterialPageRoute(
-                              builder: (_) => const ForgotPasswordScreen())),
+                          : () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => const ForgotPasswordScreen(),
+                              ),
+                            ),
                       child: const Text('Şifremi unuttum'),
                     ),
                     TextButton(
                       onPressed: _loading
                           ? null
-                          : () => Navigator.of(context).push(MaterialPageRoute(
-                              builder: (_) => const SignUpScreen())),
+                          : () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => const SignUpScreen(),
+                              ),
+                            ),
                       child: const Text('Hesabın yok mu? Kayıt ol'),
                     ),
                   ],

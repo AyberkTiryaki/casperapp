@@ -12,11 +12,13 @@ Future<void> confirmAndSignOut(BuildContext context, WidgetRef ref) async {
       content: const Text('Hesabınızdan çıkmak istediğinize emin misiniz?'),
       actions: [
         TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Vazgeç')),
+          onPressed: () => Navigator.of(ctx).pop(false),
+          child: const Text('Vazgeç'),
+        ),
         FilledButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Çıkış yap')),
+          onPressed: () => Navigator.of(ctx).pop(true),
+          child: const Text('Çıkış yap'),
+        ),
       ],
     ),
   );
@@ -61,8 +63,10 @@ class RoleHomeScaffold extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.all(24),
           children: [
-            Text('Merhaba, ${profile.fullName}',
-                style: t.textTheme.headlineSmall),
+            Text(
+              'Merhaba, ${profile.fullName}',
+              style: t.textTheme.headlineSmall,
+            ),
             const SizedBox(height: 8),
             Text('Modüller', style: t.textTheme.bodyMedium),
             const SizedBox(height: 16),

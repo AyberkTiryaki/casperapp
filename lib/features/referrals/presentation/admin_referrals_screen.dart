@@ -39,24 +39,28 @@ class _AdminReferralsScreenState extends ConsumerState<AdminReferralsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-                '${r.referrerName} → ${r.referredName} referansı ${approve ? 'onaylanacak' : 'reddedilecek'}.${changing ? ' (Önceki karar değiştirilecek.)' : ''}'),
+              '${r.referrerName} → ${r.referredName} referansı ${approve ? 'onaylanacak' : 'reddedilecek'}.${changing ? ' (Önceki karar değiştirilecek.)' : ''}',
+            ),
             if (!approve) ...[
               const SizedBox(height: 12),
               TextField(
                 controller: note,
-                decoration:
-                    const InputDecoration(labelText: 'Not (isteğe bağlı)'),
+                decoration: const InputDecoration(
+                  labelText: 'Not (isteğe bağlı)',
+                ),
               ),
             ],
           ],
         ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.of(ctx).pop(false),
-              child: const Text('Vazgeç')),
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Vazgeç'),
+          ),
           FilledButton(
-              onPressed: () => Navigator.of(ctx).pop(true),
-              child: Text(approve ? 'Onayla' : 'Reddet')),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(approve ? 'Onayla' : 'Reddet'),
+          ),
         ],
       ),
     );
@@ -65,14 +69,17 @@ class _AdminReferralsScreenState extends ConsumerState<AdminReferralsScreen> {
     if (ok != true || !mounted) return;
     final messenger = ScaffoldMessenger.of(context);
     try {
-      await ref.read(referralRepositoryProvider).decide(
+      await ref
+          .read(referralRepositoryProvider)
+          .decide(
             referralId: r.id,
             approve: approve,
             note: approve ? null : noteText,
           );
       ref.invalidate(adminReferralsProvider);
       messenger.showSnackBar(
-          const SnackBar(content: Text('Karar kaydedildi.')));
+        const SnackBar(content: Text('Karar kaydedildi.')),
+      );
     } catch (e) {
       messenger.showSnackBar(SnackBar(content: Text(friendlyError(e))));
     }
@@ -110,12 +117,15 @@ class _AdminReferralsScreenState extends ConsumerState<AdminReferralsScreen> {
               data: (items) => RefreshIndicator(
                 onRefresh: () async => ref.invalidate(adminReferralsProvider),
                 child: items.isEmpty
-                    ? ListView(children: const [
-                        SizedBox(height: 120),
-                        EmptyView(
+                    ? ListView(
+                        children: const [
+                          SizedBox(height: 120),
+                          EmptyView(
                             title: 'Referans yok',
-                            icon: Icons.group_add_outlined),
-                      ])
+                            icon: Icons.group_add_outlined,
+                          ),
+                        ],
+                      )
                     : ListView.separated(
                         padding: const EdgeInsets.all(16),
                         physics: const AlwaysScrollableScrollPhysics(),
@@ -137,8 +147,11 @@ class _AdminReferralsScreenState extends ConsumerState<AdminReferralsScreen> {
 }
 
 class _ReferralCard extends StatelessWidget {
-  const _ReferralCard(
-      {required this.r, required this.onApprove, required this.onReject});
+  const _ReferralCard({
+    required this.r,
+    required this.onApprove,
+    required this.onReject,
+  });
   final AdminReferral r;
   final VoidCallback onApprove;
   final VoidCallback onReject;
@@ -152,42 +165,61 @@ class _ReferralCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(children: [
-              Expanded(
-                  child: Text('Getiren: ${r.referrerName}',
-                      style: Theme.of(context).textTheme.titleMedium)),
-              ReferralStatusChip(r.status),
-            ]),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Getiren: ${r.referrerName}',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+                ReferralStatusChip(r.status),
+              ],
+            ),
             Text(
-                'Kod: ${r.referrerCode ?? '-'} - Güncel indirim: %${r.referrerDiscountPercent}'),
+              'Kod: ${r.referrerCode ?? '-'} - Güncel indirim: %${r.referrerDiscountPercent}',
+            ),
             const SizedBox(height: 4),
             Text('Getirilen: ${r.referredName}'),
-            Text(r.referredHasActivePackage
-                ? 'Aktif paketi var'
-                : 'Aktif paketi yok'),
+            Text(
+              r.referredHasActivePackage
+                  ? 'Aktif paketi var'
+                  : 'Aktif paketi yok',
+            ),
             if (r.createdAt != null) Text('Tarih: ${formatDate(r.createdAt!)}'),
             if (r.decisionNote != null && r.decisionNote!.isNotEmpty)
               Text('Not: ${r.decisionNote}'),
             const SizedBox(height: 8),
-            Wrap(spacing: 8, children: [
-              if (pending) ...[
-                FilledButton(
-                    style: FilledButton.styleFrom(minimumSize: const Size(0, 40)),
+            Wrap(
+              spacing: 8,
+              children: [
+                if (pending) ...[
+                  FilledButton(
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size(0, 40),
+                    ),
                     onPressed: onApprove,
-                    child: const Text('Onayla')),
-                OutlinedButton(
-                    style:
-                        OutlinedButton.styleFrom(minimumSize: const Size(0, 40)),
+                    child: const Text('Onayla'),
+                  ),
+                  OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(0, 40),
+                    ),
                     onPressed: onReject,
-                    child: const Text('Reddet')),
-              ] else
-                OutlinedButton(
-                  style: OutlinedButton.styleFrom(minimumSize: const Size(0, 40)),
-                  onPressed:
-                      r.status == ReferralStatus.approved ? onReject : onApprove,
-                  child: const Text('Kararı değiştir'),
-                ),
-            ]),
+                    child: const Text('Reddet'),
+                  ),
+                ] else
+                  OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(0, 40),
+                    ),
+                    onPressed: r.status == ReferralStatus.approved
+                        ? onReject
+                        : onApprove,
+                    child: const Text('Kararı değiştir'),
+                  ),
+              ],
+            ),
           ],
         ),
       ),

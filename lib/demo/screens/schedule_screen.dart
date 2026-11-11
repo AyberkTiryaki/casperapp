@@ -28,9 +28,9 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         onPressed: store.trainers.isEmpty
             ? null
             : () => showDialog<void>(
-                  context: context,
-                  builder: (_) => _ClassFormDialog(day: _selected),
-                ),
+                context: context,
+                builder: (_) => _ClassFormDialog(day: _selected),
+              ),
         icon: const Icon(Icons.add),
         label: const Text('Ders Ekle'),
       ),
@@ -41,7 +41,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             SizedBox(
               height: 76,
               child: ListView.separated(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 scrollDirection: Axis.horizontal,
                 itemCount: days.length,
                 separatorBuilder: (_, _) => const SizedBox(width: 8),
@@ -168,8 +171,10 @@ class _ClassCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(c.title,
-                            style: Theme.of(context).textTheme.titleMedium),
+                        Text(
+                          c.title,
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
                         const SizedBox(height: 2),
                         Text(
                           '${saatAraligi(c.start, c.end)} • ${trainer?.name ?? '-'}'
@@ -239,7 +244,8 @@ class _BookingSheet extends StatelessWidget {
     final store = StoreScope.of(context);
     final c = store.classes.where((x) => x.id == classId).firstOrNull;
     if (c == null) return const SizedBox.shrink();
-    final members = [...store.members]..sort((a, b) {
+    final members = [...store.members]
+      ..sort((a, b) {
         final ab = c.attendeeIds.contains(a.id) ? 0 : 1;
         final bb = c.attendeeIds.contains(b.id) ? 0 : 1;
         return ab != bb ? ab - bb : a.name.compareTo(b.name);
@@ -327,8 +333,13 @@ class _ClassFormDialogState extends State<_ClassFormDialog> {
 
   void _save() {
     if (!_formKey.currentState!.validate()) return;
-    final start =
-        DateTime(_day.year, _day.month, _day.day, _time.hour, _time.minute);
+    final start = DateTime(
+      _day.year,
+      _day.month,
+      _day.day,
+      _time.hour,
+      _time.minute,
+    );
     StoreScope.read(context).addClass(
       title: _title.text.trim(),
       trainerId: _trainerId!,
@@ -418,8 +429,9 @@ class _ClassFormDialogState extends State<_ClassFormDialog> {
                     Expanded(
                       child: TextFormField(
                         controller: _capacity,
-                        decoration:
-                            const InputDecoration(labelText: 'Kontenjan'),
+                        decoration: const InputDecoration(
+                          labelText: 'Kontenjan',
+                        ),
                         keyboardType: TextInputType.number,
                         validator: (v) {
                           final n = int.tryParse(v ?? '');

@@ -51,7 +51,12 @@ class _CreateClassScreenState extends ConsumerState<CreateClassScreen> {
       return;
     }
     final startsAt = DateTime(
-        _date.year, _date.month, _date.day, _time.hour, _time.minute);
+      _date.year,
+      _date.month,
+      _date.day,
+      _time.hour,
+      _time.minute,
+    );
     setState(() {
       _saving = true;
       _error = null;
@@ -59,7 +64,9 @@ class _CreateClassScreenState extends ConsumerState<CreateClassScreen> {
     final messenger = ScaffoldMessenger.of(context);
     final nav = Navigator.of(context);
     try {
-      await ref.read(scheduleRepositoryProvider).createClass(
+      await ref
+          .read(scheduleRepositoryProvider)
+          .createClass(
             categoryId: _categoryId!,
             classType: _type,
             startsAt: startsAt,
@@ -82,7 +89,10 @@ class _CreateClassScreenState extends ConsumerState<CreateClassScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final cats = ref.watch(categoriesProvider).value
+    final cats =
+        ref
+            .watch(categoriesProvider)
+            .value
             ?.where((c) => c.isActive)
             .toList() ??
         const [];
@@ -124,10 +134,11 @@ class _CreateClassScreenState extends ConsumerState<CreateClassScreen> {
           ),
           const SizedBox(height: 4),
           Text(
-              _type == ClassType.individual
-                  ? 'Bireysel ders: kontenjan 1'
-                  : 'Grup dersi: kontenjan 6',
-              style: Theme.of(context).textTheme.bodySmall),
+            _type == ClassType.individual
+                ? 'Bireysel ders: kontenjan 1'
+                : 'Grup dersi: kontenjan 6',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
           const SizedBox(height: 12),
           ListTile(
             contentPadding: EdgeInsets.zero,
@@ -151,8 +162,10 @@ class _CreateClassScreenState extends ConsumerState<CreateClassScreen> {
             title: const Text('Saat'),
             trailing: Text(_time.format(context)),
             onTap: () async {
-              final t =
-                  await showTimePicker(context: context, initialTime: _time);
+              final t = await showTimePicker(
+                context: context,
+                initialTime: _time,
+              );
               if (t != null) setState(() => _time = t);
             },
           ),
@@ -164,12 +177,16 @@ class _CreateClassScreenState extends ConsumerState<CreateClassScreen> {
           const SizedBox(height: 12),
           TextField(
             controller: _title,
-            decoration: const InputDecoration(labelText: 'Başlık (isteğe bağlı)'),
+            decoration: const InputDecoration(
+              labelText: 'Başlık (isteğe bağlı)',
+            ),
           ),
           if (_error != null) ...[
             const SizedBox(height: 12),
-            Text(_error!,
-                style: TextStyle(color: Theme.of(context).colorScheme.error)),
+            Text(
+              _error!,
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
           ],
           const SizedBox(height: 16),
           FilledButton(

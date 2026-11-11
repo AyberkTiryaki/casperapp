@@ -20,7 +20,11 @@ class MyReservationsScreen extends ConsumerWidget {
         appBar: AppBar(
           title: const Text('Rezervasyonlarım'),
           bottom: const TabBar(
-              tabs: [Tab(text: 'Yaklaşan'), Tab(text: 'Geçmiş')]),
+            tabs: [
+              Tab(text: 'Yaklaşan'),
+              Tab(text: 'Geçmiş'),
+            ],
+          ),
         ),
         body: AsyncValueView<List<MyReservation>>(
           value: async,
@@ -31,10 +35,12 @@ class MyReservationsScreen extends ConsumerWidget {
               ..sort((a, b) => a.startsAt.compareTo(b.startsAt));
             final past = all.where((r) => !r.isUpcoming(now)).toList()
               ..sort((a, b) => b.startsAt.compareTo(a.startsAt));
-            return TabBarView(children: [
-              _List(items: upcoming, empty: 'Yaklaşan rezervasyonunuz yok'),
-              _List(items: past, empty: 'Geçmiş rezervasyonunuz yok'),
-            ]);
+            return TabBarView(
+              children: [
+                _List(items: upcoming, empty: 'Yaklaşan rezervasyonunuz yok'),
+                _List(items: past, empty: 'Geçmiş rezervasyonunuz yok'),
+              ],
+            );
           },
         ),
       ),
@@ -58,10 +64,12 @@ class _List extends ConsumerWidget {
             .catchError((_) => <MyReservation>[]);
       },
       child: items.isEmpty
-          ? ListView(children: [
-              const SizedBox(height: 80),
-              EmptyView(title: empty, icon: Icons.event_available_outlined),
-            ])
+          ? ListView(
+              children: [
+                const SizedBox(height: 80),
+                EmptyView(title: empty, icon: Icons.event_available_outlined),
+              ],
+            )
           : ListView.separated(
               physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.all(16),
@@ -78,13 +86,15 @@ class _List extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                            (r.title == null || r.title!.trim().isEmpty)
-                                ? r.categoryName
-                                : '${r.categoryName} - ${r.title}',
-                            style: Theme.of(context).textTheme.titleMedium),
+                          (r.title == null || r.title!.trim().isEmpty)
+                              ? r.categoryName
+                              : '${r.categoryName} - ${r.title}',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
                         const SizedBox(height: 4),
                         Text(
-                            '${formatDate(r.startsAt)}  ${formatTime(r.startsAt)} - ${formatTime(r.endsAt)}'),
+                          '${formatDate(r.startsAt)}  ${formatTime(r.startsAt)} - ${formatTime(r.endsAt)}',
+                        ),
                         Text('${r.trainerName} • ${r.classType.label}'),
                         const SizedBox(height: 4),
                         Text(r.statusLabel(now)),
@@ -92,9 +102,12 @@ class _List extends ConsumerWidget {
                           const SizedBox(height: 8),
                           OutlinedButton(
                             onPressed: canCancel
-                                ? () => runMemberCancelFlow(context, ref,
+                                ? () => runMemberCancelFlow(
+                                    context,
+                                    ref,
                                     reservationId: r.reservationId,
-                                    startsAt: r.startsAt)
+                                    startsAt: r.startsAt,
+                                  )
                                 : null,
                             child: const Text('İptal et'),
                           ),

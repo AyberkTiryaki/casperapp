@@ -41,11 +41,14 @@ class CategoriesScreen extends ConsumerWidget {
           ),
           actions: [
             TextButton(
-                onPressed: () => Navigator.of(ctx).pop(false),
-                child: const Text('Vazgeç')),
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: const Text('Vazgeç'),
+            ),
             FilledButton(
               onPressed: () {
-                if (formKey.currentState!.validate()) Navigator.of(ctx).pop(true);
+                if (formKey.currentState!.validate()) {
+                  Navigator.of(ctx).pop(true);
+                }
               },
               child: const Text('Kaydet'),
             ),
@@ -65,7 +68,9 @@ class CategoriesScreen extends ConsumerWidget {
         await repo.updateCategory(id: c.id, name: text, isActive: active);
       }
       ref.invalidate(categoriesProvider);
-      messenger.showSnackBar(const SnackBar(content: Text('Kategori kaydedildi.')));
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Kategori kaydedildi.')),
+      );
     } catch (e) {
       messenger.showSnackBar(SnackBar(content: Text(friendlyError(e))));
     }
@@ -87,13 +92,16 @@ class CategoriesScreen extends ConsumerWidget {
         data: (items) => RefreshIndicator(
           onRefresh: () async => ref.invalidate(categoriesProvider),
           child: items.isEmpty
-              ? ListView(children: const [
-                  SizedBox(height: 120),
-                  EmptyView(
+              ? ListView(
+                  children: const [
+                    SizedBox(height: 120),
+                    EmptyView(
                       title: 'Kategori yok',
                       message: 'İlk kategoriyi eklemek için aşağıdaki düğmeyi kullanın.',
-                      icon: Icons.category_outlined),
-                ])
+                      icon: Icons.category_outlined,
+                    ),
+                  ],
+                )
               : ListView.separated(
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
                   physics: const AlwaysScrollableScrollPhysics(),

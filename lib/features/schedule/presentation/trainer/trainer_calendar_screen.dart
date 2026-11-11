@@ -31,23 +31,28 @@ class _TrainerCalendarScreenState extends ConsumerState<TrainerCalendarScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Takvimim')),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-            builder: (_) => CreateClassScreen(initialDay: _day))),
+        onPressed: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => CreateClassScreen(initialDay: _day),
+          ),
+        ),
         icon: const Icon(Icons.add),
         label: const Text('Ders aç'),
       ),
       body: Column(
         children: [
           const SizedBox(height: 8),
-          DayStrip(
-              selected: _day, onSelected: (d) => setState(() => _day = d)),
+          DayStrip(selected: _day, onSelected: (d) => setState(() => _day = d)),
           const SizedBox(height: 8),
           Expanded(
             child: ClassListView(
               query: query,
               showTrainer: false,
-              onTap: (c) => Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) => ClassParticipantsScreen(item: c))),
+              onTap: (c) => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => ClassParticipantsScreen(item: c),
+                ),
+              ),
             ),
           ),
         ],
@@ -76,7 +81,9 @@ class ClassParticipantsScreen extends ConsumerWidget {
               onRetry: () => ref.invalidate(participantsProvider(item.id)),
               data: (items) => items.isEmpty
                   ? const EmptyView(
-                      title: 'Henüz katılımcı yok', icon: Icons.group_outlined)
+                      title: 'Henüz katılımcı yok',
+                      icon: Icons.group_outlined,
+                    )
                   : ListView.separated(
                       itemCount: items.length,
                       separatorBuilder: (_, _) => const Divider(height: 1),

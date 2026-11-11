@@ -7,10 +7,10 @@ import '../data/referral_repository.dart';
 import '../domain/referral_models.dart';
 
 Color referralStatusColor(ReferralStatus s) => switch (s) {
-      ReferralStatus.pending => Colors.orange,
-      ReferralStatus.approved => Colors.green,
-      ReferralStatus.rejected => Colors.red,
-    };
+  ReferralStatus.pending => Colors.orange,
+  ReferralStatus.approved => Colors.green,
+  ReferralStatus.rejected => Colors.red,
+};
 
 class ReferralStatusChip extends StatelessWidget {
   const ReferralStatusChip(this.status, {super.key});
@@ -45,10 +45,10 @@ class MyReferralsScreen extends ConsumerWidget {
     final combined = summary.hasError
         ? AsyncValue<void>.error(summary.error!, summary.stackTrace!)
         : list.hasError
-            ? AsyncValue<void>.error(list.error!, list.stackTrace!)
-            : (summary.isLoading || list.isLoading)
-                ? const AsyncValue<void>.loading()
-                : const AsyncValue<void>.data(null);
+        ? AsyncValue<void>.error(list.error!, list.stackTrace!)
+        : (summary.isLoading || list.isLoading)
+        ? const AsyncValue<void>.loading()
+        : const AsyncValue<void>.data(null);
     final signupCode = ref.watch(signupReferralCodeProvider);
 
     return Scaffold(
@@ -66,7 +66,9 @@ class MyReferralsScreen extends ConsumerWidget {
               physics: const AlwaysScrollableScrollPhysics(),
               children: [
                 if (shouldShowInvalidReferralWarning(
-                    signupCode: signupCode, wasReferred: s.wasReferred))
+                  signupCode: signupCode,
+                  wasReferred: s.wasReferred,
+                ))
                   const Padding(
                     padding: EdgeInsets.only(bottom: 12),
                     child: Card(
@@ -83,9 +85,13 @@ class MyReferralsScreen extends ConsumerWidget {
                       children: [
                         Text('Referans kodum', style: t.textTheme.labelLarge),
                         const SizedBox(height: 8),
-                        SelectableText(s.referralCode ?? '-',
-                            style: t.textTheme.headlineMedium?.copyWith(
-                                letterSpacing: 4, fontWeight: FontWeight.w700)),
+                        SelectableText(
+                          s.referralCode ?? '-',
+                          style: t.textTheme.headlineMedium?.copyWith(
+                            letterSpacing: 4,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                         const SizedBox(height: 8),
                         OutlinedButton.icon(
                           onPressed: s.referralCode == null
@@ -93,9 +99,11 @@ class MyReferralsScreen extends ConsumerWidget {
                               : () async {
                                   final m = ScaffoldMessenger.of(context);
                                   await Clipboard.setData(
-                                      ClipboardData(text: s.referralCode!));
-                                  m.showSnackBar(const SnackBar(
-                                      content: Text('Kopyalandı')));
+                                    ClipboardData(text: s.referralCode!),
+                                  );
+                                  m.showSnackBar(
+                                    const SnackBar(content: Text('Kopyalandı')),
+                                  );
                                 },
                           icon: const Icon(Icons.copy),
                           label: const Text('Kopyala'),
@@ -113,8 +121,10 @@ class MyReferralsScreen extends ConsumerWidget {
                       children: [
                         Text('Sayılan referans: ${s.activeCount}'),
                         const SizedBox(height: 4),
-                        Text('Güncel indirim: %${s.discountPercent}',
-                            style: t.textTheme.titleMedium),
+                        Text(
+                          'Güncel indirim: %${s.discountPercent}',
+                          style: t.textTheme.titleMedium,
+                        ),
                         const SizedBox(height: 4),
                         Text('Bekleyen referans: ${s.pendingCount}'),
                         const SizedBox(height: 8),
@@ -139,9 +149,11 @@ class MyReferralsScreen extends ConsumerWidget {
                         child: ListTile(
                           title: Text(r.displayName),
                           subtitle: r.status == ReferralStatus.approved
-                              ? Text(r.countsNow
-                                  ? 'Sayılıyor'
-                                  : 'Sayılmıyor (aktif paketi yok)')
+                              ? Text(
+                                  r.countsNow
+                                      ? 'Sayılıyor'
+                                      : 'Sayılmıyor (aktif paketi yok)',
+                                )
                               : null,
                           trailing: ReferralStatusChip(r.status),
                         ),

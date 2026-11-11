@@ -6,16 +6,20 @@ const allowedSessionCounts = [8, 12, 16, 20];
 DateTime _dt(dynamic v) => DateTime.parse(v as String).toLocal();
 
 class Category {
-  const Category({required this.id, required this.name, required this.isActive});
+  const Category({
+    required this.id,
+    required this.name,
+    required this.isActive,
+  });
   final String id;
   final String name;
   final bool isActive;
 
   factory Category.fromJson(Map<String, dynamic> j) => Category(
-        id: j['id'] as String,
-        name: (j['name'] as String?) ?? '',
-        isActive: (j['is_active'] as bool?) ?? true,
-      );
+    id: j['id'] as String,
+    name: (j['name'] as String?) ?? '',
+    isActive: (j['is_active'] as bool?) ?? true,
+  );
 }
 
 class PackageDefinition {
@@ -59,9 +63,9 @@ class MemberSummary {
   final String fullName;
 
   factory MemberSummary.fromJson(Map<String, dynamic> j) => MemberSummary(
-        id: j['id'] as String,
-        fullName: (j['full_name'] as String?) ?? '',
-      );
+    id: j['id'] as String,
+    fullName: (j['full_name'] as String?) ?? '',
+  );
 }
 
 class PackageFreeze {
@@ -82,16 +86,17 @@ class PackageFreeze {
   final int days;
   final String? note;
 
-  bool coversNow(DateTime now) => !startsAt.isAfter(now) && now.isBefore(endsAt);
+  bool coversNow(DateTime now) =>
+      !startsAt.isAfter(now) && now.isBefore(endsAt);
 
   factory PackageFreeze.fromJson(Map<String, dynamic> j) => PackageFreeze(
-        id: j['id'].toString(),
-        memberPackageId: (j['member_package_id'] as String?) ?? '',
-        startsAt: _dt(j['starts_at']),
-        endsAt: _dt(j['ends_at']),
-        days: (j['days'] as num?)?.toInt() ?? 0,
-        note: j['note'] as String?,
-      );
+    id: j['id'].toString(),
+    memberPackageId: (j['member_package_id'] as String?) ?? '',
+    startsAt: _dt(j['starts_at']),
+    endsAt: _dt(j['ends_at']),
+    days: (j['days'] as num?)?.toInt() ?? 0,
+    note: j['note'] as String?,
+  );
 }
 
 enum PackageDisplayStatus {
@@ -163,9 +168,12 @@ class MemberPackage {
       discountPercent: (j['discount_percent'] as num?)?.toInt() ?? 0,
       freezes: fr is List
           ? fr
-              .map((e) =>
-                  PackageFreeze.fromJson(Map<String, dynamic>.from(e as Map)))
-              .toList()
+                .map(
+                  (e) => PackageFreeze.fromJson(
+                    Map<String, dynamic>.from(e as Map),
+                  ),
+                )
+                .toList()
           : const [],
     );
   }
@@ -174,8 +182,10 @@ class MemberPackage {
   bool isCurrentlyActive(DateTime now) =>
       status == 'active' && endsAt.isAfter(now);
 
-  PackageDisplayStatus displayStatus(DateTime now,
-      {List<PackageFreeze>? freezes}) {
+  PackageDisplayStatus displayStatus(
+    DateTime now, {
+    List<PackageFreeze>? freezes,
+  }) {
     if (status == 'terminated') return PackageDisplayStatus.terminated;
     if (status == 'expired' || !endsAt.isAfter(now)) {
       return PackageDisplayStatus.expired;
@@ -209,14 +219,14 @@ class CreditLedgerEntry {
   final String? note;
 
   String get label => switch (entryType) {
-        'grant' => 'Paket tanımlandı',
-        'booking' => 'Rezervasyon',
-        'refund' => 'İade',
-        'transfer_out' => 'Aktarım (eski paketten çıkış)',
-        'transfer_in' => 'Aktarım (yeni pakete giriş)',
-        'adjustment' => 'Düzeltme',
-        _ => entryType,
-      };
+    'grant' => 'Paket tanımlandı',
+    'booking' => 'Rezervasyon',
+    'refund' => 'İade',
+    'transfer_out' => 'Aktarım (eski paketten çıkış)',
+    'transfer_in' => 'Aktarım (yeni pakete giriş)',
+    'adjustment' => 'Düzeltme',
+    _ => entryType,
+  };
 
   factory CreditLedgerEntry.fromJson(Map<String, dynamic> j) =>
       CreditLedgerEntry(

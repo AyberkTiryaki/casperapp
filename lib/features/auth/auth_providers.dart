@@ -4,7 +4,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/config/supabase.dart';
 import 'data/auth_repository.dart';
 
-final authRepositoryProvider = Provider<AuthRepository>((ref) => AuthRepository());
+final authRepositoryProvider = Provider<AuthRepository>(
+  (ref) => AuthRepository(),
+);
 
 final authStateProvider = StreamProvider<AuthState>(
   (ref) => supabase.auth.onAuthStateChange,
@@ -25,4 +27,6 @@ class PasswordRecoveryNotifier extends Notifier<bool> {
 
 /// `passwordRecovery` olayı geldiğinde true olur.
 final passwordRecoveryProvider =
-    NotifierProvider<PasswordRecoveryNotifier, bool>(PasswordRecoveryNotifier.new);
+    NotifierProvider<PasswordRecoveryNotifier, bool>(
+      PasswordRecoveryNotifier.new,
+    );

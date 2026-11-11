@@ -29,7 +29,9 @@ Future<bool> runBookFlow(
   String? memberName,
 }) async {
   final messenger = ScaffoldMessenger.of(context);
-  final who = memberName == null ? 'Bu derse' : '$memberName adlı üyeyi bu derse';
+  final who = memberName == null
+      ? 'Bu derse'
+      : '$memberName adlı üyeyi bu derse';
   final ok = await confirmDialog(
     context,
     'Rezervasyon yap',
@@ -43,7 +45,10 @@ Future<bool> runBookFlow(
     await holder.run(
       memberId == null ? c.id : '${c.id}:$memberId',
       (key) => repo.bookClass(
-          classId: c.id, idempotencyKey: key, memberId: memberId),
+        classId: c.id,
+        idempotencyKey: key,
+        memberId: memberId,
+      ),
     );
     invalidateSchedule(ref);
     _snack(messenger, 'Rezervasyon yapıldı.');
@@ -64,8 +69,10 @@ Future<bool> runMemberCancelFlow(
 }) async {
   final messenger = ScaffoldMessenger.of(context);
   if (!canMemberCancel(startsAt, DateTime.now())) {
-    _snack(messenger,
-        'Dersin başlamasına 2 saatten az kaldığı için iptal edilemez.');
+    _snack(
+      messenger,
+      'Dersin başlamasına 2 saatten az kaldığı için iptal edilemez.',
+    );
     return false;
   }
   final ok = await confirmDialog(
@@ -106,7 +113,9 @@ Future<bool> runAdminCancelReservationFlow(
   );
   if (r == null) return false;
   try {
-    await ref.read(scheduleRepositoryProvider).cancelReservation(
+    await ref
+        .read(scheduleRepositoryProvider)
+        .cancelReservation(
           reservationId: reservationId,
           refund: r.refund,
           reason: r.reason,
@@ -130,12 +139,12 @@ Future<bool> runSetNoShowFlow(
 }) async {
   final messenger = ScaffoldMessenger.of(context);
   try {
-    await ref
-        .read(scheduleRepositoryProvider)
-        .setNoShow(reservationId, noShow);
+    await ref.read(scheduleRepositoryProvider).setNoShow(reservationId, noShow);
     invalidateSchedule(ref);
-    _snack(messenger,
-        noShow ? 'Gelmedi olarak işaretlendi.' : 'Gelmedi işareti kaldırıldı.');
+    _snack(
+      messenger,
+      noShow ? 'Gelmedi olarak işaretlendi.' : 'Gelmedi işareti kaldırıldı.',
+    );
     return true;
   } catch (e) {
     invalidateSchedule(ref);
@@ -146,7 +155,10 @@ Future<bool> runSetNoShowFlow(
 
 /// Dersin tamamını iptal eder; hak iadesi ve neden seçilir.
 Future<bool> runCancelClassFlow(
-    BuildContext context, WidgetRef ref, StudioClass c) async {
+  BuildContext context,
+  WidgetRef ref,
+  StudioClass c,
+) async {
   final messenger = ScaffoldMessenger.of(context);
   final r = await showDialog<({bool refund, String? reason})>(
     context: context,
@@ -158,11 +170,9 @@ Future<bool> runCancelClassFlow(
   );
   if (r == null) return false;
   try {
-    await ref.read(scheduleRepositoryProvider).cancelClass(
-          classId: c.id,
-          refund: r.refund,
-          reason: r.reason,
-        );
+    await ref
+        .read(scheduleRepositoryProvider)
+        .cancelClass(classId: c.id, refund: r.refund, reason: r.reason);
     invalidateSchedule(ref);
     _snack(messenger, 'Ders iptal edildi.');
     return true;
@@ -211,18 +221,22 @@ class _RefundDialogState extends State<RefundDialog> {
             ),
             TextField(
               controller: _reason,
-              decoration: const InputDecoration(labelText: 'Neden (isteğe bağlı)'),
+              decoration: const InputDecoration(
+                labelText: 'Neden (isteğe bağlı)',
+              ),
             ),
           ],
         ),
       ),
       actions: [
         TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Vazgeç')),
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Vazgeç'),
+        ),
         FilledButton(
           onPressed: () =>
-              Navigator.of(context).pop((refund: _refund, reason: _reason.text)),
+              Navigator.of(context)
+                  .pop((refund: _refund, reason: _reason.text)),
           child: const Text('İptal et'),
         ),
       ],

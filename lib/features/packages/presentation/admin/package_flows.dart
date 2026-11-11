@@ -11,8 +11,12 @@ import '../../../referrals/data/referral_repository.dart';
 import '../../../referrals/domain/referral_models.dart';
 import '../../domain/package_models.dart';
 
-Future<bool> _confirm(BuildContext context, String title, String message,
-    {String ok = 'Onayla'}) async {
+Future<bool> _confirm(
+  BuildContext context,
+  String title,
+  String message, {
+  String ok = 'Onayla',
+}) async {
   final r = await showDialog<bool>(
     context: context,
     builder: (ctx) => AlertDialog(
@@ -20,10 +24,13 @@ Future<bool> _confirm(BuildContext context, String title, String message,
       content: Text(message),
       actions: [
         TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Vazgeç')),
+          onPressed: () => Navigator.of(ctx).pop(false),
+          child: const Text('Vazgeç'),
+        ),
         FilledButton(
-            onPressed: () => Navigator.of(ctx).pop(true), child: Text(ok)),
+          onPressed: () => Navigator.of(ctx).pop(true),
+          child: Text(ok),
+        ),
       ],
     ),
   );
@@ -35,7 +42,10 @@ bool _isCode(Object e, String code) =>
 
 /// "Paket ata" akışı. İşlem anahtarı bir kez üretilir; ağ hatasında aynı anahtarla tekrar denenir.
 Future<void> runAssignFlow(
-    BuildContext context, WidgetRef ref, MemberSummary member) async {
+  BuildContext context,
+  WidgetRef ref,
+  MemberSummary member,
+) async {
   final messenger = ScaffoldMessenger.of(context);
   List<PackageDefinition> defs;
   try {
@@ -49,7 +59,8 @@ Future<void> runAssignFlow(
   if (!context.mounted) return;
   if (defs.isEmpty) {
     messenger.showSnackBar(
-        const SnackBar(content: Text('Atanabilecek aktif paket tanımı yok.')));
+      const SnackBar(content: Text('Atanabilecek aktif paket tanımı yok.')),
+    );
     return;
   }
   final picked = await showDialog<PackageDefinition>(
@@ -61,7 +72,8 @@ Future<void> runAssignFlow(
           SimpleDialogOption(
             onPressed: () => Navigator.of(ctx).pop(d),
             child: Text(
-                '${d.categoryName ?? ''} - ${d.name}\n${d.sessionCount} ders, ${d.validityDays} gün, ${formatTl(d.price)}'),
+              '${d.categoryName ?? ''} - ${d.name}\n${d.sessionCount} ders, ${d.validityDays} gün, ${formatTl(d.price)}',
+            ),
           ),
       ],
     ),
@@ -103,9 +115,12 @@ Future<void> runAssignFlow(
         continue;
       }
       if (isNetworkError(e)) {
-        final retry = await _confirm(context, 'Bağlantı hatası',
-            'İşlem tamamlanamadı. Aynı işlemi tekrar denemek ister misiniz?',
-            ok: 'Tekrar dene');
+        final retry = await _confirm(
+          context,
+          'Bağlantı hatası',
+          'İşlem tamamlanamadı. Aynı işlemi tekrar denemek ister misiniz?',
+          ok: 'Tekrar dene',
+        );
         if (retry && context.mounted) continue;
         return;
       }
@@ -120,7 +135,10 @@ Future<void> runAssignFlow(
 
 /// "Dondur" akışı.
 Future<void> runFreezeFlow(
-    BuildContext context, WidgetRef ref, MemberPackage pkg) async {
+  BuildContext context,
+  WidgetRef ref,
+  MemberPackage pkg,
+) async {
   final messenger = ScaffoldMessenger.of(context);
   final now = DateTime.now();
   final today = DateTime(now.year, now.month, now.day);
@@ -144,7 +162,8 @@ Future<void> runFreezeFlow(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-              '${formatDate(range.start)} - ${formatDate(range.end)} ($days gün) arasındaki rezervasyonlar iptal edilecek ve haklar iade edilecek. Paketin bitiş tarihi $days gün uzatılacak.'),
+            '${formatDate(range.start)} - ${formatDate(range.end)} ($days gün) arasındaki rezervasyonlar iptal edilecek ve haklar iade edilecek. Paketin bitiş tarihi $days gün uzatılacak.',
+          ),
           const SizedBox(height: 12),
           TextField(
             controller: note,
@@ -154,11 +173,13 @@ Future<void> runFreezeFlow(
       ),
       actions: [
         TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Vazgeç')),
+          onPressed: () => Navigator.of(ctx).pop(false),
+          child: const Text('Vazgeç'),
+        ),
         FilledButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Dondur')),
+          onPressed: () => Navigator.of(ctx).pop(true),
+          child: const Text('Dondur'),
+        ),
       ],
     ),
   );
@@ -166,7 +187,9 @@ Future<void> runFreezeFlow(
   note.dispose();
   if (ok != true) return;
   try {
-    await ref.read(packageRepositoryProvider).freezePackage(
+    await ref
+        .read(packageRepositoryProvider)
+        .freezePackage(
           packageId: pkg.id,
           startDate: range.start,
           endDate: range.end,
@@ -195,7 +218,10 @@ bool canEndFreeze(PackageFreeze f, DateTime now) =>
 
 /// Paketin dondurmalarını listeler; bitirilebilir olanlar için seçilen dondurmayı döndürür.
 Future<void> showFreezesSheet(
-    BuildContext context, WidgetRef ref, MemberPackage pkg) async {
+  BuildContext context,
+  WidgetRef ref,
+  MemberPackage pkg,
+) async {
   final now = DateTime.now();
   final freezes = [...pkg.freezes]
     ..sort((a, b) => b.startsAt.compareTo(a.startsAt));
@@ -210,14 +236,20 @@ Future<void> showFreezesSheet(
             ListTile(
               leading: const Icon(Icons.ac_unit),
               title: Text(
-                  '${formatDate(f.startsAt)} - ${formatDate(freezeLastDay(f))} (${f.days} gün)'),
-              subtitle: Text(f.note == null || f.note!.isEmpty
-                  ? (canEndFreeze(f, now) ? 'Devam ediyor / yaklaşan' : 'Sona erdi')
-                  : f.note!),
+                '${formatDate(f.startsAt)} - ${formatDate(freezeLastDay(f))} (${f.days} gün)',
+              ),
+              subtitle: Text(
+                f.note == null || f.note!.isEmpty
+                    ? (canEndFreeze(f, now)
+                          ? 'Devam ediyor / yaklaşan'
+                          : 'Sona erdi')
+                    : f.note!,
+              ),
               trailing: canEndFreeze(f, now)
                   ? TextButton(
                       onPressed: () => Navigator.of(ctx).pop(f),
-                      child: const Text('Dondurmayı bitir'))
+                      child: const Text('Dondurmayı bitir'),
+                    )
                   : null,
             ),
         ],
@@ -229,15 +261,21 @@ Future<void> showFreezesSheet(
 }
 
 /// "Dondurmayı bitir" akışı: şimdi bitir veya yeni son gün seç.
-Future<void> runEndFreezeFlow(BuildContext context, WidgetRef ref,
-    MemberPackage pkg, PackageFreeze freeze) async {
+Future<void> runEndFreezeFlow(
+  BuildContext context,
+  WidgetRef ref,
+  MemberPackage pkg,
+  PackageFreeze freeze,
+) async {
   final messenger = ScaffoldMessenger.of(context);
   final today = _dateOnly(DateTime.now());
   final first = _dateOnly(freeze.startsAt);
   final oldLast = freezeLastDay(freeze);
   final yesterday = DateTime(today.year, today.month, today.day - 1);
   final dayBeforeFirst = DateTime(first.year, first.month, first.day - 1);
-  final minLast = dayBeforeFirst.isAfter(yesterday) ? dayBeforeFirst : yesterday;
+  final minLast = dayBeforeFirst.isAfter(yesterday)
+      ? dayBeforeFirst
+      : yesterday;
   final maxLast = DateTime(oldLast.year, oldLast.month, oldLast.day - 1);
   final canPick = !minLast.isAfter(maxLast);
   final started = !first.isAfter(today);
@@ -249,9 +287,11 @@ Future<void> runEndFreezeFlow(BuildContext context, WidgetRef ref,
       children: [
         SimpleDialogOption(
           onPressed: () => Navigator.of(ctx).pop('now'),
-          child: Text(started
-              ? 'Şimdi bitir (paket bugünden itibaren kullanılabilir)'
-              : 'Dondurmayı tamamen kaldır'),
+          child: Text(
+            started
+                ? 'Şimdi bitir (paket bugünden itibaren kullanılabilir)'
+                : 'Dondurmayı tamamen kaldır',
+          ),
         ),
         if (canPick)
           SimpleDialogOption(
@@ -274,16 +314,14 @@ Future<void> runEndFreezeFlow(BuildContext context, WidgetRef ref,
     );
     if (lastDay == null || !context.mounted) return;
   }
-  final removed = lastDay == null
-      ? null
-      : oldLast.difference(lastDay).inDays;
+  final removed = lastDay == null ? null : oldLast.difference(lastDay).inDays;
   final ok = await _confirm(
     context,
     'Dondurmayı bitir',
     lastDay == null
         ? (started
-            ? 'Dondurma bugünden itibaren sona erecek. Kalan dondurma günleri paketin bitiş tarihinden düşülecek. Dondurma sırasında iptal edilen rezervasyonlar geri gelmez.'
-            : 'Dondurma tamamen kaldırılacak ve dondurma günleri paketin bitiş tarihinden düşülecek.')
+              ? 'Dondurma bugünden itibaren sona erecek. Kalan dondurma günleri paketin bitiş tarihinden düşülecek. Dondurma sırasında iptal edilen rezervasyonlar geri gelmez.'
+              : 'Dondurma tamamen kaldırılacak ve dondurma günleri paketin bitiş tarihinden düşülecek.')
         : 'Dondurmanın son günü ${formatDate(lastDay)} olacak. $removed gün paketin bitiş tarihinden düşülecek. İptal edilen rezervasyonlar geri gelmez.',
     ok: 'Bitir',
   );
@@ -295,7 +333,9 @@ Future<void> runEndFreezeFlow(BuildContext context, WidgetRef ref,
     ref.invalidate(memberPackagesProvider(pkg.memberId));
     ref.invalidate(freezesProvider(pkg.id));
     ref.invalidate(ledgerProvider(pkg.id));
-    messenger.showSnackBar(const SnackBar(content: Text('Dondurma güncellendi.')));
+    messenger.showSnackBar(
+      const SnackBar(content: Text('Dondurma güncellendi.')),
+    );
   } catch (e) {
     ref.invalidate(memberPackagesProvider(pkg.memberId));
     messenger.showSnackBar(SnackBar(content: Text(friendlyError(e))));
@@ -304,7 +344,10 @@ Future<void> runEndFreezeFlow(BuildContext context, WidgetRef ref,
 
 /// "Hak düzelt" akışı: +/- miktar ve zorunlu not.
 Future<void> runAdjustCreditsFlow(
-    BuildContext context, WidgetRef ref, MemberPackage pkg) async {
+  BuildContext context,
+  WidgetRef ref,
+  MemberPackage pkg,
+) async {
   final messenger = ScaffoldMessenger.of(context);
   final r = await showDialog<({int delta, String note})>(
     context: context,
@@ -396,17 +439,19 @@ class _AdjustDialogState extends State<_AdjustDialog> {
             if (_error != null)
               Padding(
                 padding: const EdgeInsets.only(top: 8),
-                child: Text(_error!,
-                    style:
-                        TextStyle(color: Theme.of(context).colorScheme.error)),
+                child: Text(
+                  _error!,
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                ),
               ),
           ],
         ),
       ),
       actions: [
         TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Vazgeç')),
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Vazgeç'),
+        ),
         FilledButton(onPressed: _submit, child: const Text('Onayla')),
       ],
     );
@@ -457,8 +502,9 @@ class _AssignDialogState extends ConsumerState<_AssignDialog> {
     final s = _summary;
     final entitlement = s?.discountPercent ?? 0;
     final applied = (_apply && entitlement > 0) ? _percent : 0;
-    final result =
-        double.parse((d.price * (100 - applied) / 100).toStringAsFixed(2));
+    final result = double.parse(
+      (d.price * (100 - applied) / 100).toStringAsFixed(2),
+    );
     return AlertDialog(
       title: const Text('Paket ata'),
       content: SingleChildScrollView(
@@ -467,18 +513,22 @@ class _AssignDialogState extends ConsumerState<_AssignDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-                '${widget.member.fullName} adlı üyeye "${d.name}" paketi (${d.sessionCount} ders) atanacak.'),
+              '${widget.member.fullName} adlı üyeye "${d.name}" paketi (${d.sessionCount} ders) atanacak.',
+            ),
             const SizedBox(height: 12),
             if (_error != null)
-              Text(friendlyError(_error!),
-                  style: TextStyle(color: Theme.of(context).colorScheme.error))
+              Text(
+                friendlyError(_error!),
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
+              )
             else if (s == null)
               const LinearProgressIndicator()
             else if (entitlement == 0)
               const Text('Bu üyenin referans indirimi hakkı yok.')
             else ...[
               Text(
-                  'Referans indirimi hakkı: %$entitlement (${s.activeCount} aktif referans)'),
+                'Referans indirimi hakkı: %$entitlement (${s.activeCount} aktif referans)',
+              ),
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
                 title: const Text('İndirim uygula'),
@@ -488,8 +538,9 @@ class _AssignDialogState extends ConsumerState<_AssignDialog> {
               if (_apply)
                 DropdownButtonFormField<int>(
                   initialValue: _percent,
-                  decoration:
-                      const InputDecoration(labelText: 'İndirim oranı (%)'),
+                  decoration: const InputDecoration(
+                    labelText: 'İndirim oranı (%)',
+                  ),
                   items: [
                     for (var p = 5; p <= entitlement; p += 5)
                       DropdownMenuItem(value: p, child: Text('%$p')),
@@ -506,13 +557,15 @@ class _AssignDialogState extends ConsumerState<_AssignDialog> {
       ),
       actions: [
         TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Vazgeç')),
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Vazgeç'),
+        ),
         if (_error != null)
           TextButton(onPressed: _load, child: const Text('Tekrar dene')),
         FilledButton(
-          onPressed:
-              s == null ? null : () => Navigator.of(context).pop(applied),
+          onPressed: s == null
+              ? null
+              : () => Navigator.of(context).pop(applied),
           child: const Text('Onayla'),
         ),
       ],

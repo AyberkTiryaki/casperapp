@@ -70,7 +70,8 @@ String normalizeReferralCode(String? v) =>
 String? validateReferralCode(String? v) {
   final c = normalizeReferralCode(v);
   if (c.isEmpty) return null;
-  if (c.length != 7 || c.split('').any((ch) => !referralCodeAlphabet.contains(ch))) {
+  if (c.length != 7 ||
+      c.split('').any((ch) => !referralCodeAlphabet.contains(ch))) {
     return 'Referans kodu 7 karakter olmalı ve geçerli karakterlerden oluşmalı.';
   }
   return null;

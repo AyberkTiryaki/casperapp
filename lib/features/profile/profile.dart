@@ -16,10 +16,10 @@ enum UserRole {
   }
 
   String get label => switch (this) {
-        UserRole.member => 'Üye',
-        UserRole.trainer => 'Antrenör',
-        UserRole.admin => 'Yönetici',
-      };
+    UserRole.member => 'Üye',
+    UserRole.trainer => 'Antrenör',
+    UserRole.admin => 'Yönetici',
+  };
 }
 
 class Profile {

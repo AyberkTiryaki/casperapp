@@ -15,7 +15,7 @@ import '../shared/schedule_widgets.dart';
 
 class AdminClassDetailScreen extends ConsumerWidget {
   const AdminClassDetailScreen({super.key, required StudioClass item})
-      : snapshot = item;
+    : snapshot = item;
 
   /// Ekran açılırken geçen kopya; güncel veri bulunamazsa bu kullanılır.
   final StudioClass snapshot;
@@ -24,12 +24,14 @@ class AdminClassDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Güncel katılım sayısı için dersin gününü yeniden okur (mutasyonlarda invalidate edilir).
     final fresh = ref
-        .watch(classesProvider((
-          day: dayStart(snapshot.startsAt),
-          categoryId: null,
-          trainerId: null,
-          includeCancelled: true,
-        )))
+        .watch(
+          classesProvider((
+            day: dayStart(snapshot.startsAt),
+            categoryId: null,
+            trainerId: null,
+            includeCancelled: true,
+          )),
+        )
         .value
         ?.where((c) => c.id == snapshot.id)
         .firstOrNull;
@@ -54,11 +56,17 @@ class AdminClassDetailScreen extends ConsumerWidget {
                     label: const Text('Üye ekle'),
                     onPressed: () async {
                       final m = await showDialog<MemberSummary>(
-                          context: context,
-                          builder: (_) => const MemberPickerDialog());
+                        context: context,
+                        builder: (_) => const MemberPickerDialog(),
+                      );
                       if (m == null || !context.mounted) return;
-                      await runBookFlow(context, ref, item,
-                          memberId: m.id, memberName: m.fullName);
+                      await runBookFlow(
+                        context,
+                        ref,
+                        item,
+                        memberId: m.id,
+                        memberName: m.fullName,
+                      );
                     },
                   ),
                 OutlinedButton.icon(
@@ -80,7 +88,9 @@ class AdminClassDetailScreen extends ConsumerWidget {
             onRetry: () => ref.invalidate(adminReservationsProvider(item.id)),
             data: (items) => items.isEmpty
                 ? const EmptyView(
-                    title: 'Rezervasyon yok', icon: Icons.event_seat_outlined)
+                    title: 'Rezervasyon yok',
+                    icon: Icons.event_seat_outlined,
+                  )
                 : Column(
                     children: [
                       for (final r in items)
@@ -89,8 +99,10 @@ class AdminClassDetailScreen extends ConsumerWidget {
                             title: Text(r.fullName),
                             subtitle: Text(_statusText(r)),
                             leading: r.status == 'no_show'
-                                ? const Icon(Icons.person_off_outlined,
-                                    color: AppColors.danger)
+                                ? const Icon(
+                                    Icons.person_off_outlined,
+                                    color: AppColors.danger,
+                                  )
                                 : null,
                             trailing: _trailing(context, ref, item, r),
                           ),
@@ -103,16 +115,26 @@ class AdminClassDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget? _trailing(BuildContext context, WidgetRef ref, StudioClass item,
-      AdminClassReservation r) {
+  Widget? _trailing(
+    BuildContext context,
+    WidgetRef ref,
+    StudioClass item,
+    AdminClassReservation r,
+  ) {
     if (item.isCancelled) return null;
     final started = item.hasStarted(DateTime.now());
     if (started && (r.status == 'booked' || r.status == 'no_show')) {
       final noShow = r.status == 'no_show';
       return TextButton(
-        onPressed: () => runSetNoShowFlow(context, ref,
-            reservationId: r.reservationId, noShow: !noShow),
-        child: Text(noShow ? 'Gelmedi işaretini kaldır' : 'Gelmedi olarak işaretle'),
+        onPressed: () => runSetNoShowFlow(
+          context,
+          ref,
+          reservationId: r.reservationId,
+          noShow: !noShow,
+        ),
+        child: Text(
+          noShow ? 'Gelmedi işaretini kaldır' : 'Gelmedi olarak işaretle',
+        ),
       );
     }
     if (r.status == 'booked') {
@@ -178,8 +200,9 @@ class _MemberPickerDialogState extends ConsumerState<MemberPickerDialog> {
     final seq = ++_seq;
     setState(() => _result = const AsyncLoading());
     try {
-      final r =
-          await ref.read(packageRepositoryProvider).searchMembers(q.trim());
+      final r = await ref
+          .read(packageRepositoryProvider)
+          .searchMembers(q.trim());
       if (mounted && seq == _seq) setState(() => _result = AsyncData(r));
     } catch (e, st) {
       if (mounted && seq == _seq) setState(() => _result = AsyncError(e, st));
@@ -199,11 +222,15 @@ class _MemberPickerDialogState extends ConsumerState<MemberPickerDialog> {
               controller: _controller,
               onChanged: (v) {
                 _debounce?.cancel();
-                _debounce =
-                    Timer(const Duration(milliseconds: 400), () => _search(v));
+                _debounce = Timer(
+                  const Duration(milliseconds: 400),
+                  () => _search(v),
+                );
               },
               decoration: const InputDecoration(
-                  labelText: 'Üye ara', prefixIcon: Icon(Icons.search)),
+                labelText: 'Üye ara',
+                prefixIcon: Icon(Icons.search),
+              ),
             ),
             const SizedBox(height: 8),
             Expanded(
@@ -212,7 +239,9 @@ class _MemberPickerDialogState extends ConsumerState<MemberPickerDialog> {
                 onRetry: () => _search(_controller.text),
                 data: (items) => items.isEmpty
                     ? const EmptyView(
-                        title: 'Üye bulunamadı', icon: Icons.person_search)
+                        title: 'Üye bulunamadı',
+                        icon: Icons.person_search,
+                      )
                     : ListView.builder(
                         itemCount: items.length,
                         itemBuilder: (_, i) => ListTile(
@@ -228,8 +257,9 @@ class _MemberPickerDialogState extends ConsumerState<MemberPickerDialog> {
       ),
       actions: [
         TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Vazgeç')),
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Vazgeç'),
+        ),
       ],
     );
   }

@@ -40,7 +40,8 @@ class _MemberFormDialogState extends State<_MemberFormDialog> {
     _name = TextEditingController(text: m?.name ?? '');
     _phone = TextEditingController(text: m?.phone ?? '');
     _membership = m?.membership ?? MembershipType.aylik;
-    _end = m?.membershipEnd ??
+    _end =
+        m?.membershipEnd ??
         gunBasi(DateTime.now()).add(Duration(days: _membership.days));
     _trainerId = m?.trainerId;
     _programId = m?.programId;
@@ -108,8 +109,9 @@ class _MemberFormDialogState extends State<_MemberFormDialog> {
                   autofocus: !_isEdit,
                   decoration: const InputDecoration(labelText: 'Ad Soyad'),
                   textCapitalization: TextCapitalization.words,
-                  validator: (v) =>
-                      (v == null || v.trim().length < 2) ? 'Ad soyad girin' : null,
+                  validator: (v) => (v == null || v.trim().length < 2)
+                      ? 'Ad soyad girin'
+                      : null,
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
@@ -164,8 +166,9 @@ class _MemberFormDialogState extends State<_MemberFormDialog> {
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String?>(
                   initialValue: _programId,
-                  decoration:
-                      const InputDecoration(labelText: 'Antrenman programı'),
+                  decoration: const InputDecoration(
+                    labelText: 'Antrenman programı',
+                  ),
                   items: [
                     const DropdownMenuItem(value: null, child: Text('Yok')),
                     for (final p in store.programs)
