@@ -27,3 +27,9 @@ String formatTl(num value) {
 /// Virgül veya nokta ile girilen ondalık sayı.
 double? parseDecimal(String? v) =>
     double.tryParse((v ?? '').trim().replaceAll(',', '.'));
+
+/// 09:30 biçimi.
+String formatTime(DateTime d) {
+  final l = d.toLocal();
+  return '${l.hour.toString().padLeft(2, '0')}:${l.minute.toString().padLeft(2, '0')}';
+}

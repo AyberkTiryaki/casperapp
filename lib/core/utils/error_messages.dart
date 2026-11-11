@@ -24,6 +24,26 @@ const _serverCodeMessages = <String, String>{
       'İndirim, üyenin güncel referans indirimi hakkını aşıyor. Lütfen oranı yenileyip tekrar deneyin.',
   'REFERRAL_NOT_FOUND': 'Referans kaydı bulunamadı.',
   'DECISION_REQUIRED': 'Bu işlem için bir karar (onay/ret) belirtilmeli.',
+  'ALREADY_BOOKED': 'Bu derse zaten rezervasyonunuz var.',
+  'CANCEL_WINDOW_CLOSED':
+      'Dersin başlamasına 2 saatten az kaldığı için iptal edilemez.',
+  'CATEGORY_NOT_FOUND': 'Kategori bulunamadı veya pasif.',
+  'CLASS_AFTER_PACKAGE_END': 'Ders, paketinizin bitiş tarihinden sonra.',
+  'CLASS_ALREADY_STARTED': 'Ders başlamış olduğu için bu işlem yapılamaz.',
+  'CLASS_CANCELLED': 'Bu ders iptal edilmiş.',
+  'CLASS_FULL': 'Ders dolu.',
+  'CLASS_NOT_FOUND': 'Ders bulunamadı.',
+  'INVALID_CLASS_TIME': 'Ders zamanı geçersiz (geçmişte olamaz).',
+  'INVALID_DURATION': 'Ders süresi geçersiz.',
+  'NO_ACTIVE_PACKAGE': 'Bu kategoride aktif paketiniz yok.',
+  'NO_CREDITS': 'Paketinizde kalan ders hakkı yok.',
+  'PACKAGE_EXPIRED': 'Paketinizin süresi dolmuş.',
+  'PACKAGE_FROZEN': 'Paketiniz dondurulmuş durumda.',
+  'REFUND_CHOICE_REQUIRED': 'Hak iadesi tercihi belirtilmeli.',
+  'RESERVATION_NOT_FOUND': 'Rezervasyon bulunamadı veya iptal edilmiş.',
+  'TRAINER_BUSY': 'Antrenörün bu saatte başka bir dersi var.',
+  'TRAINER_NOT_FOUND': 'Antrenör bulunamadı.',
+  'TRAINER_REQUIRED': 'Antrenör seçilmeli.',
 };
 
 String friendlyError(Object e) {

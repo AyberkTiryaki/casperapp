@@ -6,6 +6,7 @@ import '../../packages/presentation/admin/definitions_screen.dart';
 import '../../packages/presentation/admin/members_screen.dart';
 import '../../profile/profile.dart';
 import '../../referrals/presentation/admin_referrals_screen.dart';
+import '../../schedule/presentation/admin/admin_schedule_screen.dart';
 
 class AdminHomeScreen extends StatelessWidget {
   const AdminHomeScreen({super.key, required this.profile});
@@ -28,8 +29,8 @@ class AdminHomeScreen extends StatelessWidget {
           onTap: () => _go(context, const AdminReferralsScreen())),
       const ComingModule(
           'Kullanıcı ve rol yönetimi', Icons.manage_accounts_outlined),
-      const ComingModule(
-          'Antrenör ve takvim yönetimi', Icons.event_note_outlined),
+      ComingModule('Ders ve Rezervasyon Yönetimi', Icons.event_note_outlined,
+          onTap: () => _go(context, const AdminScheduleScreen())),
       const ComingModule('Raporlar', Icons.bar_chart_outlined),
     ]);
   }
