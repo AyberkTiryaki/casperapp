@@ -17,3 +17,7 @@ minimum_password_length = 8
 enable_signup = true
 enable_confirmations = true
 double_confirm_changes = true
+
+# Bildirim gönderici: zamanlanmış görev çağırır; kimlik doğrulama x-cron-secret ile yapılır.
+[functions.send-notifications]
+verify_jwt = false
