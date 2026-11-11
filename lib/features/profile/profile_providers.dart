@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../auth/auth_providers.dart';
+import 'deletion_request.dart';
 import 'profile.dart';
 import 'profile_repository.dart';
 
@@ -14,3 +15,17 @@ final currentProfileProvider = FutureProvider<Profile?>((ref) async {
   if (uid == null) return null;
   return ref.watch(profileRepositoryProvider).fetchProfile(uid);
 }, retry: (_, _) => null);
+
+final kvkkConsentProvider = FutureProvider.autoDispose<KvkkConsent?>((ref) {
+  final uid = ref.watch(currentUserIdProvider);
+  if (uid == null) return null;
+  return ref.watch(profileRepositoryProvider).latestKvkk(uid);
+});
+
+final pendingDeletionProvider = FutureProvider.autoDispose<DeletionRequest?>((
+  ref,
+) {
+  final uid = ref.watch(currentUserIdProvider);
+  if (uid == null) return null;
+  return ref.watch(profileRepositoryProvider).pendingDeletionRequest(uid);
+});

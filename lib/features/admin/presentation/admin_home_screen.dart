@@ -9,6 +9,7 @@ import '../../referrals/presentation/admin_referrals_screen.dart';
 import '../../schedule/presentation/admin/admin_schedule_screen.dart';
 import '../../wallet/presentation/admin/products_screen.dart';
 import 'audit_screen.dart';
+import 'deletion_requests_screen.dart';
 import 'users_screen.dart';
 
 class AdminHomeScreen extends StatelessWidget {
@@ -63,6 +64,11 @@ class AdminHomeScreen extends StatelessWidget {
           'İşlem geçmişi',
           Icons.history_outlined,
           onTap: () => _go(context, const AuditScreen()),
+        ),
+        ComingModule(
+          'Hesap silme talepleri',
+          Icons.person_remove_outlined,
+          onTap: () => _go(context, const DeletionRequestsScreen()),
         ),
         const ComingModule('Raporlar', Icons.bar_chart_outlined),
       ],

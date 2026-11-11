@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../auth/auth_providers.dart';
+import '../notifications/notifications_screen.dart';
 import '../profile/profile.dart';
+import '../profile/profile_screen.dart';
 
 Future<void> confirmAndSignOut(BuildContext context, WidgetRef ref) async {
   final ok = await showDialog<bool>(
@@ -52,6 +54,19 @@ class RoleHomeScaffold extends ConsumerWidget {
       appBar: AppBar(
         title: Text(profile.role.label),
         actions: [
+          IconButton(
+            tooltip: 'Bildirimler',
+            icon: const Icon(Icons.notifications_outlined),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+            ),
+          ),
+          IconButton(
+            tooltip: 'Profilim',
+            icon: const Icon(Icons.person_outline),
+            onPressed: () => Navigator.of(context)
+                .push(MaterialPageRoute(builder: (_) => const ProfileScreen())),
+          ),
           IconButton(
             tooltip: 'Çıkış yap',
             icon: const Icon(Icons.logout),
