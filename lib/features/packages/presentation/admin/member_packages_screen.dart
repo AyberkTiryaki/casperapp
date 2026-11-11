@@ -71,6 +71,22 @@ class AdminMemberPackagesScreen extends ConsumerWidget {
                               onPressed: () => runFreezeFlow(context, ref, p),
                               child: const Text('Dondur'),
                             ),
+                          if (p.isCurrentlyActive(now))
+                            OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                  minimumSize: const Size(0, 40)),
+                              onPressed: () =>
+                                  runAdjustCreditsFlow(context, ref, p),
+                              child: const Text('Hak düzelt'),
+                            ),
+                          if (p.status == 'active' && p.freezes.isNotEmpty)
+                            OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                  minimumSize: const Size(0, 40)),
+                              onPressed: () =>
+                                  showFreezesSheet(context, ref, p),
+                              child: const Text('Dondurmalar'),
+                            ),
                         ],
                       );
                     },

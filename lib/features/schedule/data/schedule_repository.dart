@@ -40,6 +40,7 @@ abstract class ScheduleRepository {
     bool? refund,
     String? reason,
   });
+  Future<void> setNoShow(String reservationId, bool noShow);
 }
 
 List<Map<String, dynamic>> _rows(dynamic r) =>
@@ -169,6 +170,14 @@ class SupabaseScheduleRepository implements ScheduleRepository {
         'p_refund': refund,
         'p_reason': _blankToNull(reason),
       },
+    );
+  }
+
+  @override
+  Future<void> setNoShow(String reservationId, bool noShow) async {
+    await supabase.rpc(
+      'admin_set_no_show',
+      params: {'p_reservation_id': reservationId, 'p_no_show': noShow},
     );
   }
 }

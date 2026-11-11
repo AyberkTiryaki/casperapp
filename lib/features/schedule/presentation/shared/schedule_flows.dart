@@ -121,6 +121,29 @@ Future<bool> runAdminCancelReservationFlow(
   }
 }
 
+/// Yönetici: başlamış dersteki rezervasyonu "gelmedi" yapar veya geri alır (hak değişmez).
+Future<bool> runSetNoShowFlow(
+  BuildContext context,
+  WidgetRef ref, {
+  required String reservationId,
+  required bool noShow,
+}) async {
+  final messenger = ScaffoldMessenger.of(context);
+  try {
+    await ref
+        .read(scheduleRepositoryProvider)
+        .setNoShow(reservationId, noShow);
+    invalidateSchedule(ref);
+    _snack(messenger,
+        noShow ? 'Gelmedi olarak işaretlendi.' : 'Gelmedi işareti kaldırıldı.');
+    return true;
+  } catch (e) {
+    invalidateSchedule(ref);
+    _snack(messenger, friendlyError(e));
+    return false;
+  }
+}
+
 /// Dersin tamamını iptal eder; hak iadesi ve neden seçilir.
 Future<bool> runCancelClassFlow(
     BuildContext context, WidgetRef ref, StudioClass c) async {

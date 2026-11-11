@@ -48,6 +48,10 @@ abstract class PackageRepository {
     required DateTime endDate,
     String? note,
   });
+
+  /// [lastDay] null ise dondurma hemen biter (başlamamışsa tamamen kaldırılır).
+  Future<void> endFreeze(String freezeId, {DateTime? lastDay});
+  Future<void> adjustCredits(String packageId, int delta, String note);
 }
 
 const _pkgSelect =
@@ -195,6 +199,23 @@ class SupabasePackageRepository implements PackageRepository {
       'p_start_date': isoDate(startDate),
       'p_end_date': isoDate(endDate),
       'p_note': (note == null || note.trim().isEmpty) ? null : note.trim(),
+    });
+  }
+
+  @override
+  Future<void> endFreeze(String freezeId, {DateTime? lastDay}) async {
+    await supabase.rpc('admin_end_freeze', params: {
+      'p_freeze_id': freezeId,
+      'p_last_day': lastDay == null ? null : isoDate(lastDay),
+    });
+  }
+
+  @override
+  Future<void> adjustCredits(String packageId, int delta, String note) async {
+    await supabase.rpc('admin_adjust_credits', params: {
+      'p_package_id': packageId,
+      'p_delta': delta,
+      'p_note': note.trim(),
     });
   }
 }

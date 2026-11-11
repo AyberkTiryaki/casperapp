@@ -44,6 +44,12 @@ const _serverCodeMessages = <String, String>{
   'TRAINER_BUSY': 'Antrenörün bu saatte başka bir dersi var.',
   'TRAINER_NOT_FOUND': 'Antrenör bulunamadı.',
   'TRAINER_REQUIRED': 'Antrenör seçilmeli.',
+  'FREEZE_NOT_FOUND': 'Dondurma kaydı bulunamadı.',
+  'FREEZE_ALREADY_ENDED': 'Bu dondurma zaten sona ermiş.',
+  'INVALID_CREDIT_DELTA': 'Hak değişimi 1 ile 100 arasında olmalı.',
+  'NOTE_REQUIRED': 'Not girmek zorunludur.',
+  'CLASS_NOT_STARTED': 'Ders henüz başlamadığı için bu işlem yapılamaz.',
+  'RESERVATION_NOT_ACTIVE': 'Rezervasyonun durumu bu işleme uygun değil.',
 };
 
 String friendlyError(Object e) {

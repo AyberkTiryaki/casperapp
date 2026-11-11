@@ -63,6 +63,7 @@ Yol haritasında açıkça yazmayan ek kararlar 11. bölümdedir (10 Kasım 2026
 | P-09 | **(Varsayılan c)** Aktarılamayan rezervasyon iptal edilir ve hak eski paketin hareketlerine iade edilir. Eski paket kapalı olduğu için bu hak kullanılamaz; kayıt amaçlıdır. |
 | P-10 | Eski paketin kalan hakları yenilemeyle biter (kapalı paketle rezervasyon yapılamaz). |
 | P-11 | Paket atama tekrarlanan istekte (aynı idempotency anahtarı) ikinci paket yaratmaz. |
+| P-12 | Yönetici bir paketin hakkını elle ±1..100 düzeltebilir (`admin_adjust_credits`). Not zorunludur, hak 0'ın altına düşemez; `credit_ledger`'a `adjustment` kaydı ve audit kaydı yazılır. Paket durumu denetlenmez. | `INVALID_CREDIT_DELTA`, `NOTE_REQUIRED`, `NO_CREDITS`, `PACKAGE_NOT_FOUND` |
 
 ## 4. Dersler (S)
 
@@ -103,7 +104,7 @@ Tüm kontroller ve hak düşümü `book_class` içinde tek transaction olarak ya
 | I-03 | Yönetici her zaman iptal edebilir ve hak iadesini **açıkça seçmek zorundadır** (evet/hayır). | `REFUND_CHOICE_REQUIRED` |
 | I-04 | Tekrarlanan iptal isteği ikinci iade yaratmaz; mevcut iptal kaydını döndürür. | — |
 | I-05 | İptal, dersin dolu kontenjanını 1 azaltır (yer açılır). | — |
-| I-06 | Üye derse gelmezse otomatik ek düşüm yapılmaz; düşülmüş hak kalır. Gerekirse yönetici manuel hak düzeltmesi girer (adım 5). | — |
+| I-06 | Üye derse gelmezse otomatik ek düşüm yapılmaz; düşülmüş hak kalır. Gerekirse yönetici manuel hak düzeltmesi girer (`admin_adjust_credits`, P-12). Yönetici ders başladıktan sonra rezervasyonu kayıt amaçlı "gelmedi" işaretleyebilir ve geri alabilir (`admin_set_no_show`; hak değişmez). | `CLASS_NOT_STARTED`, `RESERVATION_NOT_ACTIVE` |
 | I-07 | Üye başkasının rezervasyonunu iptal etmeye çalışırsa "bulunamadı" yanıtı alır (varlığı sızdırılmaz). | `RESERVATION_NOT_FOUND` |
 
 ## 7. Dondurma (D)
@@ -116,6 +117,7 @@ Tüm kontroller ve hak düşümü `book_class` içinde tek transaction olarak ya
 | D-04 | **(Varsayılan b)** Dondurulan gün sayısı paketin bitiş tarihine eklenir. | — |
 | D-05 | Dondurma aralığına denk gelen (ve henüz başlamamış) rezervasyonlar iptal edilir, hakları iade edilir. Aralık dışındaki rezervasyonlar korunur. | — |
 | D-06 | Dondurma süresince ve dondurma aralığındaki derslere rezervasyon yapılamaz (R-06). | `PACKAGE_FROZEN` |
+| D-07 | **Erken bitirme** (`admin_end_freeze`, yalnızca yönetici): `p_last_day` boşsa başlamamış dondurma tamamen kaldırılır, başlamışsa dün biter. Doluysa yeni son gün (dahil) bugünden önceki günden, dondurma ilk gününden bir gün öncesinden küçük olamaz ve mevcut son günden önce olmalıdır (uzatma yeni dondurmadır). Kaldırılan gün sayısı paket bitişinden düşülür (D-04'ün tersi); dondurma sırasında iptal edilen rezervasyonlar geri gelmez. Paket aktif olmalıdır. | `FREEZE_NOT_FOUND`, `FREEZE_ALREADY_ENDED`, `INVALID_FREEZE_RANGE`, `PACKAGE_NOT_ACTIVE` |
 
 ## 8. Cüzdan ve ürün satışı (C)
 
@@ -172,8 +174,8 @@ Yol haritasında açıkça yazmayan aşağıdaki kararlar 10 Kasım 2026'da stü
 3. Aynı eğitmenin çakışan dersi açılamaz; ders süresi 15–240 dk (S-03, S-04).
 4. Dondurma süresince, dondurma sonrası tarihli derslere de rezervasyon yapılamaz (R-06).
 5. Yönetici ve eğitmen hesapları rezervasyon yapamaz; yalnızca üye rolü yapar (R-01).
-6. Süresi dolan paketin durumu şimdilik yeni atama sırasında `expired` yapılır; geçerlilik her işlemde `ends_at` üzerinden anlık kontrol edilir. Zamanlanmış görev adım 5 kapsamında eklenecek.
-7. Dondurmayı erken bitirme ve manuel hak düzeltme (`admin_adjust_credits`) adım 5 kapsamına bırakıldı.
+6. Süresi dolan paketin durumu şimdilik yeni atama sırasında `expired` yapılır; geçerlilik her işlemde `ends_at` üzerinden anlık kontrol edilir. **Uygulandı (adım 5):** `expire-packages` zamanlanmış görevi her 15 dakikada `private.expire_packages()` çalıştırır; yalnızca durumu günceller, kurallar yine `ends_at` ile anlık denetlenir.
+7. Dondurmayı erken bitirme (`admin_end_freeze`, D-07), manuel hak düzeltme (`admin_adjust_credits`, P-12) ve gelmedi işaretleme (`admin_set_no_show`) **uygulandı (adım 5).**
 8. Tam 2 saat kala iptal serbesttir (I-01); yönetici iptalinde iade seçimi zorunludur (I-03).
 9. Kayıt verisinde KVKK onayı yoksa (ör. panelden açılan hesap) profil yine oluşur, onay kaydı yazılmaz.
 

@@ -90,6 +90,11 @@ class FakePackageRepository implements PackageRepository {
     required DateTime endDate,
     String? note,
   }) async {}
+
+  @override
+  Future<void> endFreeze(String freezeId, {DateTime? lastDay}) async {}
+  @override
+  Future<void> adjustCredits(String packageId, int delta, String note) async {}
 }
 
 MemberPackage samplePackage({

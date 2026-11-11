@@ -14,11 +14,26 @@ import '../shared/schedule_flows.dart';
 import '../shared/schedule_widgets.dart';
 
 class AdminClassDetailScreen extends ConsumerWidget {
-  const AdminClassDetailScreen({super.key, required this.item});
-  final StudioClass item;
+  const AdminClassDetailScreen({super.key, required StudioClass item})
+      : snapshot = item;
+
+  /// Ekran açılırken geçen kopya; güncel veri bulunamazsa bu kullanılır.
+  final StudioClass snapshot;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Güncel katılım sayısı için dersin gününü yeniden okur (mutasyonlarda invalidate edilir).
+    final fresh = ref
+        .watch(classesProvider((
+          day: dayStart(snapshot.startsAt),
+          categoryId: null,
+          trainerId: null,
+          includeCancelled: true,
+        )))
+        .value
+        ?.where((c) => c.id == snapshot.id)
+        .firstOrNull;
+    final item = fresh ?? snapshot;
     final async = ref.watch(adminReservationsProvider(item.id));
     final canBook = !item.isCancelled && !item.hasStarted(DateTime.now());
     return Scaffold(
@@ -73,20 +88,11 @@ class AdminClassDetailScreen extends ConsumerWidget {
                           child: ListTile(
                             title: Text(r.fullName),
                             subtitle: Text(_statusText(r)),
-                            trailing: r.status == 'booked' && !item.isCancelled
-                                ? IconButton(
-                                    tooltip: 'Rezervasyonu iptal et',
-                                    icon: const Icon(Icons.close,
-                                        color: AppColors.danger),
-                                    onPressed: () =>
-                                        runAdminCancelReservationFlow(
-                                      context,
-                                      ref,
-                                      reservationId: r.reservationId,
-                                      memberName: r.fullName,
-                                    ),
-                                  )
+                            leading: r.status == 'no_show'
+                                ? const Icon(Icons.person_off_outlined,
+                                    color: AppColors.danger)
                                 : null,
+                            trailing: _trailing(context, ref, item, r),
                           ),
                         ),
                     ],
@@ -95,6 +101,33 @@ class AdminClassDetailScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  Widget? _trailing(BuildContext context, WidgetRef ref, StudioClass item,
+      AdminClassReservation r) {
+    if (item.isCancelled) return null;
+    final started = item.hasStarted(DateTime.now());
+    if (started && (r.status == 'booked' || r.status == 'no_show')) {
+      final noShow = r.status == 'no_show';
+      return TextButton(
+        onPressed: () => runSetNoShowFlow(context, ref,
+            reservationId: r.reservationId, noShow: !noShow),
+        child: Text(noShow ? 'Gelmedi işaretini kaldır' : 'Gelmedi olarak işaretle'),
+      );
+    }
+    if (r.status == 'booked') {
+      return IconButton(
+        tooltip: 'Rezervasyonu iptal et',
+        icon: const Icon(Icons.close, color: AppColors.danger),
+        onPressed: () => runAdminCancelReservationFlow(
+          context,
+          ref,
+          reservationId: r.reservationId,
+          memberName: r.fullName,
+        ),
+      );
+    }
+    return null;
   }
 
   String _statusText(AdminClassReservation r) {
