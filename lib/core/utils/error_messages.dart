@@ -6,9 +6,9 @@ const _serverCodeMessages = <String, String>{
   'FORBIDDEN': 'Bu işlem için yetkiniz yok.',
   'UNAUTHENTICATED': 'Oturumunuz sona ermiş. Lütfen tekrar giriş yapın.',
   'IDEMPOTENCY_KEY_REQUIRED': 'İşlem anahtarı eksik. Lütfen tekrar deneyin.',
-  'IDEMPOTENCY_KEY_REUSED':
-      'Bu işlem anahtarı farklı bir işlemde kullanılmış. Lütfen işlemi baştan başlatın.',
-  'MEMBER_NOT_ELIGIBLE': 'Bu üyeye paket tanımlanamaz (aktif bir üye değil).',
+  'IDEMPOTENCY_KEY_REUSED': 'Bu işlem anahtarı farklı bir işlemde kullanılmış. Lütfen işlemi baştan başlatın.',
+  'MEMBER_NOT_ELIGIBLE':
+      'Bu işlem için üye uygun değil (aktif bir üye olmalı).',
   'DEFINITION_NOT_FOUND': 'Paket tanımı bulunamadı veya pasif.',
   'ACTIVE_PACKAGE_EXISTS': 'Bu kategoride zaten aktif bir paket var.',
   'PACKAGE_NOT_FOUND': 'Paket bulunamadı.',
@@ -20,8 +20,7 @@ const _serverCodeMessages = <String, String>{
   'FREEZE_OVERLAP': 'Bu tarihlerde zaten bir dondurma var.',
   'USER_NOT_FOUND': 'Kullanıcı bulunamadı.',
   'INVALID_DISCOUNT': 'İndirim oranı geçersiz.',
-  'DISCOUNT_EXCEEDS_ENTITLEMENT':
-      'İndirim, üyenin güncel referans indirimi hakkını aşıyor. Lütfen oranı yenileyip tekrar deneyin.',
+  'DISCOUNT_EXCEEDS_ENTITLEMENT': 'İndirim, üyenin güncel referans indirimi hakkını aşıyor. Lütfen oranı yenileyip tekrar deneyin.',
   'REFERRAL_NOT_FOUND': 'Referans kaydı bulunamadı.',
   'DECISION_REQUIRED': 'Bu işlem için bir karar (onay/ret) belirtilmeli.',
   'ALREADY_BOOKED': 'Bu derse zaten rezervasyonunuz var.',
@@ -49,6 +48,15 @@ const _serverCodeMessages = <String, String>{
   'INVALID_CREDIT_DELTA': 'Hak değişimi 1 ile 100 arasında olmalı.',
   'NOTE_REQUIRED': 'Not girmek zorunludur.',
   'CLASS_NOT_STARTED': 'Ders henüz başlamadığı için bu işlem yapılamaz.',
+  'INVALID_AMOUNT': 'Tutar geçersiz.',
+  'INVALID_QUANTITY': 'Adet 1 ile 100 arasında olmalı.',
+  'INSUFFICIENT_BALANCE': 'Cüzdan bakiyesi yetersiz.',
+  'PRODUCT_NOT_FOUND': 'Ürün bulunamadı veya satışa kapalı.',
+  'ENTRY_NOT_FOUND': 'Cüzdan hareketi bulunamadı.',
+  'CANNOT_REVERSE_REVERSAL': 'Ters kayıt tekrar ters çevrilemez.',
+  'ALREADY_REVERSED': 'Bu hareket zaten ters çevrilmiş.',
+  'CANNOT_DEMOTE_SELF': 'Kendi rolünüzü değiştiremezsiniz.',
+  'CANNOT_DEACTIVATE_SELF': 'Kendi hesabınızı pasif yapamazsınız.',
   'RESERVATION_NOT_ACTIVE': 'Rezervasyonun durumu bu işleme uygun değil.',
 };
 

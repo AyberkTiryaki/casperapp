@@ -33,3 +33,7 @@ String formatTime(DateTime d) {
   final l = d.toLocal();
   return '${l.hour.toString().padLeft(2, '0')}:${l.minute.toString().padLeft(2, '0')}';
 }
+
+/// İşaretli tutar: +1.250 ₺ / -300 ₺
+String formatSignedTl(num value) =>
+    value > 0 ? '+${formatTl(value)}' : formatTl(value);

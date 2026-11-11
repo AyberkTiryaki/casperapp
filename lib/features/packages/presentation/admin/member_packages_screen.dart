@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/widgets/async_value_view.dart';
 import '../../../../core/widgets/empty_view.dart';
 import '../../../referrals/data/referral_repository.dart';
+import '../../../wallet/presentation/admin/member_wallet_screen.dart';
 import '../../data/package_repository.dart';
 import '../../domain/package_models.dart';
 import '../shared/package_widgets.dart';
@@ -17,7 +18,23 @@ class AdminMemberPackagesScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(memberPackagesProvider(member.id));
     return Scaffold(
-      appBar: AppBar(title: Text(member.fullName)),
+      appBar: AppBar(
+        title: Text(member.fullName),
+        actions: [
+          TextButton.icon(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => AdminMemberWalletScreen(
+                  memberId: member.id,
+                  memberName: member.fullName,
+                ),
+              ),
+            ),
+            icon: const Icon(Icons.account_balance_wallet_outlined),
+            label: const Text('Cüzdan'),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => runAssignFlow(context, ref, member),
         icon: const Icon(Icons.add),
@@ -28,7 +45,8 @@ class AdminMemberPackagesScreen extends ConsumerWidget {
         onRetry: () => ref.invalidate(memberPackagesProvider(member.id)),
         data: (items) {
           final now = DateTime.now();
-          final sorted = [...items]..sort((a, b) {
+          final sorted = [...items]
+            ..sort((a, b) {
               final aa = a.isCurrentlyActive(now) ? 0 : 1;
               final bb = b.isCurrentlyActive(now) ? 0 : 1;
               if (aa != bb) return aa - bb;
@@ -38,12 +56,15 @@ class AdminMemberPackagesScreen extends ConsumerWidget {
             onRefresh: () async =>
                 ref.invalidate(memberPackagesProvider(member.id)),
             child: sorted.isEmpty
-                ? ListView(children: const [
-                    SizedBox(height: 120),
-                    EmptyView(
+                ? ListView(
+                    children: const [
+                      SizedBox(height: 120),
+                      EmptyView(
                         title: 'Bu üyenin paketi yok',
-                        icon: Icons.confirmation_number_outlined),
-                  ])
+                        icon: Icons.confirmation_number_outlined,
+                      ),
+                    ],
+                  )
                 : ListView.separated(
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
                     physics: const AlwaysScrollableScrollPhysics(),
@@ -58,23 +79,28 @@ class AdminMemberPackagesScreen extends ConsumerWidget {
                         actions: [
                           OutlinedButton(
                             style: OutlinedButton.styleFrom(
-                                minimumSize: const Size(0, 40)),
+                              minimumSize: const Size(0, 40),
+                            ),
                             onPressed: () => Navigator.of(context).push(
-                                MaterialPageRoute(
-                                    builder: (_) => LedgerScreen(package: p))),
+                              MaterialPageRoute(
+                                builder: (_) => LedgerScreen(package: p),
+                              ),
+                            ),
                             child: const Text('Hak hareketleri'),
                           ),
                           if (p.isCurrentlyActive(now))
                             OutlinedButton(
                               style: OutlinedButton.styleFrom(
-                                  minimumSize: const Size(0, 40)),
+                                minimumSize: const Size(0, 40),
+                              ),
                               onPressed: () => runFreezeFlow(context, ref, p),
                               child: const Text('Dondur'),
                             ),
                           if (p.isCurrentlyActive(now))
                             OutlinedButton(
                               style: OutlinedButton.styleFrom(
-                                  minimumSize: const Size(0, 40)),
+                                minimumSize: const Size(0, 40),
+                              ),
                               onPressed: () =>
                                   runAdjustCreditsFlow(context, ref, p),
                               child: const Text('Hak düzelt'),
@@ -82,7 +108,8 @@ class AdminMemberPackagesScreen extends ConsumerWidget {
                           if (p.status == 'active' && p.freezes.isNotEmpty)
                             OutlinedButton(
                               style: OutlinedButton.styleFrom(
-                                  minimumSize: const Size(0, 40)),
+                                minimumSize: const Size(0, 40),
+                              ),
                               onPressed: () =>
                                   showFreezesSheet(context, ref, p),
                               child: const Text('Dondurmalar'),
@@ -111,7 +138,8 @@ class _ReferralHeader extends ConsumerWidget {
         leading: const Icon(Icons.group_add_outlined),
         title: Text('Referans kodu: ${s.referralCode ?? '-'}'),
         subtitle: Text(
-            'Güncel indirim hakkı: %${s.discountPercent} (${s.activeCount} aktif referans)'),
+          'Güncel indirim hakkı: %${s.discountPercent} (${s.activeCount} aktif referans)',
+        ),
       ),
     );
   }
