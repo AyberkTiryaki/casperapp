@@ -63,7 +63,7 @@ Son çalıştırma (13.11.2026): 4/4 başarılı; istekler birbirinden 2–16 ms
 | Hesap (şifre `1234`) | Rol | Durum |
 |---|---|---|
 | `yonetici@casper.test` | yönetici | |
-| `egitmen1..3@casper.test` | eğitmen | Ayşe (grup Pilates), Mert (Fonksiyonel), Selin (birebir) |
+| `egitmen1..4@casper.test` | eğitmen | Ayşe (grup Pilates), Mert (Fonksiyonel), Selin (birebir), Kerem (uygulama akışıyla eklendi) |
 | `uye1@casper.test` | üye | Pilates 8, cüzdan 500 TL, yarın 10:00 kayıtlı |
 | `uye2@casper.test` | üye | Pilates 12, cüzdan 200 TL, yarın 10:00 kayıtlı |
 | `uye3@casper.test` | üye | Fonksiyonel 8 |

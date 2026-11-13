@@ -10,7 +10,9 @@ $$ select md5('casper-seed:' || p)::uuid $$;
 do $c$
 declare
   u    uuid[] := array(select id from auth.users where email like '%@casper.test');
-  cats uuid[] := array[pg_temp.sid('cat_pilates'), pg_temp.sid('cat_fonk')];
+  -- 'Yoga': 13.11.2026'da uygulama akışı denenirken yönetici hesabıyla eklendi
+  cats uuid[] := array[pg_temp.sid('cat_pilates'), pg_temp.sid('cat_fonk')]
+                 || array(select id from public.categories where name = 'Yoga');
   prds uuid[] := array[pg_temp.sid('prd_su'), pg_temp.sid('prd_bar'), pg_temp.sid('prd_shake')];
 begin
   delete from public.credit_ledger where member_id = any(u);
