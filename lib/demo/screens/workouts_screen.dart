@@ -240,7 +240,7 @@ class _ProgramFormDialogState extends State<_ProgramFormDialog> {
         ),
       ),
       actions: [
-        TextButton(
+        OutlinedButton(
           onPressed: () => Navigator.pop(context),
           child: const Text('Vazgeç'),
         ),

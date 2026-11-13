@@ -259,7 +259,7 @@ class _MemberPickerDialogState extends ConsumerState<MemberPickerDialog> {
         ),
       ),
       actions: [
-        TextButton(
+        OutlinedButton(
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('Vazgeç'),
         ),

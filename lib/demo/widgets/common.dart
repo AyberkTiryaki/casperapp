@@ -114,7 +114,7 @@ Future<bool> confirmDialog(
       title: Text(title),
       content: Text(message),
       actions: [
-        TextButton(
+        OutlinedButton(
           onPressed: () => Navigator.pop(ctx, false),
           child: const Text('Vazgeç'),
         ),

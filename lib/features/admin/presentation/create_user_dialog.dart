@@ -181,7 +181,7 @@ class _CreateUserDialogState extends ConsumerState<_CreateUserDialog> {
         ),
       ),
       actions: [
-        TextButton(
+        OutlinedButton(
           onPressed: _busy ? null : () => Navigator.of(context).pop(),
           child: const Text('Vazgeç'),
         ),

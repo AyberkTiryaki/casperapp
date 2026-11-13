@@ -182,7 +182,7 @@ class _MemberFormDialogState extends State<_MemberFormDialog> {
         ),
       ),
       actions: [
-        TextButton(
+        OutlinedButton(
           onPressed: () => Navigator.pop(context),
           child: const Text('Vazgeç'),
         ),

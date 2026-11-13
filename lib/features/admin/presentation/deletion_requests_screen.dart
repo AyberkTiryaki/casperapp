@@ -65,7 +65,7 @@ class DeletionRequestsScreen extends ConsumerWidget {
               : '${item.name} kullanıcısının silme talebi reddedilecek.',
         ),
         actions: [
-          TextButton(
+          OutlinedButton(
             onPressed: () => Navigator.of(ctx).pop(false),
             child: const Text('Vazgeç'),
           ),

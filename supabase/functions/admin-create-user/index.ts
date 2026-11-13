@@ -57,9 +57,13 @@ Deno.serve(async (req) => {
   if (password.length < 4 || password.length > 72) return fail("WEAK_PASSWORD");
   if (fullName.length < 2 || fullName.length > 120) return fail("INVALID_FULL_NAME");
 
+  // Auth proje genelinde en az 8 karakter ister (üye kaydı için). Kısa geçici şifreye izin
+  // vermek için hesap önce rastgele uzun bir şifreyle açılır, sonra girilen şifre
+  // admin_set_initial_password (yalnızca service_role) ile yazılır.
+  const bootstrap = crypto.randomUUID() + crypto.randomUUID();
   const { data: created, error: createErr } = await admin.auth.admin.createUser({
     email,
-    password,
+    password: bootstrap,
     email_confirm: true,
     user_metadata: { full_name: fullName },
   });
@@ -72,6 +76,16 @@ Deno.serve(async (req) => {
     return fail("CREATE_USER_FAILED", 500);
   }
   const userId = created.user.id;
+
+  const { error: pwErr } = await admin.rpc("admin_set_initial_password", {
+    p_user_id: userId,
+    p_password: password,
+  });
+  if (pwErr) {
+    // Şifresi bilinmeyen hesap bırakma
+    await admin.auth.admin.deleteUser(userId);
+    return fail("CREATE_USER_FAILED", 500);
+  }
 
   // Profil, auth tetikleyicisiyle 'member' olarak oluşur
   if (role === "trainer") {

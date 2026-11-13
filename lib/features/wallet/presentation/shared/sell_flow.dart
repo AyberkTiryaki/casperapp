@@ -128,7 +128,7 @@ class _SellDialogState extends State<_SellDialog> {
         ),
       ),
       actions: [
-        TextButton(
+        OutlinedButton(
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('Vazgeç'),
         ),

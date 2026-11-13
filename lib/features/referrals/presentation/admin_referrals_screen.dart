@@ -55,7 +55,7 @@ class _AdminReferralsScreenState extends ConsumerState<AdminReferralsScreen> {
             ],
           ),
           actions: [
-            TextButton(
+            OutlinedButton(
               onPressed: () => Navigator.of(ctx).pop(),
               child: const Text('Vazgeç'),
             ),

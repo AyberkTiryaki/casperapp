@@ -24,7 +24,7 @@ Future<bool> _confirm(
       title: Text(title),
       content: Text(message),
       actions: [
-        TextButton(
+        OutlinedButton(
           onPressed: () => Navigator.of(ctx).pop(false),
           child: const Text('Vazgeç'),
         ),
@@ -176,7 +176,7 @@ Future<void> runFreezeFlow(
           ],
         ),
         actions: [
-          TextButton(
+          OutlinedButton(
             onPressed: () => Navigator.of(ctx).pop(),
             child: const Text('Vazgeç'),
           ),
@@ -451,7 +451,7 @@ class _AdjustDialogState extends State<_AdjustDialog> {
         ),
       ),
       actions: [
-        TextButton(
+        OutlinedButton(
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('Vazgeç'),
         ),
@@ -559,7 +559,7 @@ class _AssignDialogState extends ConsumerState<_AssignDialog> {
         ),
       ),
       actions: [
-        TextButton(
+        OutlinedButton(
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('Vazgeç'),
         ),

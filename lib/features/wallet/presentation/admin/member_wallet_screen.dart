@@ -249,7 +249,7 @@ class _AmountDialogState extends State<_AmountDialog> {
         ),
       ),
       actions: [
-        TextButton(
+        OutlinedButton(
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('Vazgeç'),
         ),

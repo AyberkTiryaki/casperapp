@@ -172,7 +172,7 @@ class _ProductDialogState extends State<_ProductDialog> {
         ),
       ),
       actions: [
-        TextButton(
+        OutlinedButton(
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('Vazgeç'),
         ),

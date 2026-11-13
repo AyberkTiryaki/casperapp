@@ -13,7 +13,7 @@ Future<void> confirmAndSignOut(BuildContext context, WidgetRef ref) async {
       title: const Text('Çıkış yap'),
       content: const Text('Hesabınızdan çıkmak istediğinize emin misiniz?'),
       actions: [
-        TextButton(
+        OutlinedButton(
           onPressed: () => Navigator.of(ctx).pop(false),
           child: const Text('Vazgeç'),
         ),

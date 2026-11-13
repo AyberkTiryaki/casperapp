@@ -43,7 +43,7 @@ class CategoriesScreen extends ConsumerWidget {
               ),
             ),
             actions: [
-              TextButton(
+              OutlinedButton(
                 onPressed: () => Navigator.of(ctx).pop(),
                 child: const Text('Vazgeç'),
               ),

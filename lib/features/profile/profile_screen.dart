@@ -229,7 +229,7 @@ class _DeletionSectionState extends ConsumerState<_DeletionSection> {
             ],
           ),
           actions: [
-            TextButton(
+            OutlinedButton(
               onPressed: () => Navigator.of(ctx).pop(),
               child: const Text('Vazgeç'),
             ),

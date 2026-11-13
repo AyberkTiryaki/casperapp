@@ -449,7 +449,7 @@ class _ClassFormDialogState extends State<_ClassFormDialog> {
         ),
       ),
       actions: [
-        TextButton(
+        OutlinedButton(
           onPressed: () => Navigator.pop(context),
           child: const Text('Vazgeç'),
         ),
