@@ -13,7 +13,9 @@ declare
   -- 'Yoga': 13.11.2026'da uygulama akışı denenirken yönetici hesabıyla eklendi
   cats uuid[] := array[pg_temp.sid('cat_pilates'), pg_temp.sid('cat_fonk')]
                  || array(select id from public.categories where name = 'Yoga');
-  prds uuid[] := array[pg_temp.sid('prd_su'), pg_temp.sid('prd_bar'), pg_temp.sid('prd_shake')];
+  prds uuid[] := array[pg_temp.sid('prd_su'), pg_temp.sid('prd_bar'), pg_temp.sid('prd_shake'),
+                       pg_temp.sid('prd_elektrolit'), pg_temp.sid('prd_havlu'),
+                       pg_temp.sid('prd_corap'), pg_temp.sid('prd_eski')];
 begin
   delete from public.credit_ledger where member_id = any(u);
   delete from public.reservations where member_id = any(u)

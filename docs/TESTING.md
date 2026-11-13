@@ -58,20 +58,29 @@ Son çalıştırma (13.11.2026): 4/4 başarılı; istekler birbirinden 2–16 ms
 
 ## Deneme verisi
 
-`supabase/seed/demo.sql` uygulamayı elle denemek için hesap, kategori, paket, ürün, 14 günlük ders takvimi ve örnek rezervasyon ekler. Tekrar çalıştırılabilir. Canlıya geçmeden önce `supabase/seed/demo_cleanup.sql` ile silinir.
+Sırayla iki dosya çalıştırılır; canlıya geçmeden önce `supabase/seed/demo_cleanup.sql` ile silinir.
+
+1. `supabase/seed/demo.sql`: hesaplar, kategori, paket tanımı, ürün, 14 günlük ders takvimi, örnek rezervasyon. Tekrar çalıştırılabilir.
+2. `supabase/seed/demo_extra.sql`: her tabloda denenecek bir şey olsun diye geçmiş dersler (katıldı / gelmedi), satış ve ters kayıt, cüzdan düzeltmesi, dondurma, üye iptali, ders iptali, telafi hakkı, süresi dolmuş paket, referanslar, hesap silme talebi ve bildirimler. Bir kez çalışır.
+
+`device_tokens` bilerek boştur: gerçek telefon uygulamayı açıp bildirim izni verince kendi kaydını yazar.
+
+Durum 13.11.2026'daki yüklemeye göredir.
 
 | Hesap (şifre `1234`) | Rol | Durum |
 |---|---|---|
-| `yonetici@casper.test` | yönetici | |
+| `yonetici@casper.test` | yönetici | bekleyen 1 referans, 1 hesap silme talebi görür |
 | `egitmen1..4@casper.test` | eğitmen | Ayşe (grup Pilates), Mert (Fonksiyonel), Selin (birebir), Kerem (uygulama akışıyla eklendi) |
-| `uye1@casper.test` | üye | Pilates 8, cüzdan 500 TL, yarın 10:00 kayıtlı |
-| `uye2@casper.test` | üye | Pilates 12, cüzdan 200 TL, yarın 10:00 kayıtlı |
-| `uye3@casper.test` | üye | Fonksiyonel 8 |
-| `uye4@casper.test` | üye | Fonksiyonel 16, yarın 18:00 kayıtlı |
-| `uye5@casper.test` | üye | paketi yok |
-| `uye6@casper.test` | üye | Pilates 8, cüzdan 0 TL |
+| `uye1@casper.test` | üye | Pilates 8 (5 hak), 460 TL; ürün aldı, biri ters kayıtla iade; 2 onaylı referans → %10 indirim |
+| `uye2@casper.test` | üye | Pilates 12 (10 hak), 80 TL; dün gelmedi (no-show), +1 telafi, bir rezervasyonunu iptal etti |
+| `uye3@casper.test` | üye | Fonksiyonel 8; paketi 3.–6. gün dondurulmuş; referansı beklemede |
+| `uye4@casper.test` | üye | Fonksiyonel 16; kayıtlı olduğu ders yönetici tarafından iptal edildi (hak iade) |
+| `uye5@casper.test` | üye | aktif paketi yok, süresi dolmuş eski paketi var; referansı reddedildi; hesap silme talebi bekliyor |
+| `uye6@casper.test` | üye | Pilates 8, paketi 2 gün içinde bitiyor (bitiş uyarısı); 50 TL hediye, 5 TL kaldı |
 
-Şifreler doğrudan veritabanına yazıldığı için 6 karakter kuralına takılmaz; uygulamadan şifre değiştirirken kural yine geçerlidir.
+Ürünler: Su, Protein Bar, Protein Shake, Elektrolit İçecek, Havlu Kiralama, Pilates Çorabı ve pasif "Yaz Kampanyası Paketi". Kategoriler: Pilates, Fonksiyonel Antrenman, Yoga.
+
+Şifreler doğrudan veritabanına yazıldığı için uzunluk kuralına takılmaz. Uygulamadan hesap açarken (`admin-create-user`) en az 8 karakter gerekir.
 
 ## Uygulama testleri (Flutter)
 
