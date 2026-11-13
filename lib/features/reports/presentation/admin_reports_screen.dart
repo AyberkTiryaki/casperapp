@@ -81,6 +81,11 @@ class _AdminReportsScreenState extends ConsumerState<AdminReportsScreen> {
                       ),
                     ),
                     OutlinedButton.icon(
+                      // Tema tam genişlik verir (Size.fromHeight); Row içinde
+                      // sonsuz genişlik hatası olmasın diye sınırlı boyut
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size(0, 44),
+                      ),
                       onPressed: _pickRange,
                       icon: const Icon(Icons.date_range),
                       label: const Text('Tarih seç'),

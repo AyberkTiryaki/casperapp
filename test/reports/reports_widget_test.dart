@@ -1,3 +1,4 @@
+import 'package:caspertrainingstudio/core/theme/app_theme.dart';
 import 'package:caspertrainingstudio/features/reports/data/report_repository.dart';
 import 'package:caspertrainingstudio/features/reports/domain/report_models.dart';
 import 'package:caspertrainingstudio/features/reports/presentation/admin_reports_screen.dart';
@@ -15,7 +16,11 @@ Future<void> pumpScreen(WidgetTester tester, FakeReportRepository repo) async {
   await tester.pumpWidget(
     ProviderScope(
       overrides: [reportRepositoryProvider.overrideWithValue(repo)],
-      child: const MaterialApp(home: AdminReportsScreen()),
+      // Uygulama teması: tam genişlik buton teması Row içinde hata verir, testte de görünsün
+      child: MaterialApp(
+        theme: AppTheme.light,
+        home: const AdminReportsScreen(),
+      ),
     ),
   );
   await tester.pumpAndSettle();
