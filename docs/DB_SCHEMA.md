@@ -557,6 +557,134 @@ Kaynak: `20261111110000_referral_manual_and_schedule_views.sql`. Tablo değişik
 
 Rezervasyon ve ders yazma işlemleri mevcut RPC'lerle yapılır: `create_class`, `cancel_class`, `book_class`, `cancel_reservation`, `class_participants`.
 
+## Antrenman programları, ölçümler, eğitmenin üyeleri, rapor (13.11.2026)
+
+Kaynak: `20261113150000_programs_measurements_reports.sql`. Kurallar: `docs/BUSINESS_RULES.md` §16 (Y-10, A, O, RP). Üç tabloda da RLS açıktır; `authenticated` yalnızca `SELECT` yetkisine sahiptir, yazma yalnızca aşağıdaki RPC'lerle yapılır. `anon` erişemez.
+
+### workout_programs
+Üyeye hazırlanan antrenman programı.
+
+| sütun | tip | kural/varsayılan |
+|---|---|---|
+| id | uuid | PK, default `gen_random_uuid()` |
+| member_id | uuid | NOT NULL; FK → `profiles(id)` `ON DELETE CASCADE` |
+| title | text | NOT NULL; CHECK boşluksuz uzunluk 1–80 |
+| goal | text | NULL; CHECK uzunluk ≤ 200 |
+| notes | text | NULL; CHECK uzunluk ≤ 2000 |
+| is_active | boolean | NOT NULL, default `true` |
+| created_by | uuid | NULL; FK → `profiles(id)` `ON DELETE SET NULL` (hazırlayan) |
+| updated_by | uuid | NULL; FK → `profiles(id)` `ON DELETE SET NULL` |
+| created_at | timestamptz | NOT NULL, default `now()` |
+| updated_at | timestamptz | NOT NULL, default `now()`; tetikleyici `workout_programs_touch` |
+
+- Kısıtlar: partial UNIQUE `workout_programs_one_active_per_member` (member_id WHERE is_active) — üye başına tek aktif program.
+- İndeksler: `workout_programs_member_idx` (member_id, created_at DESC).
+
+### workout_program_items
+Programın hareketleri. Program silinince silinir (`ON DELETE CASCADE`); düzenlemede tümü yeniden yazılır.
+
+| sütun | tip | kural/varsayılan |
+|---|---|---|
+| id | uuid | PK, default `gen_random_uuid()` |
+| program_id | uuid | NOT NULL; FK → `workout_programs(id)` `ON DELETE CASCADE` |
+| day_label | text | NOT NULL; CHECK boşluksuz uzunluk 1–40 ("Gün 1", "Pazartesi") |
+| exercise | text | NOT NULL; CHECK boşluksuz uzunluk 1–120 |
+| sets | integer | NULL; CHECK 1–99 |
+| reps | text | NULL; CHECK uzunluk ≤ 40 (serbest metin: "12", "8-10", "30 sn") |
+| rest_seconds | integer | NULL; CHECK 0–3600 |
+| note | text | NULL; CHECK uzunluk ≤ 300 |
+| sort_order | integer | NOT NULL, default 0 (`p_items` dizisindeki sıra, 1'den başlar) |
+
+- İndeksler: `workout_program_items_program_idx` (program_id, sort_order).
+
+### body_measurements
+Vücut ölçümleri (**sağlık verisi**; KVKK notu için BUSINESS_RULES §16). Güncellenmez; hatalı kayıt silinir.
+
+| sütun | tip | kural/varsayılan |
+|---|---|---|
+| id | uuid | PK, default `gen_random_uuid()` |
+| member_id | uuid | NOT NULL; FK → `profiles(id)` `ON DELETE CASCADE` |
+| measured_on | date | NOT NULL; CHECK ≥ 2000-01-01 (gelecek tarih RPC'de reddedilir) |
+| weight_kg | numeric(5,1) | NULL; CHECK 20–400 |
+| body_fat_pct | numeric(4,1) | NULL; CHECK 1–75 |
+| muscle_kg | numeric(5,1) | NULL; CHECK 5–150 |
+| waist_cm | numeric(5,1) | NULL; CHECK 30–250 |
+| hip_cm | numeric(5,1) | NULL; CHECK 30–250 |
+| chest_cm | numeric(5,1) | NULL; CHECK 30–250 |
+| arm_cm | numeric(5,1) | NULL; CHECK 10–100 |
+| thigh_cm | numeric(5,1) | NULL; CHECK 20–150 |
+| note | text | NULL; CHECK uzunluk ≤ 500 |
+| created_by | uuid | NULL; FK → `profiles(id)` `ON DELETE SET NULL` |
+| created_at | timestamptz | NOT NULL, default `now()` |
+
+- Kısıtlar: CHECK `body_measurements_at_least_one` — sekiz ölçüden en az biri dolu.
+- İndeksler: `body_measurements_member_idx` (member_id, measured_on DESC, created_at DESC).
+
+### RLS
+
+| tablo | SELECT kimler | INSERT / UPDATE / DELETE kimler |
+|---|---|---|
+| workout_programs | üye (kendi), admin, üyenin eğitmeni (`private.is_my_member`) | yalnızca RPC |
+| workout_program_items | programı görebilen | yalnızca RPC |
+| body_measurements | üye (kendi), admin, üyenin eğitmeni | yalnızca RPC |
+
+Eğitmenin `profiles`, `wallets`, `member_packages` üzerindeki yetkisi **değişmedi**: kendi üyesinin de profil boy/kilo/doğum tarihini, cüzdanını ve paketlerini göremez.
+
+### RPC fonksiyonları
+
+Hepsi `public` şemasında, `SECURITY DEFINER`, `search_path = ''`; `EXECUTE` yalnızca `authenticated`.
+
+| fonksiyon imzası | kim çağırabilir | ne yapar |
+|---|---|---|
+| `trainer_my_members(p_trainer_id uuid default null)` → table(member_id uuid, full_name text, last_class_at timestamptz, next_class_at timestamptz, class_count integer) | trainer (yalnızca kendisi), admin (`p_trainer_id` zorunlu: `TRAINER_REQUIRED`) | Eğitmenin üyeleri (Y-10), ada göre sıralı. `class_count`: son 90 gün + gelecekteki iptal edilmemiş rezervasyon sayısı. Okuma |
+| `save_workout_program(p_member_id uuid, p_title text, p_goal text default null, p_notes text default null, p_items jsonb default '[]', p_program_id uuid default null, p_is_active boolean default true)` → workout_programs | üyenin eğitmeni, admin | Program oluşturur (`p_program_id` boş) veya düzenler; hareketleri `p_items` dizisiyle bütünüyle değiştirir; aktifse üyenin diğer aktif programını pasife alır. Tek transaction, üye danışma kilidi altında. Denetim: `workout_program_create` / `workout_program_update`. Idempotency anahtarı yok (tekrarlanan "yeni program" isteği ikinci program oluşturur; yalnızca sonuncusu aktif kalır) |
+| `set_workout_program_active(p_program_id uuid, p_is_active boolean)` → workout_programs | üyenin eğitmeni, admin | Programı aktif/pasif yapar; aktife alınırsa diğeri pasife düşer. Aynı değerle tekrar çağrı değişiklik yapmaz. Denetim: `workout_program_set_active` |
+| `add_body_measurement(p_member_id uuid, p_measured_on date default null, p_weight_kg numeric default null, p_body_fat_pct numeric default null, p_muscle_kg numeric default null, p_waist_cm numeric default null, p_hip_cm numeric default null, p_chest_cm numeric default null, p_arm_cm numeric default null, p_thigh_cm numeric default null, p_note text default null)` → body_measurements | üye (kendisi), üyenin eğitmeni, admin | Ölçüm ekler; değerleri tek ondalığa yuvarlar. Eğitmen/yönetici için denetim: `body_measurement_add` (değerler yazılmaz) |
+| `delete_body_measurement(p_measurement_id uuid)` → void | admin (hepsi); üye ve üyenin eğitmeni (yalnızca kendi girdiği) | Ölçümü siler. Eğitmen/yönetici için denetim: `body_measurement_delete` |
+| `admin_report(p_from date default null, p_to date default null)` → jsonb | admin | Tarih aralığı raporu (İstanbul günü, uçlar dahil; varsayılan içinde bulunulan ay; en fazla 366 gün). Okuma (`STABLE`) |
+
+`p_items` öğesi: `{"day_label": "Gün 1", "exercise": "Squat", "sets": 3, "reps": "12", "rest_seconds": 60, "note": null}`; dizi sırası `sort_order` olur.
+
+`admin_report` çıktısı:
+
+```
+{
+  "from": "2026-11-01", "to": "2026-11-30", "generated_at": "…",
+  "package_sales": {"count", "total", "list_total", "discount_total", "discounted_count"},
+  "product_sales": {"count", "quantity", "total", "reversed_count"},
+  "wallet_topups": {"count", "total"},
+  "members":       {"new", "active_with_package"},
+  "classes":       {"held", "upcoming", "cancelled", "capacity", "booked", "occupancy_pct"},
+  "attendance":    {"attended", "no_show"},
+  "trainers":      [{"trainer_id", "full_name", "class_count", "capacity", "booked", "attended", "no_show"}],
+  "top_products":  [{"product_id", "name", "quantity", "total"}]
+}
+```
+
+Alanların tanımı: BUSINESS_RULES RP-03..RP-10. `capacity`, `booked`, `occupancy_pct`, `attendance` ve `trainers` yalnızca **yapılan** dersleri kapsar; `members.active_with_package` aralıktan bağımsız anlık değerdir.
+
+### private yardımcılar
+
+| fonksiyon | amaç |
+|---|---|
+| `private.is_my_member(member_id)` | Oturum aktif eğitmense ve üye onun üyesiyse (Y-10) true. RLS politikalarında kullanılır; `authenticated` için açıktır |
+| `private.can_coach_member(member_id)` | `is_admin()` veya `is_my_member(member_id)`. RLS ve RPC yetki kontrolü |
+
+Kilit: `save_workout_program` ve `set_workout_program_active` yalnızca kilit sırasının 1. adımını (`private.lock_member`) ve ardından `workout_programs` satırlarını kilitler; `classes` / `member_packages` kilidi almaz, bu yüzden mevcut kilit sırasıyla çelişmez. Tek aktif program için son savunma hattı partial UNIQUE indeksidir.
+
+### Hata kodları
+
+| kod | anlam |
+|---|---|
+| `PROGRAM_NOT_FOUND` | Program yok, başka üyeye ait veya çağıranın yetkisi yok (P0002) |
+| `MEASUREMENT_EMPTY` | Hiç ölçü girilmedi |
+| `MEASUREMENT_NOT_FOUND` | Ölçüm yok veya çağıran silemez (P0002) |
+| `INVALID_DATE` | Ölçüm tarihi gelecekte veya 2000'den önce |
+| `INVALID_DATE_RANGE` | Rapor aralığı ters veya 366 günden uzun |
+| `INVALID_INPUT` | Başlık/hareket geçersiz, `p_items` dizi değil, sayı taşması |
+| `TRAINER_REQUIRED` | Yönetici `trainer_my_members` için eğitmen belirtmedi |
+| `FORBIDDEN`, `MEMBER_NOT_ELIGIBLE` | Yetki yok (42501) / hedef aktif üye değil |
+
 ## Migration dosyaları
 
 | dosya | içerik |
@@ -568,3 +696,4 @@ Rezervasyon ve ders yazma işlemleri mevcut RPC'lerle yapılır: `create_class`,
 | `20261111090000_package_read_policies.sql` | adım 3: üyenin kendi paketine bağlı pasif tanım/kategoriyi okuyabilmesi (`package_definitions_select_own_used`, `categories_select_own_used`), `member_packages_member_status_idx` indeksi |
 | `20261111100000_referrals.sql` | adım 3b: referans kodu, `referrals` tablosu, sayım/indirim fonksiyonları, kayıt tetikleyicisi güncellemesi, `assign_package` indirim parametresi |
 | `20261111110000_referral_manual_and_schedule_views.sql` | `short_name` STABLE düzeltmesi; elle referans (`admin_create_referral`, `admin_search_users`); takvim okuma RPC'leri (`list_classes`, `my_reservations`, `admin_class_reservations`) |
+| `20261113150000_programs_measurements_reports.sql` | `workout_programs`, `workout_program_items`, `body_measurements` tabloları ve RLS; `private.is_my_member`, `private.can_coach_member`; `trainer_my_members`, `save_workout_program`, `set_workout_program_active`, `add_body_measurement`, `delete_body_measurement`, `admin_report` |

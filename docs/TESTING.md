@@ -12,6 +12,7 @@ Konum: `supabase/tests/database/`. Her dosya tek bir transaction içinde çalı�
 | `04_wallet.test.sql` | Cüzdan yükleme, ürün satışı, yetersiz bakiye, satış düzeltme | C-01..C-09 | 67 |
 | `05_rls.test.sql` | Yetki ve RLS: üye, eğitmen, yönetici, pasif hesap, anon | Y-02, Y-04..Y-08, K-06, K-07, F-13 | 113 |
 | `06_notifications.test.sql` | Bildirim kuyruğu: tetikleyici, tekrar etmeme, zamanlanmış görev, gönderici | B-01..B-03 | 59 |
+| `07_programs_measurements_reports.test.sql` | Eğitmenin üyeleri, antrenman programları, vücut ölçümleri (RLS: üye / eğitmen / yönetici / anon), yönetici raporu sayıları | Y-04..Y-06, Y-08..Y-10, A-01..A-05, O-01..O-06, RP-01..RP-10 | 102 |
 
 ### Çalıştırma
 
@@ -34,6 +35,8 @@ python supabase/tests/run_remote.py supabase/tests/database/02_booking.test.sql
 Veri bırakmaz, yine de canlıya geçtikten sonra **yalnızca dev/staging projesinde** çalıştırın.
 
 Son çalıştırma (13.11.2026, bağlı proje): 6 dosya, 487 test, 0 başarısız.
+
+`07_programs_measurements_reports.test.sql` (102 test), `20261113150000` migration'ı yüklenmeden önce migration + test tek transaction'da birleştirilip zorunlu geri alma ile denendi (13.11.2026): 102/102 başarılı, veritabanında iz kalmadı. Migration yüklendikten sonra `python supabase/tests/run_remote.py` ile 7 dosyanın tamamı yeniden çalıştırılmalı ve bu satır güncellenmelidir. Rapor testleri başka veriyle karışmaması için Ocak 2020'ye yerleştirilmiş kayıtlarla çalışır.
 
 ### Sınırlar
 
@@ -58,10 +61,11 @@ Son çalıştırma (13.11.2026): 4/4 başarılı; istekler birbirinden 2–16 ms
 
 ## Deneme verisi
 
-Sırayla iki dosya çalıştırılır; canlıya geçmeden önce `supabase/seed/demo_cleanup.sql` ile silinir.
+Sırayla üç dosya çalıştırılır; canlıya geçmeden önce `supabase/seed/demo_cleanup.sql` ile silinir.
 
 1. `supabase/seed/demo.sql`: hesaplar, kategori, paket tanımı, ürün, 14 günlük ders takvimi, örnek rezervasyon. Tekrar çalıştırılabilir.
 2. `supabase/seed/demo_extra.sql`: her tabloda denenecek bir şey olsun diye geçmiş dersler (katıldı / gelmedi), satış ve ters kayıt, cüzdan düzeltmesi, dondurma, üye iptali, ders iptali, telafi hakkı, süresi dolmuş paket, referanslar, hesap silme talebi ve bildirimler. Bir kez çalışır.
+3. `supabase/seed/demo_programs.sql` (`20261113150000` migration'ından sonra): uye1'e bir eski (pasif) ve bir aktif antrenman programı, uye4'e aktif program; uye1'e 5 haftaya yayılmış 6, uye2'ye 4 vücut ölçümü. Tekrar çalıştırılabilir. Eğitmen ekranlarında ("Üyelerim") görünen üyeler rezervasyonlara bağlıdır: Ayşe (egitmen1) → uye1, uye2, uye6; Mert (egitmen2) → uye3, uye4; Selin (egitmen3) → uye2.
 
 `device_tokens` bilerek boştur: gerçek telefon uygulamayı açıp bildirim izni verince kendi kaydını yazar.
 
@@ -71,10 +75,10 @@ Durum 13.11.2026'daki yüklemeye göredir.
 |---|---|---|
 | `yonetici@casper.test` | yönetici | bekleyen 1 referans, 1 hesap silme talebi görür |
 | `egitmen1..4@casper.test` | eğitmen | Ayşe (grup Pilates), Mert (Fonksiyonel), Selin (birebir), Kerem (uygulama akışıyla eklendi) |
-| `uye1@casper.test` | üye | Pilates 8 (5 hak), 460 TL; ürün aldı, biri ters kayıtla iade; 2 onaylı referans → %10 indirim |
-| `uye2@casper.test` | üye | Pilates 12 (10 hak), 80 TL; dün gelmedi (no-show), +1 telafi, bir rezervasyonunu iptal etti |
+| `uye1@casper.test` | üye | Pilates 8 (5 hak), 460 TL; ürün aldı, biri ters kayıtla iade; 2 onaylı referans → %10 indirim; aktif + eski antrenman programı, 6 ölçüm |
+| `uye2@casper.test` | üye | Pilates 12 (10 hak), 80 TL; dün gelmedi (no-show), +1 telafi, bir rezervasyonunu iptal etti; 4 ölçüm, programı yok |
 | `uye3@casper.test` | üye | Fonksiyonel 8; paketi 3.–6. gün dondurulmuş; referansı beklemede |
-| `uye4@casper.test` | üye | Fonksiyonel 16; kayıtlı olduğu ders yönetici tarafından iptal edildi (hak iade) |
+| `uye4@casper.test` | üye | Fonksiyonel 16; kayıtlı olduğu ders yönetici tarafından iptal edildi (hak iade); aktif antrenman programı |
 | `uye5@casper.test` | üye | aktif paketi yok, süresi dolmuş eski paketi var; referansı reddedildi; hesap silme talebi bekliyor |
 | `uye6@casper.test` | üye | Pilates 8, paketi 2 gün içinde bitiyor (bitiş uyarısı); 50 TL hediye, 5 TL kaldı |
 
@@ -88,7 +92,13 @@ Durum 13.11.2026'daki yüklemeye göredir.
 flutter test
 ```
 
+13.11.2026'da eklenenler (sahte depo + `ProviderScope` override kalıbı, bkz. `test/packages/fake_repo.dart`): `test/workouts/` (program modeli, üye ve eğitmen ekranları, program düzenleyici), `test/measurements/` (ilerleme hesabı, doğrulama, ölçüm ekranı ve formu, eğilim çizgisi), `test/reports/` (rapor modeli, tarih aralıkları, rapor ekranı), `test/trainer/` (eğitmenin üyeleri listesi ve arama). Son çalıştırma (13.11.2026): 88 test, 0 başarısız.
+
 ## Elle doğrulanacaklar (pilot öncesi)
+
+- Eğitmen hesabıyla: Üyelerim → üye → program hazırla / ölçüm gir; başka eğitmenin üyesinin listede olmadığı
+- Üye hesabıyla: Antrenman programım, Ölçümlerim ve ilerleme (kilo eğilim çizgisi, açık ve koyu tema)
+- Yönetici hesabıyla: Raporlar (bu ay, geçen ay, özel aralık)
 
 - Gerçek iPhone ve Android cihazda giriş, takvim, bildirim izni ve bildirim alma
 - Bağlantı koptuktan sonra tekrarlanan rezervasyon isteğinin çift kayıt oluşturmaması

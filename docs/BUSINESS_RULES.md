@@ -19,7 +19,7 @@ Yol haritasındaki açık kararlar 10 Kasım 2026'da stüdyo tarafından aşağ�
 | b | Dondurma süresi bitişe eklenir mi? | **Evet.** Dondurulan gün sayısı paketin bitiş tarihine eklenir. | D-04 | `freeze_package` |
 | c | Yenilemede/aktarımda rezervasyonlar | Gelecek rezervasyon yalnızca yeni paket **aynı kategorideyse, hakkı kaldıysa ve ders tarihinde geçerliyse** aktarılır. Aksi halde iptal edilir ve hak **eski paketin** hareketlerine iade edilir. | P-08, P-09 | `assign_package` |
 
-Yol haritasında açıkça yazmayan ek kararlar 11. bölümdedir (10 Kasım 2026'da onaylandı). Adım 3 ek kararları 12. bölümdedir (onaylandı). Referans sistemi kuralları 13. bölümde, onaylanan referans kararları 14. bölümde, henüz onaylanmamış yeni varsayımlar 15. bölümdedir.
+Yol haritasında açıkça yazmayan ek kararlar 11. bölümdedir (10 Kasım 2026'da onaylandı). Adım 3 ek kararları 12. bölümdedir (onaylandı). Referans sistemi kuralları 13. bölümde, onaylanan referans kararları 14. bölümde, henüz onaylanmamış yeni varsayımlar 15. bölümdedir. Antrenman programı, vücut ölçümü, eğitmenin üyeleri ve rapor kuralları (13.11.2026) 16. bölümdedir.
 
 ## 1. Kayıt, profil, KVKK (K)
 
@@ -29,7 +29,7 @@ Yol haritasında açıkça yazmayan ek kararlar 11. bölümdedir (10 Kasım 2026
 | K-02 | Kayıtta ad soyad, doğum tarihi, boy (cm), kilo (kg) alınır. **Kronik rahatsızlık / sağlık alanı yoktur.** |
 | K-03 | Doğum tarihi geçmişte olmalıdır. Sunucu boy için 50–260 cm, kilo için 20–400 kg kabul eder (uygulama formu 100–250 cm ve 30–300 kg ister). Aralık dışı değer sunucuda boş kaydedilir. |
 | K-04 | Kayıt, KVKK onay kutusu işaretlenmeden tamamlanamaz. Onay, **metin sürümü + onay zamanı** ile `consents` tablosuna yazılır. Metin değişince yeni sürüm ayrıca onaylanır (`accept_kvkk`). |
-| K-05 | Profilde yalnızca **güncel** kilo tutulur; kilo geçmişi tutulmaz. |
+| K-05 | Profilde yalnızca **güncel** kilo tutulur; profil kilosunun geçmişi tutulmaz. **(13.11.2026)** Kilo ve diğer ölçülerin zaman içindeki takibi ayrı `body_measurements` tablosundadır (O kuralları, §16); ölçüm girmek profildeki kiloyu değiştirmez. |
 | K-06 | Her yeni hesabın rolü **üye**dir. Kayıt verisindeki hiçbir alan rolü değiştiremez. |
 | K-07 | Üye kendi profilinde yalnızca ad soyad, doğum tarihi, boy ve kiloyu değiştirebilir. |
 | K-08 | Üye hesap silme talebi oluşturabilir; aynı anda tek bekleyen talep olur. Talebi yönetici sonuçlandırır (süreç adım 8). |
@@ -42,11 +42,12 @@ Yol haritasında açıkça yazmayan ek kararlar 11. bölümdedir (10 Kasım 2026
 | Y-02 | Rolü yalnızca yönetici, `admin_set_role` ile değiştirir. Üye/eğitmen kendi rolünü değiştiremez. Yönetici kendi rolünü düşüremez ve kendini pasifleştiremez. |
 | Y-03 | İlk yönetici bir kez Supabase SQL Editor üzerinden atanır (bkz. `docs/KURULUM.md`). |
 | Y-04 | Üye yalnızca kendi profilini, paketlerini, hak hareketlerini, rezervasyonlarını, cüzdanını ve satışlarını görür. Başka üyenin hiçbir verisini göremez. |
-| Y-05 | Eğitmen: takvimi, kendi derslerinin katılımcılarını (yalnızca ad), üye aramayı (yalnızca ad) ve kendi yaptığı satışları görür. Üyelerin boy/kilo/doğum tarihi, paket ve cüzdan bilgilerini göremez; yönetici işlemlerini çağıramaz. |
+| Y-05 | Eğitmen: takvimi, kendi derslerinin katılımcılarını (yalnızca ad), üye aramayı (yalnızca ad) ve kendi yaptığı satışları görür. **(13.11.2026'da değişti)** Ayrıca yalnızca **kendi üyelerinin** (Y-10) antrenman programlarını ve vücut ölçümlerini görür, program hazırlar ve ölçüm girer. Üyelerin profilindeki boy/kilo/doğum tarihini, paket ve cüzdan bilgilerini yine göremez; yönetici işlemlerini çağıramaz. Önceki hali: eğitmen üyelerin hiçbir kilo/ölçü verisini göremezdi. |
 | Y-06 | Yönetici tüm verileri görür; paket, dondurma, cüzdan, rol ve tanım yönetimi yapar. |
 | Y-07 | Pasif hesap (`is_active = false`) hiçbir role sahip sayılmaz; işlem yapamaz. |
 | Y-08 | Giriş yapmamış istemci (anon) hiçbir tabloya ve fonksiyona erişemez. `service_role` anahtarı mobil uygulamada bulunmaz. |
-| Y-09 | Yöneticinin yaptığı kritik işlemler (rol, paket atama, dondurma, iptal, cüzdan) `audit_log` tablosuna yazılır. |
+| Y-09 | Yöneticinin yaptığı kritik işlemler (rol, paket atama, dondurma, iptal, cüzdan) `audit_log` tablosuna yazılır. **(13.11.2026)** Eğitmen ve yöneticinin program ve ölçüm yazmaları da yazılır (O-06). |
+| Y-10 | **(13.11.2026)** "Eğitmenin üyesi": eğitmenin **son 90 gün içinde başlamış veya gelecekteki**, iptal edilmemiş bir dersinde **iptal edilmemiş rezervasyonu** (katıldı veya gelmedi) olan **aktif üye**. Bağ anlık hesaplanır (`private.is_my_member`); rezervasyon iptal edilince veya 90 gün dolunca erişim kendiliğinden biter. Kural RLS ile ve RPC'lerin içinde zorunlu kılınır; ekrandaki filtre yalnızca kolaylıktır. Eğitmen kendi üyelerini `trainer_my_members` ile listeler (ad, son ders, sonraki ders, ders sayısı); yönetici herhangi bir eğitmen için çağırabilir. | 
 
 ## 3. Paketler (P)
 
@@ -163,6 +164,9 @@ Tüm kontroller ve hak düşümü `book_class` içinde tek transaction olarak ya
 | Hatalı satış ters kayıtla düzeltilir | Bakiye geri gelir; satış `reversed_at` ile işaretlenir; ikinci ters kayıt `ALREADY_REVERSED` | C-08 |
 | Üye başka üyenin profilini/paketini/cüzdanını sorgular | Boş sonuç (RLS) | Y-04 |
 | Eğitmen `assign_package` / `admin_wallet_topup` çağırır | `FORBIDDEN` | Y-05 |
+| Eğitmen kendi üyesi olmayan üyenin programını/ölçümünü sorgular veya yazar | Boş sonuç (RLS) / `FORBIDDEN` | Y-10 |
+| Üyeye ikinci aktif program kaydedilir | Önceki program pasife alınır; doğrudan ikinci aktif satır `23505` | A-03 |
+| Eğitmen / üye `admin_report` çağırır | `FORBIDDEN` | RP-01 |
 | Üye `profiles.role` alanını güncellemeye çalışır | Yetki hatası | Y-02, K-07 |
 
 ## 11. Onaylanan ek kararlar
@@ -254,3 +258,58 @@ Aşağıdaki kararlar stüdyo tarafından onaylandı. 2. madde sonradan F-16 ile
 5. "Geldi / gelmedi" işaretleme (yoklama) bu adımda yoktur; adım 5 kapsamında ele alınacak (I-06).
 6. Elle eklenen referansta getiren ve getirilen herhangi bir aktif kullanıcı olabilir (rol kısıtı yok); yönetici bu kaydı da sonradan reddedebilir (F-16, §14-3).
 7. Üye "Geçmiş" sekmesinde iptal edilmiş rezervasyonlarını da görür; liste en son 300 rezervasyonla sınırlıdır.
+
+## 16. Antrenman programları, vücut ölçümleri, eğitmenin üyeleri, raporlar (13.11.2026)
+
+Stüdyo kararı: 13.11.2026. Sunucu karşılığı: `supabase/migrations/20261113150000_programs_measurements_reports.sql`. Testler: `supabase/tests/database/07_programs_measurements_reports.test.sql`. Bu bölüm **Y-05'i değiştirir** (bkz. Y-05, Y-10) ve K-05'i daraltır.
+
+### Antrenman programları (A)
+
+| Kimlik | Kural | Hata kodu |
+|---|---|---|
+| A-01 | Programı üyenin eğitmeni (Y-10) veya yönetici hazırlar; yalnızca aktif **üye** hesabına hazırlanır. Başlık zorunludur (en fazla 80 karakter); hedef ve not isteğe bağlıdır. Üye kendine program yazamaz. | `FORBIDDEN`, `MEMBER_NOT_ELIGIBLE`, `INVALID_INPUT` |
+| A-02 | Program, sıralı hareketlerden oluşur: gün etiketi ("Gün 1", "Pazartesi"), hareket adı, set (1–99), tekrar (serbest metin: "12", "8-10", "30 sn"), dinlenme (0–3600 sn), not. Gün ve hareket adı zorunludur; en fazla 150 hareket. Program ve hareketleri **tek işlemde** kaydedilir (`save_workout_program`); düzenlemede hareket listesi bütünüyle değişir, hatalı istek hiçbir şeyi değiştirmez. | `INVALID_INPUT` |
+| A-03 | Bir üyenin birden çok programı olabilir; **en fazla biri aktiftir** (veritabanı kısıtı). Yeni program aktif kaydedilirse veya eski bir program aktif yapılırsa üyenin diğer aktif programı aynı işlemde pasife alınır. | — |
+| A-04 | Program silinmez; eğitmen/yönetici düzenler veya pasife alır (`set_workout_program_active`). Üyenin eğitmeni, başka eğitmenin veya yöneticinin hazırladığı programı da düzenleyebilir. | `PROGRAM_NOT_FOUND` |
+| A-05 | Üye yalnızca kendi programlarını görür: önce aktif program, altında eskileri. Yetkisiz kullanıcıya programın varlığı sızdırılmaz ("bulunamadı"). | `PROGRAM_NOT_FOUND` |
+
+### Vücut ölçümleri (O)
+
+| Kimlik | Kural | Hata kodu |
+|---|---|---|
+| O-01 | Ölçüm alanları: kilo (20–400 kg), yağ oranı (%1–75), kas kütlesi (5–150 kg), bel / kalça / göğüs (30–250 cm), kol (10–100 cm), bacak (20–150 cm), not. Hepsi isteğe bağlıdır ama **en az biri** girilmelidir; değerler tek ondalığa yuvarlanır. | `MEASUREMENT_EMPTY`, `INVALID_INPUT`, aralık dışı: `23514` |
+| O-02 | Ölçümü üye **kendisi için**, eğitmen **kendi üyesi için** (Y-10), yönetici herkes için girer. Yalnızca aktif üye hesabına ölçüm girilir. | `FORBIDDEN`, `MEMBER_NOT_ELIGIBLE` |
+| O-03 | Ölçüm tarihi gün olarak tutulur (İstanbul); verilmezse bugündür, **gelecekte olamaz**. Aynı güne birden çok ölçüm girilebilir. | `INVALID_DATE` |
+| O-04 | Üye ekranı son değeri, bir önceki ve ilk ölçüme göre değişimi ve kilo eğilim çizgisini gösterir. Değişim "iyi/kötü" olarak renklendirilmez (hedefe bağlıdır). | — |
+| O-05 | Ölçüm düzenlenmez; hatalı kayıt silinip yeniden girilir. Yönetici her ölçümü, üye ve eğitmen yalnızca **kendi girdiği** ölçümü silebilir (eğitmen için üye hâlâ kendi üyesi olmalıdır). | `MEASUREMENT_NOT_FOUND` |
+| O-06 | Eğitmen/yönetici ölçüm ekleme ve silme işlemleri `audit_log`'a yazılır; denetim kaydına **ölçüm değerleri yazılmaz** (yalnızca üye ve tarih). Üyenin kendi girişi denetim kaydı oluşturmaz. | — |
+
+### Raporlar (RP)
+
+| Kimlik | Kural | Hata kodu |
+|---|---|---|
+| RP-01 | Raporu yalnızca yönetici alır (`admin_report`). | `FORBIDDEN` |
+| RP-02 | Aralık İstanbul gününe göredir, iki uç dahildir; verilmezse içinde bulunulan aydır; en fazla 366 gün. | `INVALID_DATE_RANGE` |
+| RP-03 | Paket satışı: aralıkta atanan (aktifleşen) paketlerin adedi, tahsil edilen tutar (`price_paid`), liste tutarı, indirim tutarı ve indirimli paket adedi. Sonradan yenilenen/sonlandırılan paketler de satış sayılır. | — |
+| RP-04 | Ürün satışı: ters kaydı alınmamış satışların adedi, toplam ürün adedi ve tutarı; ters kaydı alınanlar ayrıca sayılır. | — |
+| RP-05 | Cüzdan yüklemesi: ters kaydı alınmamış `topup` hareketlerinin adedi ve tutarı (düzeltme hareketleri dahil değildir). | — |
+| RP-06 | Yeni üye: aralıkta kayıt olan üye rolündeki hesaplar. Aktif paketli üye: **şu an** kullanılabilir paketi olan aktif üye sayısı (aralıktan bağımsız anlık değer). | — |
+| RP-07 | Dersler: yapılan (iptal edilmemiş ve başlamış), planlanan (henüz başlamamış), iptal edilen. Ortalama doluluk = yapılan derslerde dolu kontenjan / toplam kontenjan. | — |
+| RP-08 | Katılım: yapılan derslerde katılan (`booked`) ve gelmeyen (`no_show`) rezervasyon sayısı. Yoklama zorunlu olmadığından "katıldı", gelmedi işaretlenmemiş rezervasyon demektir. | — |
+| RP-09 | Eğitmen bazında: yapılan ders sayısı, kontenjan, dolu yer, katılan, gelmeyen. | — |
+| RP-10 | En çok satan 5 ürün: adede, sonra tutara göre. | — |
+
+### KVKK — yayından önce yapılacak iş (karar değil)
+
+Vücut ölçümleri (kilo, yağ oranı, çevre ölçüleri) **sağlık verisi** niteliğindedir (KVKK md. 6, özel nitelikli kişisel veri). Canlıya geçmeden önce:
+
+- Aydınlatma metni ve **açık rıza** metni (`lib/core/config/legal.dart`) ölçümleri, eğitmenin kendi üyelerinin ölçümlerini görmesini ve saklama süresini kapsayacak biçimde hukuki metinle güncellenmeli; metin değişince sürüm numarası artırılmalı ve mevcut üyelerden yeni sürüm onayı alınmalıdır (K-04). **Bu adımda onay sürümü değiştirilmedi.**
+- Hesap silme sürecinde (adım 8) ölçümler ve programlar üyeyle birlikte silinir (`ON DELETE CASCADE`); süreç tanımlanırken bu doğrulanmalıdır.
+
+### Yeni varsayımlar — onay bekliyor
+
+1. "Kendi üyesi" penceresi dersin **başlangıcına** göre 90 gündür; son dersinden 90 gün geçen ve gelecek rezervasyonu olmayan üyenin program ve ölçümleri eğitmene kapanır (kayıtlar silinmez, yönetici ve üye görmeye devam eder).
+2. Aynı üyenin birden çok eğitmeni olabilir; hepsi üyenin tüm programlarını ve ölçümlerini görür ve programlarını düzenleyebilir.
+3. Profildeki kilo (`profiles.weight_kg`) ile ölçümlerdeki kilo birbirinden bağımsızdır; ölçüm girmek profili güncellemez (K-05).
+4. Yönetici, üyenin programlarına ve ölçümlerine "Üyeler ve paketleri → üye → ⋮" menüsünden ulaşır; yöneticiye ayrı bir "eğitmenin üyeleri" ekranı yapılmadı (`trainer_my_members(p_trainer_id)` sunucuda hazır).
+5. Raporda cüzdan yüklemeleri "gelir" başlığında gösterilir ama ürün satışlarıyla **toplanmaz** (aynı para önce yüklenir, sonra harcanır); toplam ciro satırı bu yüzden yoktur.
