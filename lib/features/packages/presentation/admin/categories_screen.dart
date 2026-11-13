@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/utils/error_messages.dart';
 import '../../../../core/widgets/async_value_view.dart';
 import '../../../../core/widgets/empty_view.dart';
+import '../../../../core/widgets/text_controller_scope.dart';
 import '../../data/package_repository.dart';
 import '../../domain/package_models.dart';
 
@@ -11,54 +12,55 @@ class CategoriesScreen extends ConsumerWidget {
   const CategoriesScreen({super.key});
 
   Future<void> _edit(BuildContext context, WidgetRef ref, Category? c) async {
-    final name = TextEditingController(text: c?.name ?? '');
     var active = c?.isActive ?? true;
     final formKey = GlobalKey<FormState>();
-    final ok = await showDialog<bool>(
+    // Kaydet: girilen ad döner; Vazgeç / dışarı dokunma: null
+    final text = await showDialog<String>(
       context: context,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setS) => AlertDialog(
-          title: Text(c == null ? 'Kategori ekle' : 'Kategori düzenle'),
-          content: Form(
-            key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  controller: name,
-                  decoration: const InputDecoration(labelText: 'Ad'),
-                  validator: (v) =>
-                      (v ?? '').trim().isEmpty ? 'Ad gerekli.' : null,
-                ),
-                SwitchListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: const Text('Aktif'),
-                  value: active,
-                  onChanged: (v) => setS(() => active = v),
-                ),
-              ],
+      builder: (ctx) => TextControllerScope(
+        initialText: c?.name ?? '',
+        builder: (ctx, name) => StatefulBuilder(
+          builder: (ctx, setS) => AlertDialog(
+            title: Text(c == null ? 'Kategori ekle' : 'Kategori düzenle'),
+            content: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    controller: name,
+                    decoration: const InputDecoration(labelText: 'Ad'),
+                    validator: (v) =>
+                        (v ?? '').trim().isEmpty ? 'Ad gerekli.' : null,
+                  ),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Aktif'),
+                    value: active,
+                    onChanged: (v) => setS(() => active = v),
+                  ),
+                ],
+              ),
             ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: const Text('Vazgeç'),
+              ),
+              FilledButton(
+                onPressed: () {
+                  if (formKey.currentState!.validate()) {
+                    Navigator.of(ctx).pop(name.text.trim());
+                  }
+                },
+                child: const Text('Kaydet'),
+              ),
+            ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(false),
-              child: const Text('Vazgeç'),
-            ),
-            FilledButton(
-              onPressed: () {
-                if (formKey.currentState!.validate()) {
-                  Navigator.of(ctx).pop(true);
-                }
-              },
-              child: const Text('Kaydet'),
-            ),
-          ],
         ),
       ),
     );
-    final text = name.text.trim();
-    name.dispose();
-    if (ok != true || !context.mounted) return;
+    if (text == null || !context.mounted) return;
     final repo = ref.read(packageRepositoryProvider);
     final messenger = ScaffoldMessenger.of(context);
     try {

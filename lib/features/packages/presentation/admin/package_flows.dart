@@ -6,6 +6,7 @@ import '../../../../core/utils/error_messages.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../core/utils/uuid.dart';
 import '../../../../core/widgets/async_value_view.dart' show isNetworkError;
+import '../../../../core/widgets/text_controller_scope.dart';
 import '../../data/package_repository.dart';
 import '../../../referrals/data/referral_repository.dart';
 import '../../../referrals/domain/referral_models.dart';
@@ -152,40 +153,42 @@ Future<void> runFreezeFlow(
   );
   if (range == null || !context.mounted) return;
   final days = range.end.difference(range.start).inDays + 1;
-  final note = TextEditingController();
-  final ok = await showDialog<bool>(
+  // Dondur: not metni döner; Vazgeç: null
+  final noteText = await showDialog<String>(
     context: context,
-    builder: (ctx) => AlertDialog(
-      title: const Text('Paketi dondur'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            '${formatDate(range.start)} - ${formatDate(range.end)} ($days gün) arasındaki rezervasyonlar iptal edilecek ve haklar iade edilecek. Paketin bitiş tarihi $days gün uzatılacak.',
+    builder: (ctx) => TextControllerScope(
+      builder: (ctx, note) => AlertDialog(
+        title: const Text('Paketi dondur'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '${formatDate(range.start)} - ${formatDate(range.end)} ($days gün) arasındaki rezervasyonlar iptal edilecek ve haklar iade edilecek. Paketin bitiş tarihi $days gün uzatılacak.',
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: note,
+              decoration: const InputDecoration(
+                labelText: 'Not (isteğe bağlı)',
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Vazgeç'),
           ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: note,
-            decoration: const InputDecoration(labelText: 'Not (isteğe bağlı)'),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(note.text),
+            child: const Text('Dondur'),
           ),
         ],
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(ctx).pop(false),
-          child: const Text('Vazgeç'),
-        ),
-        FilledButton(
-          onPressed: () => Navigator.of(ctx).pop(true),
-          child: const Text('Dondur'),
-        ),
-      ],
     ),
   );
-  final noteText = note.text;
-  note.dispose();
-  if (ok != true) return;
+  if (noteText == null) return;
   try {
     await ref
         .read(packageRepositoryProvider)

@@ -2,6 +2,7 @@ import 'package:caspertrainingstudio/features/packages/data/package_repository.d
 import 'package:caspertrainingstudio/features/packages/domain/package_models.dart';
 import 'package:caspertrainingstudio/features/referrals/data/referral_repository.dart';
 import 'package:caspertrainingstudio/features/packages/presentation/admin/definitions_screen.dart';
+import 'package:caspertrainingstudio/features/packages/presentation/admin/categories_screen.dart';
 import 'package:caspertrainingstudio/features/packages/presentation/admin/member_packages_screen.dart';
 import 'package:caspertrainingstudio/features/packages/presentation/member/my_packages_screen.dart';
 import 'package:flutter/material.dart';
@@ -131,5 +132,33 @@ void main() {
     expect(repo.createdDefs.single['validityDays'], 40);
     expect(repo.createdDefs.single['sessionCount'], 16);
     expect(repo.createdDefs.single['price'], 7500.5);
+  });
+
+  // Regresyon: diyalog kapanış animasyonu sırasında silinmiş TextEditingController
+  // kullanılıyordu ("used after being disposed") ve ekran çöküyordu.
+  testWidgets('Kategori ekle diyaloğu kaydedip kapanırken hata vermez', (
+    tester,
+  ) async {
+    final repo = FakePackageRepository();
+    await tester.pumpWidget(app(repo, const CategoriesScreen()));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Kategori ekle'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.widgetWithText(TextFormField, 'Ad'), ' Yoga ');
+    await tester.tap(find.text('Kaydet'));
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(repo.createdCats, ['Yoga']);
+    expect(find.text('Kategori kaydedildi.'), findsOneWidget);
+
+    // Vazgeç: hiçbir şey kaydedilmez, yine hata yok
+    await tester.tap(find.text('Kategori ekle'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Vazgeç'));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(repo.createdCats, ['Yoga']);
   });
 }

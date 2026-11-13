@@ -5,6 +5,7 @@ import '../../../core/utils/error_messages.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/async_value_view.dart';
 import '../../../core/widgets/empty_view.dart';
+import '../../../core/widgets/text_controller_scope.dart';
 import '../data/referral_repository.dart';
 import '../domain/referral_models.dart';
 import 'my_referrals_screen.dart' show ReferralStatusChip;
@@ -28,45 +29,45 @@ class _AdminReferralsScreenState extends ConsumerState<AdminReferralsScreen> {
   ];
 
   Future<void> _decide(AdminReferral r, bool approve) async {
-    final note = TextEditingController();
     final changing = r.status != ReferralStatus.pending;
-    final ok = await showDialog<bool>(
+    // Onayla/Reddet: not metni döner; Vazgeç: null
+    final noteText = await showDialog<String>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(approve ? 'Referansı onayla' : 'Referansı reddet'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '${r.referrerName} → ${r.referredName} referansı ${approve ? 'onaylanacak' : 'reddedilecek'}.${changing ? ' (Önceki karar değiştirilecek.)' : ''}',
-            ),
-            if (!approve) ...[
-              const SizedBox(height: 12),
-              TextField(
-                controller: note,
-                decoration: const InputDecoration(
-                  labelText: 'Not (isteğe bağlı)',
-                ),
+      builder: (ctx) => TextControllerScope(
+        builder: (ctx, note) => AlertDialog(
+          title: Text(approve ? 'Referansı onayla' : 'Referansı reddet'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '${r.referrerName} → ${r.referredName} referansı ${approve ? 'onaylanacak' : 'reddedilecek'}.${changing ? ' (Önceki karar değiştirilecek.)' : ''}',
               ),
+              if (!approve) ...[
+                const SizedBox(height: 12),
+                TextField(
+                  controller: note,
+                  decoration: const InputDecoration(
+                    labelText: 'Not (isteğe bağlı)',
+                  ),
+                ),
+              ],
             ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('Vazgeç'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(ctx).pop(note.text),
+              child: Text(approve ? 'Onayla' : 'Reddet'),
+            ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Vazgeç'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(approve ? 'Onayla' : 'Reddet'),
-          ),
-        ],
       ),
     );
-    final noteText = note.text;
-    note.dispose();
-    if (ok != true || !mounted) return;
+    if (noteText == null || !mounted) return;
     final messenger = ScaffoldMessenger.of(context);
     try {
       await ref

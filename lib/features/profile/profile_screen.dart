@@ -5,6 +5,7 @@ import '../../core/config/supabase.dart';
 import '../../core/utils/error_messages.dart';
 import '../../core/utils/formatters.dart';
 import '../../core/widgets/async_value_view.dart';
+import '../../core/widgets/text_controller_scope.dart';
 import '../auth/validators.dart';
 import 'deletion_request.dart';
 import 'profile.dart';
@@ -201,46 +202,46 @@ class _DeletionSectionState extends ConsumerState<_DeletionSection> {
   bool _busy = false;
 
   Future<void> _request() async {
-    final noteCtrl = TextEditingController();
-    final ok = await showDialog<bool>(
+    // Talep gönder: not metni döner; Vazgeç: null
+    final note = await showDialog<String>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Hesabımı sil'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Talebiniz stüdyo yöneticisine iletilir. Onaylandığında kişisel '
-              'verileriniz KVKK kapsamında silinir veya anonimleştirilir. '
-              'Mali ve yasal olarak saklanması gereken kayıtlar muhafaza edilebilir.',
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: noteCtrl,
-              maxLines: 3,
-              maxLength: 500,
-              decoration: const InputDecoration(
-                labelText: 'Not (isteğe bağlı)',
+      builder: (ctx) => TextControllerScope(
+        builder: (ctx, noteCtrl) => AlertDialog(
+          title: const Text('Hesabımı sil'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Talebiniz stüdyo yöneticisine iletilir. Onaylandığında kişisel '
+                'verileriniz KVKK kapsamında silinir veya anonimleştirilir. '
+                'Mali ve yasal olarak saklanması gereken kayıtlar muhafaza edilebilir.',
               ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: noteCtrl,
+                maxLines: 3,
+                maxLength: 500,
+                decoration: const InputDecoration(
+                  labelText: 'Not (isteğe bağlı)',
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('Vazgeç'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(ctx).pop(noteCtrl.text),
+              child: const Text('Talep gönder'),
             ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Vazgeç'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Talep gönder'),
-          ),
-        ],
       ),
     );
-    final note = noteCtrl.text;
-    noteCtrl.dispose();
-    if (ok != true) return;
+    if (note == null) return;
     final uid = ref.read(currentProfileProvider).value?.id;
     if (uid == null) return;
     setState(() => _busy = true);

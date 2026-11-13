@@ -20,6 +20,7 @@ class FakePackageRepository implements PackageRepository {
   List<MemberPackage> pkgs = [];
   final assignCalls = <AssignCall>[];
   final createdDefs = <Map<String, Object?>>[];
+  final createdCats = <String>[];
   Object? assignErrorOnFirst;
 
   @override
@@ -28,7 +29,7 @@ class FakePackageRepository implements PackageRepository {
   Future<void> createCategory({
     required String name,
     required bool isActive,
-  }) async {}
+  }) async => createdCats.add(name);
   @override
   Future<void> updateCategory({
     required String id,
