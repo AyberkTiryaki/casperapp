@@ -49,4 +49,35 @@ void main() {
     expect(canReverseEntry(rev, all), isFalse);
     expect(canReverseEntry(other, all), isTrue);
   });
+
+  test('Sale: seller_sales satırından alıcı ve ürün adı okunur', () {
+    final s = Sale.fromJson({
+      'id': 's1',
+      'member_id': 'm1',
+      'member_name': 'Deniz Üye',
+      'product_name': 'Su',
+      'quantity': 2,
+      'unit_price': 20,
+      'total': 40,
+      'created_at': '2026-11-13T10:00:00Z',
+      'reversed_at': null,
+    });
+    expect(s.memberName, 'Deniz Üye');
+    expect(s.productName, 'Su');
+    expect(s.total, 40);
+  });
+
+  test('Sale: products(name) gömülü satırda alıcı adı yoktur', () {
+    final s = Sale.fromJson({
+      'id': 's2',
+      'member_id': 'm1',
+      'products': {'name': 'Protein Bar'},
+      'quantity': 1,
+      'unit_price': 60,
+      'total': 60,
+      'created_at': '2026-11-13T10:00:00Z',
+    });
+    expect(s.memberName, isNull);
+    expect(s.productName, 'Protein Bar');
+  });
 }

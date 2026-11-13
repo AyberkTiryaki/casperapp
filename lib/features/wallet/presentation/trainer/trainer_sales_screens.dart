@@ -148,10 +148,14 @@ class MySalesScreen extends ConsumerWidget {
                     final s = items[i];
                     return Card(
                       child: ListTile(
+                        isThreeLine: s.memberName != null,
                         title: Text('${s.productName} x${s.quantity}'),
                         subtitle: Text(
-                          '${formatDate(s.createdAt)} ${formatTime(s.createdAt)}'
-                          '${s.reversedAt != null ? '  •  İptal edildi' : ''}',
+                          [
+                            if (s.memberName != null) 'Alıcı: ${s.memberName}',
+                            '${formatDate(s.createdAt)} ${formatTime(s.createdAt)}'
+                                '${s.reversedAt != null ? '  •  İptal edildi' : ''}',
+                          ].join('\n'),
                         ),
                         trailing: Text(
                           formatTl(s.total),

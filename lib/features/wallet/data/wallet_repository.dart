@@ -105,8 +105,14 @@ class SupabaseWalletRepository implements WalletRepository {
       _sales('member_id', memberId);
 
   @override
-  Future<List<Sale>> salesBySeller(String sellerId) =>
-      _sales('seller_id', sellerId);
+  Future<List<Sale>> salesBySeller(String sellerId) async {
+    // Alıcı adıyla birlikte (eğitmen profiles'ı doğrudan okuyamaz)
+    final r = await supabase.rpc(
+      'seller_sales',
+      params: {'p_seller_id': sellerId},
+    );
+    return _rows(r).map(Sale.fromJson).toList();
+  }
 
   @override
   Future<void> topup({

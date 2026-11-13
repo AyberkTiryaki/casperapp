@@ -105,10 +105,14 @@ class Sale {
     required this.total,
     required this.createdAt,
     this.reversedAt,
+    this.memberName,
   });
 
   final String id;
   final String memberId;
+
+  /// Alıcının adı (seller_sales RPC'si doldurur; diğer sorgularda null).
+  final String? memberName;
   final String productName;
   final int quantity;
   final double unitPrice;
@@ -121,7 +125,10 @@ class Sale {
     return Sale(
       id: j['id'] as String,
       memberId: j['member_id'] as String,
-      productName: p is Map ? (p['name'] as String? ?? '-') : '-',
+      productName: p is Map
+          ? (p['name'] as String? ?? '-')
+          : (j['product_name'] as String? ?? '-'),
+      memberName: j['member_name'] as String?,
       quantity: (j['quantity'] as num).toInt(),
       unitPrice: parseMoney(j['unit_price']),
       total: parseMoney(j['total']),
