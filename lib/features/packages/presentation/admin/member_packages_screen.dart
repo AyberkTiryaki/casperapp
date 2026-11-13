@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/widgets/async_value_view.dart';
 import '../../../../core/widgets/empty_view.dart';
+import '../../../measurements/presentation/member_measurements_screen.dart';
 import '../../../referrals/data/referral_repository.dart';
 import '../../../wallet/presentation/admin/member_wallet_screen.dart';
+import '../../../workouts/presentation/member_programs_screen.dart';
 import '../../data/package_repository.dart';
 import '../../domain/package_models.dart';
 import '../shared/package_widgets.dart';
@@ -32,6 +34,29 @@ class AdminMemberPackagesScreen extends ConsumerWidget {
             ),
             icon: const Icon(Icons.account_balance_wallet_outlined),
             label: const Text('Cüzdan'),
+          ),
+          PopupMenuButton<String>(
+            tooltip: 'Program ve ölçümler',
+            onSelected: (v) => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => v == 'program'
+                    ? MemberProgramsScreen(
+                        memberId: member.id,
+                        memberName: member.fullName,
+                      )
+                    : MemberMeasurementsScreen(
+                        memberId: member.id,
+                        memberName: member.fullName,
+                      ),
+              ),
+            ),
+            itemBuilder: (_) => const [
+              PopupMenuItem(
+                value: 'program',
+                child: Text('Antrenman programları'),
+              ),
+              PopupMenuItem(value: 'olcum', child: Text('Ölçümler')),
+            ],
           ),
         ],
       ),

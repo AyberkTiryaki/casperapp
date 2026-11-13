@@ -64,6 +64,11 @@ const _serverCodeMessages = <String, String>{
   'INVALID_FULL_NAME': 'Ad soyad geçersiz.',
   'INVALID_INPUT': 'Girilen bilgiler geçersiz.',
   'CREATE_USER_FAILED': 'Hesap oluşturulamadı. Lütfen tekrar deneyin.',
+  'PROGRAM_NOT_FOUND': 'Antrenman programı bulunamadı.',
+  'INVALID_DATE': 'Tarih geçersiz (gelecekte olamaz).',
+  'MEASUREMENT_EMPTY': 'En az bir ölçüm değeri girin.',
+  'MEASUREMENT_NOT_FOUND': 'Ölçüm bulunamadı veya silme yetkiniz yok.',
+  'INVALID_DATE_RANGE': 'Tarih aralığı geçersiz (en fazla 366 gün).',
   'ROLE_UPDATE_FAILED': 'Hesap açıldı ancak rol atanamadı. Rolü kullanıcı listesinden değiştirin.',
 };
 

@@ -6,6 +6,7 @@ import '../../packages/presentation/admin/definitions_screen.dart';
 import '../../packages/presentation/admin/members_screen.dart';
 import '../../profile/profile.dart';
 import '../../referrals/presentation/admin_referrals_screen.dart';
+import '../../reports/presentation/admin_reports_screen.dart';
 import '../../schedule/presentation/admin/admin_schedule_screen.dart';
 import '../../wallet/presentation/admin/products_screen.dart';
 import 'audit_screen.dart';
@@ -70,7 +71,11 @@ class AdminHomeScreen extends StatelessWidget {
           Icons.person_remove_outlined,
           onTap: () => _go(context, const DeletionRequestsScreen()),
         ),
-        const ComingModule('Raporlar', Icons.bar_chart_outlined),
+        ComingModule(
+          'Raporlar',
+          Icons.bar_chart_outlined,
+          onTap: () => _go(context, const AdminReportsScreen()),
+        ),
       ],
     );
   }

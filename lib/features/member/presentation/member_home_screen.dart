@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/utils/formatters.dart';
 import '../../home/role_home_scaffold.dart';
+import '../../measurements/presentation/my_measurements_screen.dart';
 import '../../packages/presentation/member/my_packages_screen.dart';
 import '../../profile/profile.dart';
 import '../../referrals/presentation/my_referrals_screen.dart';
@@ -10,6 +11,7 @@ import '../../schedule/presentation/member/class_calendar_screen.dart';
 import '../../schedule/presentation/member/my_reservations_screen.dart';
 import '../../wallet/data/wallet_repository.dart';
 import '../../wallet/presentation/member/my_wallet_screen.dart';
+import '../../workouts/presentation/my_programs_screen.dart';
 
 class MemberHomeScreen extends ConsumerWidget {
   const MemberHomeScreen({super.key, required this.profile});
@@ -66,10 +68,23 @@ class MemberHomeScreen extends ConsumerWidget {
             MaterialPageRoute(builder: (_) => const MyReservationsScreen()),
           ),
         ),
-        const ComingModule('Antrenman programım', Icons.fitness_center),
-        const ComingModule(
+        ComingModule(
+          'Antrenman programım',
+          Icons.fitness_center,
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => MyProgramsScreen(memberId: profile.id),
+            ),
+          ),
+        ),
+        ComingModule(
           'Ölçümlerim ve ilerleme',
           Icons.monitor_weight_outlined,
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => MyMeasurementsScreen(memberId: profile.id),
+            ),
+          ),
         ),
       ],
     );
