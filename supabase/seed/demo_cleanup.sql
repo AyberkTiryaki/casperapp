@@ -1,4 +1,4 @@
--- supabase/seed/demo.sql ile eklenen deneme verisini siler (canlıya geçmeden önce).
+-- supabase/seed/demo.sql, demo_extra.sql ve demo_programs.sql ile eklenen deneme verisini siler (canlıya geçmeden önce).
 --   supabase db query --remote --yes -f supabase/seed/demo_cleanup.sql
 -- Yalnızca @casper.test hesaplarına ve demo.sql'in sabit kimlikli kayıtlarına dokunur.
 -- Not: Gerçek üyeler deneme kategorilerinde paket/ders kullandıysa ilgili silmeler
@@ -17,6 +17,11 @@ declare
                        pg_temp.sid('prd_elektrolit'), pg_temp.sid('prd_havlu'),
                        pg_temp.sid('prd_corap'), pg_temp.sid('prd_eski')];
 begin
+  -- Antrenman programları ve ölçümler (20261113150000; demo_programs.sql + uygulamadan girilenler)
+  delete from public.body_measurements where member_id = any(u);
+  delete from public.workout_program_items where program_id in
+    (select id from public.workout_programs where member_id = any(u));
+  delete from public.workout_programs where member_id = any(u);
   delete from public.credit_ledger where member_id = any(u);
   delete from public.reservations where member_id = any(u)
     or class_id in (select id from public.classes where trainer_id = any(u));
