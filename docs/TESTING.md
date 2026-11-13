@@ -37,7 +37,41 @@ Son çalıştırma (13.11.2026, bağlı proje): 6 dosya, 487 test, 0 başarısı
 
 ### Sınırlar
 
-`now()` transaction boyunca sabit olduğundan zaman sınırları (tam 2 saat, paket bitişi) kesin ölçülür. Ancak tek transaction içinde gerçek eşzamanlılık denenemez. Son kontenjana aynı anda rezervasyon ve eşzamanlı cüzdan harcaması için pgTAP testleri kilitleme ve idempotency davranışını sırayla doğrular; gerçek yarış koşulu için iki ayrı bağlantıdan aynı anda istek atan ayrı bir yük testi gerekir (ROADMAP §13).
+`now()` transaction boyunca sabit olduğundan zaman sınırları (tam 2 saat, paket bitişi) kesin ölçülür. Ancak tek transaction içinde gerçek eşzamanlılık denenemez; bunun için aşağıdaki ayrı test vardır.
+
+## Eşzamanlılık testi
+
+```
+python supabase/tests/run_concurrency.py
+```
+
+Ayrı bağlantılardan (paralel `supabase db query --remote` süreçleri) aynı ana kilitlenmiş istekler gönderir. Test verisi commit edilir (yalnızca `concur-*@example.invalid` kullanıcıları) ve test sonunda, hata olsa bile silinir.
+
+| Senaryo | Beklenen |
+|---|---|
+| A. Kapasitesi 1 olan derse 8 üye aynı anda | 1 rezervasyon, 7 × `CLASS_FULL` |
+| B. Aynı üye + aynı idempotency anahtarı, 6 istek | 1 rezervasyon, 1 hak düşümü |
+| C. 100 TL bakiye, 30 TL ürün, 6 farklı satış | 3 satış, 3 × `INSUFFICIENT_BALANCE`, bakiye 10 TL, hiç eksiye düşmez |
+| D. Aynı anahtarla 5 satış | 1 satış, bakiye 70 TL |
+
+Son çalıştırma (13.11.2026): 4/4 başarılı; istekler birbirinden 2–16 ms arayla ulaştı.
+
+## Deneme verisi
+
+`supabase/seed/demo.sql` uygulamayı elle denemek için hesap, kategori, paket, ürün, 14 günlük ders takvimi ve örnek rezervasyon ekler. Tekrar çalıştırılabilir. Canlıya geçmeden önce `supabase/seed/demo_cleanup.sql` ile silinir.
+
+| Hesap (şifre `1234`) | Rol | Durum |
+|---|---|---|
+| `yonetici@casper.test` | yönetici | |
+| `egitmen1..3@casper.test` | eğitmen | Ayşe (grup Pilates), Mert (Fonksiyonel), Selin (birebir) |
+| `uye1@casper.test` | üye | Pilates 8, cüzdan 500 TL, yarın 10:00 kayıtlı |
+| `uye2@casper.test` | üye | Pilates 12, cüzdan 200 TL, yarın 10:00 kayıtlı |
+| `uye3@casper.test` | üye | Fonksiyonel 8 |
+| `uye4@casper.test` | üye | Fonksiyonel 16, yarın 18:00 kayıtlı |
+| `uye5@casper.test` | üye | paketi yok |
+| `uye6@casper.test` | üye | Pilates 8, cüzdan 0 TL |
+
+Şifreler doğrudan veritabanına yazıldığı için 6 karakter kuralına takılmaz; uygulamadan şifre değiştirirken kural yine geçerlidir.
 
 ## Uygulama testleri (Flutter)
 
