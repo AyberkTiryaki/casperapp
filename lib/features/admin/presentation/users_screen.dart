@@ -132,7 +132,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                 );
               },
               decoration: const InputDecoration(
-                labelText: 'Kullanıcı ara',
+                labelText: 'Ad veya e-posta ile ara',
                 prefixIcon: Icon(Icons.search),
               ),
             ),
@@ -163,8 +163,13 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                             title: Text(
                               self ? '${u.fullName} (siz)' : u.fullName,
                             ),
+                            isThreeLine: u.bodyInfo().isNotEmpty,
                             subtitle: Text(
-                              '${u.role.label}  •  ${u.isActive ? 'Aktif' : 'Pasif'}',
+                              [
+                                if (u.email != null) u.email!,
+                                '${u.role.label}  •  ${u.isActive ? 'Aktif' : 'Pasif'}',
+                                if (u.bodyInfo().isNotEmpty) u.bodyInfo(),
+                              ].join('\n'),
                             ),
                             trailing: self
                                 ? null

@@ -23,6 +23,15 @@ String? validatePassword(String? v) {
   return null;
 }
 
+/// Yöneticinin açtığı hesaplar için: kısa geçici şifreye (ör. 1234) izin verir.
+/// Sunucu tarafı aynı sınırı uygular (supabase/functions/admin-create-user).
+String? validateAdminPassword(String? v) {
+  final s = v ?? '';
+  if (s.isEmpty) return 'Şifre gerekli.';
+  if (s.length < 4) return 'Şifre en az 4 karakter olmalı.';
+  return null;
+}
+
 String? validatePasswordConfirm(String? v, String password) {
   if ((v ?? '').isEmpty) return 'Şifre tekrarı gerekli.';
   if (v != password) return 'Şifreler eşleşmiyor.';

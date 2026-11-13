@@ -60,7 +60,7 @@ const _serverCodeMessages = <String, String>{
   'RESERVATION_NOT_ACTIVE': 'Rezervasyonun durumu bu işleme uygun değil.',
   'EMAIL_ALREADY_REGISTERED': 'Bu e-posta adresiyle zaten bir hesap var.',
   'INVALID_EMAIL': 'Geçerli bir e-posta girin.',
-  'WEAK_PASSWORD': 'Şifre en az 8 karakter olmalı.',
+  'WEAK_PASSWORD': 'Şifre çok kısa veya sunucu tarafından kabul edilmedi.',
   'INVALID_FULL_NAME': 'Ad soyad geçersiz.',
   'INVALID_INPUT': 'Girilen bilgiler geçersiz.',
   'CREATE_USER_FAILED': 'Hesap oluşturulamadı. Lütfen tekrar deneyin.',

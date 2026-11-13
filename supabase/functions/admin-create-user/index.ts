@@ -52,7 +52,9 @@ Deno.serve(async (req) => {
   const role = body.role === "trainer" ? "trainer" : "member";
 
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return fail("INVALID_EMAIL");
-  if (password.length < 8 || password.length > 72) return fail("WEAK_PASSWORD");
+  // Yönetici açtığı hesaplarda kısa geçici şifreye izin verilir (ör. 1234); üyenin
+  // kendi kaydında 8 karakter kuralı uygulamada geçerlidir.
+  if (password.length < 4 || password.length > 72) return fail("WEAK_PASSWORD");
   if (fullName.length < 2 || fullName.length > 120) return fail("INVALID_FULL_NAME");
 
   const { data: created, error: createErr } = await admin.auth.admin.createUser({

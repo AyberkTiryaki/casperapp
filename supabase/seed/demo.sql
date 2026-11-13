@@ -64,6 +64,15 @@ from (values ('yonetici', 'admin'), ('egitmen1', 'trainer'),
              ('egitmen2', 'trainer'), ('egitmen3', 'trainer')) v(handle, role)
 where p.id = pg_temp.sid(v.handle) and p.role <> v.role::public.user_role;
 
+-- Boy / kilo / doğum tarihi (yönetici kullanıcı listesinde görünür)
+update public.profiles p set height_cm = v.h, weight_kg = v.w, birth_date = v.b::date
+from (values
+  ('uye1', 172, 68.5, '1992-04-12'), ('uye2', 165, 58.0, '1996-09-03'),
+  ('uye3', 181, 82.0, '1988-01-27'), ('uye4', 168, 61.5, '1999-12-15'),
+  ('uye5', 176, 90.0, '1985-06-30'), ('uye6', 160, 54.0, '2001-03-08')
+) v(handle, h, w, b)
+where p.id = pg_temp.sid(v.handle) and p.height_cm is null;
+
 -- ---------------------------------------------------------------------------
 -- Kategoriler, paket tanımları, ürünler
 -- ---------------------------------------------------------------------------

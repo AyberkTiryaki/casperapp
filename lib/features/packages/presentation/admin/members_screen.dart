@@ -100,6 +100,7 @@ class _MembersScreenState extends ConsumerState<MembersScreen> {
                           child: ListTile(
                             leading: const Icon(Icons.person_outline),
                             title: Text(m.fullName),
+                            subtitle: m.email == null ? null : Text(m.email!),
                             trailing: const Icon(Icons.chevron_right),
                             onTap: () => Navigator.of(context).push(
                               MaterialPageRoute(

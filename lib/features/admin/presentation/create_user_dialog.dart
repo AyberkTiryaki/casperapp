@@ -151,7 +151,7 @@ class _CreateUserDialogState extends ConsumerState<_CreateUserDialog> {
                           ),
                   ),
                 ),
-                validator: validatePassword,
+                validator: validateAdminPassword,
               ),
               if (widget.allowTrainer) ...[
                 const SizedBox(height: 16),

@@ -6,18 +6,51 @@ class ManagedUser {
     required this.fullName,
     required this.role,
     required this.isActive,
+    this.email,
+    this.birthDate,
+    this.heightCm,
+    this.weightKg,
   });
   final String id;
   final String fullName;
   final UserRole role;
   final bool isActive;
 
+  // Yalnızca yönetici görür (admin_list_users)
+  final String? email;
+  final DateTime? birthDate;
+  final int? heightCm;
+  final double? weightKg;
+
   factory ManagedUser.fromJson(Map<String, dynamic> j) => ManagedUser(
     id: j['id'] as String,
     fullName: (j['full_name'] as String?) ?? '',
     role: UserRole.fromString(j['role'] as String?),
     isActive: (j['is_active'] as bool?) ?? true,
+    email: j['email'] as String?,
+    birthDate: j['birth_date'] == null
+        ? null
+        : DateTime.tryParse(j['birth_date'] as String),
+    heightCm: (j['height_cm'] as num?)?.toInt(),
+    weightKg: (j['weight_kg'] as num?)?.toDouble(),
   );
+
+  /// "170 cm  •  65 kg  •  34 yaş" gibi; bilgi yoksa boş metin.
+  String bodyInfo([DateTime? now]) {
+    final parts = <String>[
+      if (heightCm != null) '$heightCm cm',
+      if (weightKg != null)
+        '${weightKg! % 1 == 0 ? weightKg!.toInt() : weightKg!.toStringAsFixed(1).replaceAll('.', ',')} kg',
+      if (birthDate != null) '${_age(birthDate!, now ?? DateTime.now())} yaş',
+    ];
+    return parts.join('  •  ');
+  }
+
+  static int _age(DateTime b, DateTime now) {
+    var a = now.year - b.year;
+    if (now.month < b.month || (now.month == b.month && now.day < b.day)) a--;
+    return a;
+  }
 }
 
 class AuditEntry {

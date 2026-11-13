@@ -58,13 +58,17 @@ class PackageDefinition {
 }
 
 class MemberSummary {
-  const MemberSummary({required this.id, required this.fullName});
+  const MemberSummary({required this.id, required this.fullName, this.email});
   final String id;
   final String fullName;
+
+  /// Yalnızca yöneticiye dolu gelir; eğitmen için null (search_members).
+  final String? email;
 
   factory MemberSummary.fromJson(Map<String, dynamic> j) => MemberSummary(
     id: j['id'] as String,
     fullName: (j['full_name'] as String?) ?? '',
+    email: j['email'] as String?,
   );
 }
 

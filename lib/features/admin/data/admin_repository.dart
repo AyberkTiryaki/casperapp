@@ -30,16 +30,14 @@ abstract class AdminRepository {
 }
 
 class SupabaseAdminRepository implements AdminRepository {
-  /// Yönetici profiles tablosunu RLS ile okuyabilir; pasif kullanıcılar da listelenir
-  /// (admin_search_users yalnızca aktifleri döndürdüğü için yeniden aktif etme için kullanılamaz).
+  /// admin_list_users: pasifler dahil; ad veya e-posta ile arar; e-posta, boy, kilo ve
+  /// doğum tarihini de döndürür (yalnızca yönetici çağırabilir).
   @override
   Future<List<ManagedUser>> searchUsers(String query) async {
-    final q = query.trim().replaceAll(RegExp(r'[%_,()\\]'), ' ').trim();
-    var req = supabase
-        .from('profiles')
-        .select('id, full_name, role, is_active');
-    if (q.isNotEmpty) req = req.ilike('full_name', '%$q%');
-    final r = await req.order('full_name').limit(50);
+    final r = await supabase.rpc(
+      'admin_list_users',
+      params: {'p_query': query.trim()},
+    );
     return _rows(r).map(ManagedUser.fromJson).toList();
   }
 

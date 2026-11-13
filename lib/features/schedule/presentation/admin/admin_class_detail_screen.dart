@@ -247,6 +247,9 @@ class _MemberPickerDialogState extends ConsumerState<MemberPickerDialog> {
                         itemBuilder: (_, i) => ListTile(
                           leading: const Icon(Icons.person_outline),
                           title: Text(items[i].fullName),
+                          subtitle: items[i].email == null
+                              ? null
+                              : Text(items[i].email!),
                           onTap: () => Navigator.of(context).pop(items[i]),
                         ),
                       ),
