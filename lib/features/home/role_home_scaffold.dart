@@ -28,9 +28,12 @@ Future<void> confirmAndSignOut(BuildContext context, WidgetRef ref) async {
 }
 
 class ComingModule {
-  const ComingModule(this.title, this.icon, {this.onTap});
+  const ComingModule(this.title, this.icon, {this.onTap, this.subtitle});
   final String title;
   final IconData icon;
+
+  /// Kartta başlığın altında gösterilen kısa bilgi (ör. güncel bakiye).
+  final String? subtitle;
 
   /// Verilirse kart çalışır durumdadır; verilmezse "Yakında" olarak devre dışıdır.
   final VoidCallback? onTap;
@@ -96,6 +99,7 @@ class RoleHomeScaffold extends ConsumerWidget {
                       onTap: m.onTap,
                       leading: Icon(m.icon),
                       title: Text(m.title),
+                      subtitle: m.subtitle == null ? null : Text(m.subtitle!),
                       trailing: m.onTap == null
                           ? const Text('Yakında')
                           : const Icon(Icons.chevron_right),

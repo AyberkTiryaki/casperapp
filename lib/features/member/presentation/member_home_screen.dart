@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/utils/formatters.dart';
 import '../../home/role_home_scaffold.dart';
 import '../../packages/presentation/member/my_packages_screen.dart';
 import '../../profile/profile.dart';
 import '../../referrals/presentation/my_referrals_screen.dart';
 import '../../schedule/presentation/member/class_calendar_screen.dart';
 import '../../schedule/presentation/member/my_reservations_screen.dart';
+import '../../wallet/data/wallet_repository.dart';
 import '../../wallet/presentation/member/my_wallet_screen.dart';
 
-class MemberHomeScreen extends StatelessWidget {
+class MemberHomeScreen extends ConsumerWidget {
   const MemberHomeScreen({super.key, required this.profile});
 
   final Profile profile;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final balance = ref.watch(walletBalanceProvider(profile.id));
     return RoleHomeScaffold(
       profile: profile,
       modules: [
@@ -28,8 +32,18 @@ class MemberHomeScreen extends StatelessWidget {
         ComingModule(
           'Cüzdanım',
           Icons.account_balance_wallet_outlined,
-          onTap: () => Navigator.of(context)
-              .push(MaterialPageRoute(builder: (_) => const MyWalletScreen())),
+          subtitle: balance.when(
+            data: (b) => 'Bakiye: ${formatTl(b)}',
+            loading: () => 'Bakiye yükleniyor…',
+            error: (_, _) => null,
+          ),
+          onTap: () async {
+            await Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const MyWalletScreen()));
+            // Cüzdan ekranından dönünce güncel bakiye
+            ref.invalidate(walletBalanceProvider(profile.id));
+          },
         ),
         ComingModule(
           'Referanslarım',

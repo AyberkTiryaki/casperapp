@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/utils/formatters.dart';
 import '../../../../core/widgets/async_value_view.dart';
 import '../../../../core/widgets/empty_view.dart';
 import '../../data/package_repository.dart';
@@ -100,14 +101,26 @@ class _MembersScreenState extends ConsumerState<MembersScreen> {
                           child: ListTile(
                             leading: const Icon(Icons.person_outline),
                             title: Text(m.fullName),
-                            subtitle: m.email == null ? null : Text(m.email!),
+                            subtitle: m.email == null && m.walletBalance == null
+                                ? null
+                                : Text(
+                                    [
+                                      if (m.email != null) m.email!,
+                                      if (m.walletBalance != null)
+                                        'Bakiye: ${formatTl(m.walletBalance!)}',
+                                    ].join('  •  '),
+                                  ),
                             trailing: const Icon(Icons.chevron_right),
-                            onTap: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    AdminMemberPackagesScreen(member: m),
-                              ),
-                            ),
+                            onTap: () async {
+                              await Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      AdminMemberPackagesScreen(member: m),
+                                ),
+                              );
+                              // Dönüşte güncel bakiye (yükleme/satış yapılmış olabilir)
+                              if (mounted) await _search(_controller.text);
+                            },
                           ),
                         );
                       },

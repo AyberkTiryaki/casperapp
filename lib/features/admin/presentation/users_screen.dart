@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/utils/error_messages.dart';
+import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/async_value_view.dart';
 import '../../../core/widgets/empty_view.dart';
 import '../../auth/auth_providers.dart';
@@ -167,7 +168,13 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                             subtitle: Text(
                               [
                                 if (u.email != null) u.email!,
-                                '${u.role.label}  •  ${u.isActive ? 'Aktif' : 'Pasif'}',
+                                [
+                                  u.role.label,
+                                  u.isActive ? 'Aktif' : 'Pasif',
+                                  if (u.role == UserRole.member &&
+                                      u.walletBalance != null)
+                                    'Bakiye: ${formatTl(u.walletBalance!)}',
+                                ].join('  •  '),
                                 if (u.bodyInfo().isNotEmpty) u.bodyInfo(),
                               ].join('\n'),
                             ),

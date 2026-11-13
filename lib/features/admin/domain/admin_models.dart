@@ -10,6 +10,7 @@ class ManagedUser {
     this.birthDate,
     this.heightCm,
     this.weightKg,
+    this.walletBalance,
   });
   final String id;
   final String fullName;
@@ -21,6 +22,7 @@ class ManagedUser {
   final DateTime? birthDate;
   final int? heightCm;
   final double? weightKg;
+  final double? walletBalance;
 
   factory ManagedUser.fromJson(Map<String, dynamic> j) => ManagedUser(
     id: j['id'] as String,
@@ -33,6 +35,7 @@ class ManagedUser {
         : DateTime.tryParse(j['birth_date'] as String),
     heightCm: (j['height_cm'] as num?)?.toInt(),
     weightKg: (j['weight_kg'] as num?)?.toDouble(),
+    walletBalance: (j['wallet_balance'] as num?)?.toDouble(),
   );
 
   /// "170 cm  •  65 kg  •  34 yaş" gibi; bilgi yoksa boş metin.
