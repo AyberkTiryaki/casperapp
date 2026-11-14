@@ -1,5 +1,5 @@
 -- Casper Training Studio — deneme verisi: antrenman programları ve vücut ölçümleri.
--- demo.sql ve demo_extra.sql'den SONRA, 20261113150000 migration'ı yüklendikten sonra çalıştırılır.
+-- demo.sql ve demo_extra.sql'den SONRA, 20261114120000 (sağlık rızası) migration'ı yüklendikten sonra çalıştırılır.
 --   supabase db query --remote --yes -f supabase/seed/demo_programs.sql
 -- Tekrar çalıştırılabilir: sabit kimlikli kayıtlar varsa atlanır.
 -- Silmek için: supabase/seed/demo_cleanup.sql
@@ -65,6 +65,16 @@ from (values
   ('prog:uye4:aktif', 6, 'Gün 2', 'Mountain climber', 3, '30 sn', 30, null)
 ) v(pid, ord, day_label, exercise, sets, reps, rest, note)
 where exists (select 1 from public.workout_programs wp where wp.id = pg_temp.sid(v.pid))
+on conflict do nothing;
+
+-- ---------------------------------------------------------------------------
+-- Sağlık verisi rızası (K-10: ölçüm ancak rızası olan üyeye yazılır).
+-- uye1, uye2 ve uye4 rıza vermiş; uye3 vermemiş (rıza uyarısı ekranı için).
+-- ---------------------------------------------------------------------------
+insert into public.consents (user_id, consent_type, text_version)
+select pg_temp.sid(m), 'health', '2026-11-v1'
+from unnest(array['uye1', 'uye2', 'uye4']) m
+where exists (select 1 from public.profiles p where p.id = pg_temp.sid(m))
 on conflict do nothing;
 
 -- ---------------------------------------------------------------------------

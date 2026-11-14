@@ -45,9 +45,12 @@ Onay kayıtları (KVKK). Aynı metin sürümü bir kullanıcı için bir kez kay
 |---|---|---|
 | id | uuid | PK, default `gen_random_uuid()` |
 | user_id | uuid | NOT NULL; FK → `profiles(id)` ON DELETE CASCADE |
-| consent_type | text | NOT NULL, default `'kvkk'` |
+| consent_type | text | NOT NULL, default `'kvkk'`; `'health'` = sağlık verisi açık rızası |
 | text_version | text | NOT NULL; CHECK uzunluk 1–40 |
 | accepted_at | timestamptz | NOT NULL, default `now()` |
+| revoked_at | timestamptz | NULL = geçerli; dolu = geri alındı (yalnızca `health`) |
+
+`body_measurements` üzerinde `body_measurements_require_consent` tetikleyicisi: üyenin geçerli `health` rızası yoksa ekleme `HEALTH_CONSENT_REQUIRED` ile reddedilir.
 
 - Kısıtlar: UNIQUE(`user_id`, `consent_type`, `text_version`) (adsız).
 - İndeksler: yalnızca UNIQUE'in dolaylı indeksi.
@@ -381,6 +384,8 @@ Tüm fonksiyonlar `public` şemasındadır, `SECURITY DEFINER` ve `search_path =
 | `admin_set_role(p_user_id uuid, p_role user_role)` → profiles | admin | Kullanıcının rolünü değiştirir; admin kendi rolünü düşüremez; denetim kaydı yazar | yok (aynı değer tekrar yazılır, denetim satırı tekrar eklenir) |
 | `admin_set_active(p_user_id uuid, p_is_active boolean)` → profiles | admin | Hesabı aktif/pasif yapar; admin kendini pasifleştiremez; denetim kaydı yazar | yok |
 | `accept_kvkk(p_text_version text)` → consents | giriş yapmış kullanıcı | Kendi adına KVKK metin sürümü onayı kaydeder | UNIQUE (user_id, consent_type, text_version) ile ON CONFLICT DO NOTHING |
+| `set_health_consent(p_accept boolean, p_text_version text)` → boolean | giriş yapmış kullanıcı (kendisi) | Sağlık verisi rızası verir (`health` satırı, geri alınmışsa yeniden açar) veya geri alır (`revoked_at` + üyenin tüm `body_measurements` satırları silinir, denetim kaydı) ; güncel durumu döner | K-09..K-12 |
+| `member_health_consent(p_member_id uuid)` → boolean | üyenin kendisi, yönetici, üyenin eğitmeni | Geçerli sağlık rızası var mı | Diğerlerine `FORBIDDEN` |
 | `list_trainers()` → table(id, full_name) | giriş yapmış kullanıcı | Aktif eğitmenlerin id ve adını listeler | okuma (gerekmez) |
 | `search_members(p_query text default '')` → table(id, full_name) | trainer, admin | Aktif üyeleri ada göre arar (en fazla 50); boy, kilo, doğum tarihi dönmez | okuma |
 | `class_participants(p_class_id uuid)` → table(reservation_id, member_id, full_name, status, booked_at) | admin veya dersin eğitmeni | İptal edilmemiş katılımcıları listeler | okuma |
@@ -440,6 +445,7 @@ Hatalar `raise exception 'KOD'` ile fırlatılır; istemci kodu metne göre Tür
 | `CANNOT_DEMOTE_SELF` | Admin kendi rolünü admin dışına düşüremez |
 | `CANNOT_DEACTIVATE_SELF` | Admin kendi hesabını pasifleştiremez |
 | `INVALID_VERSION` | KVKK metin sürümü geçersiz (1–40 karakter olmalı) |
+| `HEALTH_CONSENT_REQUIRED` | Üyenin geçerli sağlık verisi rızası yok; ölçüm kaydedilemez (K-10) |
 | `IDEMPOTENCY_KEY_REQUIRED` | İdempotency anahtarı gönderilmedi |
 | `IDEMPOTENCY_KEY_REUSED` | Aynı anahtar farklı bir istekte kullanılmış |
 | `MEMBER_NOT_ELIGIBLE` | Üye aktif değil veya rolü member değil |

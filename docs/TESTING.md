@@ -13,6 +13,7 @@ Konum: `supabase/tests/database/`. Her dosya tek bir transaction içinde çalı�
 | `05_rls.test.sql` | Yetki ve RLS: üye, eğitmen, yönetici, pasif hesap, anon | Y-02, Y-04..Y-08, K-06, K-07, F-13 | 113 |
 | `06_notifications.test.sql` | Bildirim kuyruğu: tetikleyici, tekrar etmeme, zamanlanmış görev, gönderici | B-01..B-03 | 59 |
 | `07_programs_measurements_reports.test.sql` | Eğitmenin üyeleri, antrenman programları, vücut ölçümleri (RLS: üye / eğitmen / yönetici / anon), yönetici raporu sayıları | Y-04..Y-06, Y-08..Y-10, A-01..A-05, O-01..O-06, RP-01..RP-10 | 102 |
+| `08_health_consent.test.sql` | Sağlık verisi açık rızası: kayıtta isteğe bağlı, rızasız ölçüm engeli, sonradan verme, geri alınca ölçümlerin silinmesi | K-09..K-12, Y-08 | 22 |
 
 ### Çalıştırma
 
@@ -103,3 +104,5 @@ flutter test
 - Gerçek iPhone ve Android cihazda giriş, takvim, bildirim izni ve bildirim alma
 - Bağlantı koptuktan sonra tekrarlanan rezervasyon isteğinin çift kayıt oluşturmaması
 - Pilot: 3 eğitmen ve küçük bir üye grubu
+
+`20261114120000` (sağlık rızası) migration'ı yüklenmeden önce 07 ve 08, migration ile tek transaction'da birleştirilip zorunlu geri alma ile denendi (14.11.2026): 102/102 ve 22/22 başarılı. 07'deki test kullanıcıları artık kayıtta sağlık rızası verir.

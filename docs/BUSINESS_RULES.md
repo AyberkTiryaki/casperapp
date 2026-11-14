@@ -33,6 +33,10 @@ Yol haritasında açıkça yazmayan ek kararlar 11. bölümdedir (10 Kasım 2026
 | K-06 | Her yeni hesabın rolü **üye**dir. Kayıt verisindeki hiçbir alan rolü değiştiremez. |
 | K-07 | Üye kendi profilinde yalnızca ad soyad, doğum tarihi, boy ve kiloyu değiştirebilir. |
 | K-08 | Üye hesap silme talebi oluşturabilir; aynı anda tek bekleyen talep olur. Talebi yönetici sonuçlandırır (süreç adım 8). |
+| K-09 | **(14.11.2026)** Sağlık verisi (vücut ölçümleri) için açık rıza, KVKK aydınlatma onayından **ayrı ve isteğe bağlıdır**. Kayıtta verilebilir; `consents` tablosuna `consent_type = 'health'` ve metin sürümüyle yazılır. Rıza vermeyen üye normal kayıt olur, rezervasyon yapar. |
+| K-10 | Geçerli (geri alınmamış) sağlık rızası olmayan üyeye **kimse** ölçüm kaydedemez (üye, eğitmen, yönetici); sunucu `HEALTH_CONSENT_REQUIRED` döner. Ekran uyarı gösterir ve ölçüm ekleme düğmesini kapatır. |
+| K-11 | Üye rızayı sonradan Profil ekranından verebilir (`set_health_consent(true, sürüm)`). Durumu üye, yönetici ve üyenin eğitmeni görebilir (`member_health_consent`). |
+| K-12 | Üye rızayı geri alabilir. Geri alınınca rıza kaydı silinmez (`revoked_at` yazılır) ve üyenin **tüm ölçümleri kalıcı olarak silinir**; silinen sayı denetim kaydına yazılır. Ekran önce uyarı ile onay ister. |
 
 ## 2. Roller ve yetki (Y)
 

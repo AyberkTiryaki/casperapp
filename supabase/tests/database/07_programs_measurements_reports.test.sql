@@ -24,7 +24,7 @@ language sql immutable as $f$
 $f$;
 
 -- auth.users kaydı açar; private.handle_new_user tetikleyicisi profil + cüzdan + KVKK
--- onayını oluşturur. Rol, postgres olarak doğrudan güncellenir (ilk yönetici gibi).
+-- onayını ve sağlık verisi rızasını (ölçümler için gerekli, K-10) oluşturur. Rol, postgres olarak doğrudan güncellenir (ilk yönetici gibi).
 create function ct.make_user(p_name text, p_role public.user_role default 'member')
 returns uuid language plpgsql as $f$
 declare
@@ -38,7 +38,8 @@ begin
      'pgtap-' || v_id || '@example.invalid', '', now(),
      '{"provider":"email","providers":["email"]}'::jsonb,
      jsonb_build_object('full_name', 'Test ' || p_name,
-                        'kvkk_accepted', 'true', 'kvkk_version', 'pgtap-1'),
+                        'kvkk_accepted', 'true', 'kvkk_version', 'pgtap-1',
+                        'health_consent', 'true', 'health_version', 'pgtap-1'),
      now(), now());
   if p_role <> 'member' then
     update public.profiles set role = p_role where id = v_id;
