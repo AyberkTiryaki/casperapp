@@ -37,6 +37,8 @@ class CasperApp extends StatelessWidget {
       localizationsDelegates: _delegates,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
+      // Marka kimliği koyu: gece mavisi zemin + elektrik mavisi
+      themeMode: ThemeMode.dark,
       home: const AuthGate(),
     );
   }
@@ -55,6 +57,8 @@ class _MissingConfigApp extends StatelessWidget {
       localizationsDelegates: _delegates,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
+      // Marka kimliği koyu: gece mavisi zemin + elektrik mavisi
+      themeMode: ThemeMode.dark,
       home: const Scaffold(
         body: SafeArea(
           child: Center(
