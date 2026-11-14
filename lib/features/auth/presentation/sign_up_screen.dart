@@ -84,15 +84,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
           controller: controller,
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
           children: [
-            Text(
-              title,
-              style: Theme.of(ctx).textTheme.titleLarge,
-            ),
+            Text(title, style: Theme.of(ctx).textTheme.titleLarge),
             const SizedBox(height: 4),
-            Text(
-              'Sürüm: $version',
-              style: Theme.of(ctx).textTheme.bodySmall,
-            ),
+            Text('Sürüm: $version', style: Theme.of(ctx).textTheme.bodySmall),
             const SizedBox(height: 16),
             Text(body),
             const SizedBox(height: 24),
@@ -319,8 +313,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       const Padding(
                         padding: EdgeInsets.only(bottom: 8),
                         child: WarningBox(
-                          text:
-                              'Onay vermezseniz eğitmeniniz vücut ölçümlerinizi kaydedemez ve gelişiminizi ölçümlerle takip edemez. Üyeliğiniz ve ders rezervasyonlarınız etkilenmez. Onayı daha sonra Profil ekranından verebilirsiniz.',
+                          text: 'Onay vermezseniz eğitmeniniz vücut ölçümlerinizi kaydedemez ve gelişiminizi ölçümlerle takip edemez. Üyeliğiniz ve ders rezervasyonlarınız etkilenmez. Onayı daha sonra Profil ekranından verebilirsiniz.',
                         ),
                       ),
                     if (_error != null)

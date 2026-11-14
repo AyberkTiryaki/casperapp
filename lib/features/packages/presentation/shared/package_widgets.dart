@@ -7,6 +7,7 @@ import '../../../../core/widgets/async_value_view.dart';
 import '../../../../core/widgets/empty_view.dart';
 import '../../data/package_repository.dart';
 import '../../domain/package_models.dart';
+import '../../../../core/widgets/home_button.dart';
 
 class PackageStatusChip extends StatelessWidget {
   const PackageStatusChip(this.status, {super.key});
@@ -195,7 +196,10 @@ class LedgerScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Hak hareketleri')),
+      appBar: AppBar(
+        actions: const [HomeButton()],
+        title: const Text('Hak hareketleri'),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [LedgerList(packageId: package.id)],

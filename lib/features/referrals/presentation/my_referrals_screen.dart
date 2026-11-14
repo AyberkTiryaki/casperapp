@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/widgets/async_value_view.dart';
 import '../data/referral_repository.dart';
 import '../domain/referral_models.dart';
+import '../../../core/widgets/home_button.dart';
 
 Color referralStatusColor(ReferralStatus s) => switch (s) {
   ReferralStatus.pending => Colors.orange,
@@ -52,7 +53,10 @@ class MyReferralsScreen extends ConsumerWidget {
     final signupCode = ref.watch(signupReferralCodeProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Referanslarım')),
+      appBar: AppBar(
+        actions: const [HomeButton()],
+        title: const Text('Referanslarım'),
+      ),
       body: AsyncValueView<void>(
         value: combined,
         onRetry: () => _refresh(ref),

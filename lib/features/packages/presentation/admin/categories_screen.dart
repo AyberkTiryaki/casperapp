@@ -7,6 +7,7 @@ import '../../../../core/widgets/empty_view.dart';
 import '../../../../core/widgets/text_controller_scope.dart';
 import '../../data/package_repository.dart';
 import '../../domain/package_models.dart';
+import '../../../../core/widgets/home_button.dart';
 
 class CategoriesScreen extends ConsumerWidget {
   const CategoriesScreen({super.key});
@@ -82,7 +83,10 @@ class CategoriesScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(categoriesProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Kategoriler')),
+      appBar: AppBar(
+        actions: const [HomeButton()],
+        title: const Text('Kategoriler'),
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _edit(context, ref, null),
         icon: const Icon(Icons.add),

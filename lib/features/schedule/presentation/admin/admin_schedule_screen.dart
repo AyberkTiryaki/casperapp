@@ -5,6 +5,7 @@ import '../../data/schedule_repository.dart';
 import '../shared/create_class_screen.dart';
 import '../shared/schedule_widgets.dart';
 import 'admin_class_detail_screen.dart';
+import '../../../../core/widgets/home_button.dart';
 
 class AdminScheduleScreen extends ConsumerStatefulWidget {
   const AdminScheduleScreen({super.key});
@@ -29,7 +30,10 @@ class _AdminScheduleScreenState extends ConsumerState<AdminScheduleScreen> {
       includeCancelled: _includeCancelled,
     );
     return Scaffold(
-      appBar: AppBar(title: const Text('Ders ve Rezervasyon Yönetimi')),
+      appBar: AppBar(
+        actions: const [HomeButton()],
+        title: const Text('Ders ve Rezervasyon Yönetimi'),
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => Navigator.of(context).push(
           MaterialPageRoute(

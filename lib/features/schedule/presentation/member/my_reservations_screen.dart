@@ -7,6 +7,7 @@ import '../../../../core/widgets/empty_view.dart';
 import '../../data/schedule_repository.dart';
 import '../../domain/schedule_models.dart';
 import '../shared/schedule_flows.dart';
+import '../../../../core/widgets/home_button.dart';
 
 class MyReservationsScreen extends ConsumerWidget {
   const MyReservationsScreen({super.key});
@@ -18,6 +19,7 @@ class MyReservationsScreen extends ConsumerWidget {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
+          actions: const [HomeButton()],
           title: const Text('Rezervasyonlarım'),
           bottom: const TabBar(
             tabs: [

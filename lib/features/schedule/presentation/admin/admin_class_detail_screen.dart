@@ -12,6 +12,7 @@ import '../../data/schedule_repository.dart';
 import '../../domain/schedule_models.dart';
 import '../shared/schedule_flows.dart';
 import '../shared/schedule_widgets.dart';
+import '../../../../core/widgets/home_button.dart';
 
 class AdminClassDetailScreen extends ConsumerWidget {
   const AdminClassDetailScreen({super.key, required StudioClass item})
@@ -39,7 +40,10 @@ class AdminClassDetailScreen extends ConsumerWidget {
     final async = ref.watch(adminReservationsProvider(item.id));
     final canBook = !item.isCancelled && !item.hasStarted(DateTime.now());
     return Scaffold(
-      appBar: AppBar(title: const Text('Ders detayı')),
+      appBar: AppBar(
+        actions: const [HomeButton()],
+        title: const Text('Ders detayı'),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

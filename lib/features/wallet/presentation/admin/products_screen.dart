@@ -7,6 +7,7 @@ import '../../../../core/widgets/async_value_view.dart';
 import '../../../../core/widgets/empty_view.dart';
 import '../../data/wallet_repository.dart';
 import '../../domain/wallet_models.dart';
+import '../../../../core/widgets/home_button.dart';
 
 class ProductsScreen extends ConsumerWidget {
   const ProductsScreen({super.key});
@@ -57,7 +58,10 @@ class ProductsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(productsProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Ürünler ve fiyatlar')),
+      appBar: AppBar(
+        actions: const [HomeButton()],
+        title: const Text('Ürünler ve fiyatlar'),
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _edit(context, ref, null),
         icon: const Icon(Icons.add),

@@ -10,6 +10,7 @@ import '../../data/package_repository.dart';
 import '../../domain/package_models.dart';
 import '../../../admin/presentation/create_user_dialog.dart';
 import 'member_packages_screen.dart';
+import '../../../../core/widgets/home_button.dart';
 
 class MembersScreen extends ConsumerStatefulWidget {
   const MembersScreen({super.key});
@@ -60,7 +61,10 @@ class _MembersScreenState extends ConsumerState<MembersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Üyeler')),
+      appBar: AppBar(
+        actions: const [HomeButton()],
+        title: const Text('Üyeler'),
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
           final id = await showCreateUserDialog(context, allowTrainer: false);

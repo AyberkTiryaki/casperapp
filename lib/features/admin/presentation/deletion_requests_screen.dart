@@ -8,6 +8,7 @@ import '../../../core/widgets/async_value_view.dart';
 import '../../../core/widgets/empty_view.dart';
 import '../../profile/deletion_request.dart';
 import '../data/admin_repository.dart';
+import '../../../core/widgets/home_button.dart';
 
 class DeletionItem {
   const DeletionItem(this.request, this.name);
@@ -102,7 +103,10 @@ class DeletionRequestsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final value = ref.watch(deletionRequestsProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Hesap silme talepleri')),
+      appBar: AppBar(
+        actions: const [HomeButton()],
+        title: const Text('Hesap silme talepleri'),
+      ),
       body: SafeArea(
         child: AsyncValueView<List<DeletionItem>>(
           value: value,

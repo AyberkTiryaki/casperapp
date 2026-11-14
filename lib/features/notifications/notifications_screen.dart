@@ -6,6 +6,7 @@ import '../../core/utils/formatters.dart';
 import '../../core/widgets/async_value_view.dart';
 import '../../core/widgets/empty_view.dart';
 import '../auth/auth_providers.dart';
+import '../../core/widgets/home_button.dart';
 
 class AppNotification {
   const AppNotification({
@@ -60,7 +61,10 @@ class NotificationsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final value = ref.watch(notificationsProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Bildirimler')),
+      appBar: AppBar(
+        actions: const [HomeButton()],
+        title: const Text('Bildirimler'),
+      ),
       body: SafeArea(
         child: AsyncValueView<List<AppNotification>>(
           value: value,

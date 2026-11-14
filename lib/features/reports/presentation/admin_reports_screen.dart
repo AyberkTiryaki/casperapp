@@ -6,6 +6,7 @@ import '../../../core/widgets/async_value_view.dart';
 import '../data/report_repository.dart';
 import '../domain/report_models.dart';
 import 'report_widgets.dart';
+import '../../../core/widgets/home_button.dart';
 
 enum _Quick { thisMonth, lastMonth, last7, last30 }
 
@@ -64,7 +65,10 @@ class _AdminReportsScreenState extends ConsumerState<AdminReportsScreen> {
   Widget build(BuildContext context) {
     final report = ref.watch(adminReportProvider(_range));
     return Scaffold(
-      appBar: AppBar(title: const Text('Raporlar')),
+      appBar: AppBar(
+        actions: const [HomeButton()],
+        title: const Text('Raporlar'),
+      ),
       body: Column(
         children: [
           Padding(

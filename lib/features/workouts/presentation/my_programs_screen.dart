@@ -7,6 +7,7 @@ import '../../../core/widgets/empty_view.dart';
 import '../data/workout_repository.dart';
 import '../domain/workout_models.dart';
 import 'program_widgets.dart';
+import '../../../core/widgets/home_button.dart';
 
 class MyProgramsScreen extends ConsumerWidget {
   const MyProgramsScreen({super.key, required this.memberId});
@@ -17,7 +18,10 @@ class MyProgramsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(workoutProgramsProvider(memberId));
     return Scaffold(
-      appBar: AppBar(title: const Text('Antrenman programım')),
+      appBar: AppBar(
+        actions: const [HomeButton()],
+        title: const Text('Antrenman programım'),
+      ),
       body: AsyncValueView<List<WorkoutProgram>>(
         value: async,
         onRetry: () => ref.invalidate(workoutProgramsProvider(memberId)),

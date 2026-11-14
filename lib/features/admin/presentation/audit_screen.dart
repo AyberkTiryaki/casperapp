@@ -8,6 +8,7 @@ import '../../../core/widgets/error_view.dart';
 import '../../../core/widgets/loading_view.dart';
 import '../data/admin_repository.dart';
 import '../domain/admin_models.dart';
+import '../../../core/widgets/home_button.dart';
 
 const _pageSize = 50;
 
@@ -149,6 +150,7 @@ class _AuditScreenState extends ConsumerState<AuditScreen> {
       appBar: AppBar(
         title: const Text('İşlem geçmişi'),
         actions: [
+          const HomeButton(),
           PopupMenuButton<String>(
             tooltip: 'İşleme göre filtrele',
             icon: Icon(_action == null ? Icons.filter_list : Icons.filter_alt),

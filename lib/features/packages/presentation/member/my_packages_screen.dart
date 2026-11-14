@@ -7,6 +7,7 @@ import '../../data/package_repository.dart';
 import '../../domain/package_models.dart';
 import '../shared/package_widgets.dart';
 import 'package_detail_screen.dart';
+import '../../../../core/widgets/home_button.dart';
 
 class MyPackagesScreen extends ConsumerWidget {
   const MyPackagesScreen({super.key});
@@ -15,7 +16,10 @@ class MyPackagesScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(myPackagesProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Paketlerim')),
+      appBar: AppBar(
+        actions: const [HomeButton()],
+        title: const Text('Paketlerim'),
+      ),
       body: AsyncValueView<List<MemberPackage>>(
         value: async,
         onRetry: () => ref.invalidate(myPackagesProvider),

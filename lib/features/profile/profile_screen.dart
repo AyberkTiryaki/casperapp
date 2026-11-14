@@ -13,6 +13,7 @@ import '../measurements/data/measurement_repository.dart';
 import 'deletion_request.dart';
 import 'profile.dart';
 import 'profile_providers.dart';
+import '../../core/widgets/home_button.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -21,7 +22,10 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profile = ref.watch(currentProfileProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Profilim')),
+      appBar: AppBar(
+        actions: const [HomeButton()],
+        title: const Text('Profilim'),
+      ),
       body: SafeArea(
         child: AsyncValueView<Profile?>(
           value: profile,

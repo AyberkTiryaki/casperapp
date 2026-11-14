@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'measurement_widgets.dart';
+import '../../../core/widgets/home_button.dart';
 
 /// Eğitmen/yönetici: bir üyenin ölçümleri.
 class MemberMeasurementsScreen extends ConsumerWidget {
@@ -18,6 +19,7 @@ class MemberMeasurementsScreen extends ConsumerWidget {
     final t = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
+        actions: const [HomeButton()],
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

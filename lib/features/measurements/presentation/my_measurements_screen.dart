@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'measurement_widgets.dart';
+import '../../../core/widgets/home_button.dart';
 
 /// Üye: kendi ölçümleri ve ilerlemesi.
 class MyMeasurementsScreen extends ConsumerWidget {
@@ -10,7 +11,10 @@ class MyMeasurementsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => Scaffold(
-    appBar: AppBar(title: const Text('Ölçümlerim ve ilerleme')),
+    appBar: AppBar(
+      actions: const [HomeButton()],
+      title: const Text('Ölçümlerim ve ilerleme'),
+    ),
     body: MeasurementsBody(
       memberId: memberId,
       isSelf: true,

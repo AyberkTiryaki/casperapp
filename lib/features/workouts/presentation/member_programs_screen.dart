@@ -8,6 +8,7 @@ import '../data/workout_repository.dart';
 import '../domain/workout_models.dart';
 import 'program_editor_screen.dart';
 import 'program_widgets.dart';
+import '../../../core/widgets/home_button.dart';
 
 /// Eğitmen/yönetici: bir üyenin antrenman programları.
 class MemberProgramsScreen extends ConsumerWidget {
@@ -90,6 +91,7 @@ class MemberProgramsScreen extends ConsumerWidget {
     final async = ref.watch(workoutProgramsProvider(memberId));
     return Scaffold(
       appBar: AppBar(
+        actions: const [HomeButton()],
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

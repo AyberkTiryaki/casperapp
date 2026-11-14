@@ -4,6 +4,7 @@ import '../../../core/utils/formatters.dart';
 import '../../measurements/presentation/member_measurements_screen.dart';
 import '../../workouts/presentation/member_programs_screen.dart';
 import '../domain/trainer_models.dart';
+import '../../../core/widgets/home_button.dart';
 
 /// Eğitmen: kendi üyesinin özeti; programlarına ve ölçümlerine geçiş.
 /// Profil boy/kilo/doğum tarihi, cüzdan ve paket bilgisi burada gösterilmez (Y-05).
@@ -19,7 +20,10 @@ class TrainerMemberDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(member.fullName)),
+      appBar: AppBar(
+        actions: const [HomeButton()],
+        title: Text(member.fullName),
+      ),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(16),

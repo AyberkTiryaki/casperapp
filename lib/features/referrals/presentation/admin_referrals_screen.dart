@@ -9,6 +9,7 @@ import '../../../core/widgets/text_controller_scope.dart';
 import '../data/referral_repository.dart';
 import '../domain/referral_models.dart';
 import 'my_referrals_screen.dart' show ReferralStatusChip;
+import '../../../core/widgets/home_button.dart';
 
 class AdminReferralsScreen extends ConsumerStatefulWidget {
   const AdminReferralsScreen({super.key});
@@ -90,7 +91,10 @@ class _AdminReferralsScreenState extends ConsumerState<AdminReferralsScreen> {
   Widget build(BuildContext context) {
     final async = ref.watch(adminReferralsProvider(_filter));
     return Scaffold(
-      appBar: AppBar(title: const Text('Referanslar')),
+      appBar: AppBar(
+        actions: const [HomeButton()],
+        title: const Text('Referanslar'),
+      ),
       body: Column(
         children: [
           SizedBox(

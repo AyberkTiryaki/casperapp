@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/package_repository.dart';
 import '../../domain/package_models.dart';
 import '../shared/package_widgets.dart';
+import '../../../../core/widgets/home_button.dart';
 
 class PackageDetailScreen extends ConsumerWidget {
   const PackageDetailScreen({super.key, required this.package});
@@ -15,7 +16,10 @@ class PackageDetailScreen extends ConsumerWidget {
     final t = Theme.of(context);
     final freezes = ref.watch(freezesProvider(package.id));
     return Scaffold(
-      appBar: AppBar(title: Text(package.definitionName ?? 'Paket')),
+      appBar: AppBar(
+        actions: const [HomeButton()],
+        title: Text(package.definitionName ?? 'Paket'),
+      ),
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(freezesProvider(package.id));

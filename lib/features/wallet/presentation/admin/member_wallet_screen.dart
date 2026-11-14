@@ -8,6 +8,7 @@ import '../../data/wallet_repository.dart';
 import '../../domain/wallet_models.dart';
 import '../shared/sell_flow.dart';
 import '../shared/wallet_widgets.dart';
+import '../../../../core/widgets/home_button.dart';
 
 /// Yönetici: bir üyenin cüzdanı (bakiye, hareketler, yükleme, düzeltme, ters kayıt, satış).
 class AdminMemberWalletScreen extends ConsumerWidget {
@@ -101,7 +102,10 @@ class AdminMemberWalletScreen extends ConsumerWidget {
     final balance = ref.watch(walletBalanceProvider(memberId));
     final ledger = ref.watch(walletLedgerProvider(memberId));
     return Scaffold(
-      appBar: AppBar(title: Text('Cüzdan: $memberName')),
+      appBar: AppBar(
+        actions: const [HomeButton()],
+        title: Text('Cüzdan: $memberName'),
+      ),
       body: AsyncValueView<double>(
         value: balance,
         onRetry: () => _refresh(ref),

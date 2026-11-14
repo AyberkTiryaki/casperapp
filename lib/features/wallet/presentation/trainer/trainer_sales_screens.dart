@@ -11,6 +11,7 @@ import '../../../packages/domain/package_models.dart';
 import '../../data/wallet_repository.dart';
 import '../../domain/wallet_models.dart';
 import '../shared/sell_flow.dart';
+import '../../../../core/widgets/home_button.dart';
 
 /// Eğitmen: üye ara, ürün sat.
 class SellProductScreen extends ConsumerStatefulWidget {
@@ -55,7 +56,10 @@ class _SellProductScreenState extends ConsumerState<SellProductScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Ürün satışı')),
+      appBar: AppBar(
+        actions: const [HomeButton()],
+        title: const Text('Ürün satışı'),
+      ),
       body: Column(
         children: [
           Padding(
@@ -122,7 +126,10 @@ class MySalesScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(salesBySellerProvider(sellerId));
     return Scaffold(
-      appBar: AppBar(title: const Text('Satışlarım')),
+      appBar: AppBar(
+        actions: const [HomeButton()],
+        title: const Text('Satışlarım'),
+      ),
       body: AsyncValueView<List<Sale>>(
         value: async,
         onRetry: () => ref.invalidate(salesBySellerProvider(sellerId)),

@@ -7,6 +7,7 @@ import '../../../../core/widgets/async_value_view.dart';
 import '../../../../core/widgets/empty_view.dart';
 import '../../data/package_repository.dart';
 import '../../domain/package_models.dart';
+import '../../../../core/widgets/home_button.dart';
 
 class DefinitionsScreen extends ConsumerWidget {
   const DefinitionsScreen({super.key});
@@ -22,7 +23,10 @@ class DefinitionsScreen extends ConsumerWidget {
     final async = ref.watch(definitionsProvider);
     final t = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Paket tanımları')),
+      appBar: AppBar(
+        actions: const [HomeButton()],
+        title: const Text('Paket tanımları'),
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _open(context, null),
         icon: const Icon(Icons.add),
@@ -163,6 +167,7 @@ class _DefinitionFormScreenState extends ConsumerState<DefinitionFormScreen> {
     final cats = ref.watch(categoriesProvider);
     return Scaffold(
       appBar: AppBar(
+        actions: const [HomeButton()],
         title: Text(
           widget.definition == null
               ? 'Paket tanımı ekle'

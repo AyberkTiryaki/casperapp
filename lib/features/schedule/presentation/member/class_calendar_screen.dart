@@ -6,6 +6,7 @@ import '../../data/schedule_repository.dart';
 import '../../domain/schedule_models.dart';
 import '../shared/schedule_flows.dart';
 import '../shared/schedule_widgets.dart';
+import '../../../../core/widgets/home_button.dart';
 
 class ClassCalendarScreen extends ConsumerStatefulWidget {
   const ClassCalendarScreen({super.key});
@@ -35,7 +36,10 @@ class _ClassCalendarScreenState extends ConsumerState<ClassCalendarScreen> {
       includeCancelled: false,
     );
     return Scaffold(
-      appBar: AppBar(title: const Text('Ders Takvimi')),
+      appBar: AppBar(
+        actions: const [HomeButton()],
+        title: const Text('Ders Takvimi'),
+      ),
       body: Column(
         children: [
           const SizedBox(height: 8),

@@ -7,6 +7,7 @@ import '../../data/schedule_repository.dart';
 import '../../domain/schedule_models.dart';
 import '../shared/create_class_screen.dart';
 import '../shared/schedule_widgets.dart';
+import '../../../../core/widgets/home_button.dart';
 
 class TrainerCalendarScreen extends ConsumerStatefulWidget {
   const TrainerCalendarScreen({super.key, required this.trainerId});
@@ -29,7 +30,10 @@ class _TrainerCalendarScreenState extends ConsumerState<TrainerCalendarScreen> {
       includeCancelled: false,
     );
     return Scaffold(
-      appBar: AppBar(title: const Text('Takvimim')),
+      appBar: AppBar(
+        actions: const [HomeButton()],
+        title: const Text('Takvimim'),
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => Navigator.of(context).push(
           MaterialPageRoute(
@@ -69,7 +73,10 @@ class ClassParticipantsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(participantsProvider(item.id));
     return Scaffold(
-      appBar: AppBar(title: const Text('Katılımcılar')),
+      appBar: AppBar(
+        actions: const [HomeButton()],
+        title: const Text('Katılımcılar'),
+      ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -7,6 +7,7 @@ import '../../../auth/auth_providers.dart';
 import '../../data/wallet_repository.dart';
 import '../../domain/wallet_models.dart';
 import '../shared/wallet_widgets.dart';
+import '../../../../core/widgets/home_button.dart';
 
 class MyWalletScreen extends ConsumerWidget {
   const MyWalletScreen({super.key});
@@ -24,7 +25,10 @@ class MyWalletScreen extends ConsumerWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Cüzdanım')),
+      appBar: AppBar(
+        actions: const [HomeButton()],
+        title: const Text('Cüzdanım'),
+      ),
       body: AsyncValueView<double>(
         value: balance,
         onRetry: refresh,

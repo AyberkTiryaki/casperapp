@@ -6,6 +6,7 @@ import '../../../core/widgets/async_value_view.dart';
 import '../../../core/widgets/empty_view.dart';
 import '../data/trainer_repository.dart';
 import '../domain/trainer_models.dart';
+import '../../../core/widgets/home_button.dart';
 
 String _dt(DateTime? d) =>
     d == null ? '—' : '${formatDate(d)} ${formatTime(d)}';
@@ -43,7 +44,7 @@ class _MyMembersScreenState extends ConsumerState<MyMembersScreen> {
   Widget build(BuildContext context) {
     final members = ref.watch(trainerMembersProvider(widget.trainerId));
     return Scaffold(
-      appBar: AppBar(title: Text(widget.title)),
+      appBar: AppBar(actions: const [HomeButton()], title: Text(widget.title)),
       body: Column(
         children: [
           if (widget.hint != null)

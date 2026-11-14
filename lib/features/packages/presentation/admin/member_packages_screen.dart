@@ -11,6 +11,7 @@ import '../../data/package_repository.dart';
 import '../../domain/package_models.dart';
 import '../shared/package_widgets.dart';
 import 'package_flows.dart';
+import '../../../../core/widgets/home_button.dart';
 
 class AdminMemberPackagesScreen extends ConsumerWidget {
   const AdminMemberPackagesScreen({super.key, required this.member});
@@ -23,6 +24,7 @@ class AdminMemberPackagesScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(member.fullName),
         actions: [
+          const HomeButton(),
           TextButton.icon(
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute(

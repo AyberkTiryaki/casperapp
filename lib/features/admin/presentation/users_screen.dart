@@ -14,6 +14,7 @@ import '../../wallet/presentation/shared/wallet_widgets.dart'
 import '../data/admin_repository.dart';
 import '../domain/admin_models.dart';
 import 'create_user_dialog.dart';
+import '../../../core/widgets/home_button.dart';
 
 class UsersScreen extends ConsumerStatefulWidget {
   const UsersScreen({super.key});
@@ -110,7 +111,10 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
   Widget build(BuildContext context) {
     final me = ref.watch(currentUserIdProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Kullanıcı ve rol yönetimi')),
+      appBar: AppBar(
+        actions: const [HomeButton()],
+        title: const Text('Kullanıcı ve rol yönetimi'),
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
           final id = await showCreateUserDialog(context);
