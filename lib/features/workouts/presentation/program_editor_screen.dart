@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/utils/error_messages.dart';
+import '../../../core/widgets/unsaved_changes_guard.dart';
 import '../data/workout_repository.dart';
 import '../domain/workout_models.dart';
 import 'program_widgets.dart';
@@ -35,8 +36,38 @@ class _ProgramEditorScreenState extends ConsumerState<ProgramEditorScreen> {
   late final _notes = TextEditingController(text: widget.existing?.notes ?? '');
   late bool _active = widget.existing?.isActive ?? true;
   late final List<WorkoutItem> _items = [...?widget.existing?.items];
+  late final List<WorkoutItem> _initialItems = [..._items];
   bool _saving = false;
   bool _itemsError = false;
+
+  bool get _dirty {
+    final e = widget.existing;
+    if (_title.text != (e?.title ?? '') ||
+        _goal.text != (e?.goal ?? '') ||
+        _notes.text != (e?.notes ?? '') ||
+        _active != (e?.isActive ?? true) ||
+        _items.length != _initialItems.length) {
+      return true;
+    }
+    for (var i = 0; i < _items.length; i++) {
+      if (!identical(_items[i], _initialItems[i])) return true;
+    }
+    return false;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _initialItems.length;
+    for (final c in [_title, _goal, _notes]) {
+      c.addListener(_onChanged);
+    }
+  }
+
+  bool _lastDirty = false;
+  void _onChanged() {
+    if (_dirty != _lastDirty) setState(() => _lastDirty = _dirty);
+  }
 
   @override
   void dispose() {
@@ -117,100 +148,103 @@ class _ProgramEditorScreenState extends ConsumerState<ProgramEditorScreen> {
   Widget build(BuildContext context) {
     final t = Theme.of(context);
     final days = groupItemsByDay(_items);
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          widget.existing == null ? 'Yeni program' : 'Programı düzenle',
-        ),
-        actions: [
-          TextButton(
-            onPressed: _saving ? null : _save,
-            child: const Text('Kaydet'),
+    return UnsavedChangesGuard(
+      dirty: _dirty,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            widget.existing == null ? 'Yeni program' : 'Programı düzenle',
           ),
-        ],
-      ),
-      body: AbsorbPointer(
-        absorbing: _saving,
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            Text(widget.memberName, style: t.textTheme.bodySmall),
-            const SizedBox(height: 8),
-            Form(
-              key: _form,
-              child: Column(
-                children: [
-                  TextFormField(
-                    controller: _title,
-                    maxLength: 80,
-                    decoration: const InputDecoration(labelText: 'Başlık'),
-                    validator: (v) =>
-                        (v ?? '').trim().isEmpty ? 'Başlık gerekli' : null,
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _goal,
-                    maxLength: 200,
-                    decoration: const InputDecoration(labelText: 'Hedef'),
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _notes,
-                    maxLength: 2000,
-                    minLines: 2,
-                    maxLines: 5,
-                    keyboardType: TextInputType.multiline,
-                    decoration: const InputDecoration(labelText: 'Notlar'),
-                  ),
-                ],
-              ),
+          actions: [
+            TextButton(
+              onPressed: _saving ? null : _save,
+              child: const Text('Kaydet'),
             ),
-            SwitchListTile(
-              contentPadding: EdgeInsets.zero,
-              title: const Text('Aktif program'),
-              subtitle: const Text(
-                'Aktif yapılırsa üyenin diğer aktif programı pasife alınır.',
-              ),
-              value: _active,
-              onChanged: (v) => setState(() => _active = v),
-            ),
-            const SizedBox(height: 8),
-            Text('Egzersizler', style: t.textTheme.titleMedium),
-            if (_itemsError)
-              Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text(
-                  'En az bir egzersiz ekleyin.',
-                  style: TextStyle(color: t.colorScheme.error),
-                ),
-              ),
-            for (final d in days) ...[
-              const SizedBox(height: 12),
-              Text(
-                d.key,
-                style: t.textTheme.titleSmall?.copyWith(
-                  color: t.colorScheme.primary,
-                ),
-              ),
-              for (var k = 0; k < d.value.length; k++)
-                _ItemCard(
-                  item: d.value[k],
-                  canUp: k > 0,
-                  canDown: k < d.value.length - 1,
-                  onEdit: () => _editItem(d.value[k]),
-                  onDelete: () => _delete(d.value[k]),
-                  onUp: () => _move(d.value[k], -1),
-                  onDown: () => _move(d.value[k], 1),
-                ),
-            ],
-            const SizedBox(height: 12),
-            OutlinedButton.icon(
-              onPressed: () => _editItem(null),
-              icon: const Icon(Icons.add),
-              label: const Text('Egzersiz ekle'),
-            ),
-            const SizedBox(height: 24),
           ],
+        ),
+        body: AbsorbPointer(
+          absorbing: _saving,
+          child: ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              Text(widget.memberName, style: t.textTheme.bodySmall),
+              const SizedBox(height: 8),
+              Form(
+                key: _form,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller: _title,
+                      maxLength: 80,
+                      decoration: const InputDecoration(labelText: 'Başlık'),
+                      validator: (v) =>
+                          (v ?? '').trim().isEmpty ? 'Başlık gerekli' : null,
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _goal,
+                      maxLength: 200,
+                      decoration: const InputDecoration(labelText: 'Hedef'),
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _notes,
+                      maxLength: 2000,
+                      minLines: 2,
+                      maxLines: 5,
+                      keyboardType: TextInputType.multiline,
+                      decoration: const InputDecoration(labelText: 'Notlar'),
+                    ),
+                  ],
+                ),
+              ),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text('Aktif program'),
+                subtitle: const Text(
+                  'Aktif yapılırsa üyenin diğer aktif programı pasife alınır.',
+                ),
+                value: _active,
+                onChanged: (v) => setState(() => _active = v),
+              ),
+              const SizedBox(height: 8),
+              Text('Egzersizler', style: t.textTheme.titleMedium),
+              if (_itemsError)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Text(
+                    'En az bir egzersiz ekleyin.',
+                    style: TextStyle(color: t.colorScheme.error),
+                  ),
+                ),
+              for (final d in days) ...[
+                const SizedBox(height: 12),
+                Text(
+                  d.key,
+                  style: t.textTheme.titleSmall?.copyWith(
+                    color: t.colorScheme.primary,
+                  ),
+                ),
+                for (var k = 0; k < d.value.length; k++)
+                  _ItemCard(
+                    item: d.value[k],
+                    canUp: k > 0,
+                    canDown: k < d.value.length - 1,
+                    onEdit: () => _editItem(d.value[k]),
+                    onDelete: () => _delete(d.value[k]),
+                    onUp: () => _move(d.value[k], -1),
+                    onDown: () => _move(d.value[k], 1),
+                  ),
+              ],
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: () => _editItem(null),
+                icon: const Icon(Icons.add),
+                label: const Text('Egzersiz ekle'),
+              ),
+              const SizedBox(height: 24),
+            ],
+          ),
         ),
       ),
     );

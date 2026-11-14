@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/config/legal.dart';
 import '../../../core/utils/error_messages.dart';
+import '../../../core/widgets/unsaved_changes_guard.dart';
 import '../../../core/widgets/warning_box.dart';
 import '../auth_providers.dart';
 import '../data/auth_repository.dart';
@@ -32,6 +33,41 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   bool _kvkkTouched = false;
   bool _loading = false;
   String? _error;
+
+  bool get _dirty =>
+      _kvkk ||
+      _health ||
+      [
+        _name,
+        _email,
+        _password,
+        _password2,
+        _birth,
+        _height,
+        _weight,
+        _referral,
+      ].any((c) => c.text.isNotEmpty);
+
+  @override
+  void initState() {
+    super.initState();
+    for (final c in [
+      _name,
+      _email,
+      _password,
+      _password2,
+      _height,
+      _weight,
+      _referral,
+    ]) {
+      c.addListener(_onChanged);
+    }
+  }
+
+  bool _lastDirty = false;
+  void _onChanged() {
+    if (_dirty != _lastDirty) setState(() => _lastDirty = _dirty);
+  }
 
   @override
   void dispose() {
@@ -145,197 +181,205 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   Widget build(BuildContext context) {
     final t = Theme.of(context);
     const gap = SizedBox(height: 16);
-    return Scaffold(
-      appBar: AppBar(title: const Text('Kayıt ol')),
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 420),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    TextFormField(
-                      controller: _name,
-                      textCapitalization: TextCapitalization.words,
-                      textInputAction: TextInputAction.next,
-                      decoration: const InputDecoration(labelText: 'Ad soyad'),
-                      validator: validateFullName,
-                    ),
-                    gap,
-                    TextFormField(
-                      controller: _email,
-                      keyboardType: TextInputType.emailAddress,
-                      textInputAction: TextInputAction.next,
-                      decoration: const InputDecoration(labelText: 'E-posta'),
-                      validator: validateEmail,
-                    ),
-                    gap,
-                    TextFormField(
-                      controller: _password,
-                      obscureText: true,
-                      textInputAction: TextInputAction.next,
-                      decoration: const InputDecoration(
-                        labelText: 'Şifre',
-                        helperText: 'En az 6 karakter',
+    return UnsavedChangesGuard(
+      dirty: _dirty,
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Kayıt ol')),
+        body: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 420),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      TextFormField(
+                        controller: _name,
+                        textCapitalization: TextCapitalization.words,
+                        textInputAction: TextInputAction.next,
+                        decoration: const InputDecoration(
+                          labelText: 'Ad soyad',
+                        ),
+                        validator: validateFullName,
                       ),
-                      validator: validatePassword,
-                    ),
-                    gap,
-                    TextFormField(
-                      controller: _password2,
-                      obscureText: true,
-                      textInputAction: TextInputAction.next,
-                      decoration: const InputDecoration(
-                        labelText: 'Şifre tekrar',
+                      gap,
+                      TextFormField(
+                        controller: _email,
+                        keyboardType: TextInputType.emailAddress,
+                        textInputAction: TextInputAction.next,
+                        decoration: const InputDecoration(labelText: 'E-posta'),
+                        validator: validateEmail,
                       ),
-                      validator: (v) =>
-                          validatePasswordConfirm(v, _password.text),
-                    ),
-                    gap,
-                    TextFormField(
-                      controller: _birth,
-                      readOnly: true,
-                      onTap: _pickDate,
-                      decoration: const InputDecoration(
-                        labelText: 'Doğum tarihi',
-                        suffixIcon: Icon(Icons.calendar_today_outlined),
+                      gap,
+                      TextFormField(
+                        controller: _password,
+                        obscureText: true,
+                        textInputAction: TextInputAction.next,
+                        decoration: const InputDecoration(
+                          labelText: 'Şifre',
+                          helperText: 'En az 6 karakter',
+                        ),
+                        validator: validatePassword,
                       ),
-                      validator: (_) => validateBirthDate(_birthDate),
-                    ),
-                    gap,
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            controller: _height,
-                            keyboardType: TextInputType.number,
-                            textInputAction: TextInputAction.next,
-                            decoration: const InputDecoration(
-                              labelText: 'Boy (cm)',
+                      gap,
+                      TextFormField(
+                        controller: _password2,
+                        obscureText: true,
+                        textInputAction: TextInputAction.next,
+                        decoration: const InputDecoration(
+                          labelText: 'Şifre tekrar',
+                        ),
+                        validator: (v) =>
+                            validatePasswordConfirm(v, _password.text),
+                      ),
+                      gap,
+                      TextFormField(
+                        controller: _birth,
+                        readOnly: true,
+                        onTap: _pickDate,
+                        decoration: const InputDecoration(
+                          labelText: 'Doğum tarihi',
+                          suffixIcon: Icon(Icons.calendar_today_outlined),
+                        ),
+                        validator: (_) => validateBirthDate(_birthDate),
+                      ),
+                      gap,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: _height,
+                              keyboardType: TextInputType.number,
+                              textInputAction: TextInputAction.next,
+                              decoration: const InputDecoration(
+                                labelText: 'Boy (cm)',
+                              ),
+                              validator: validateHeight,
                             ),
-                            validator: validateHeight,
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: TextFormField(
-                            controller: _weight,
-                            keyboardType: const TextInputType.numberWithOptions(
-                              decimal: true,
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: TextFormField(
+                              controller: _weight,
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
+                                    decimal: true,
+                                  ),
+                              textInputAction: TextInputAction.done,
+                              decoration: const InputDecoration(
+                                labelText: 'Kilo (kg)',
+                              ),
+                              validator: validateWeight,
                             ),
-                            textInputAction: TextInputAction.done,
-                            decoration: const InputDecoration(
-                              labelText: 'Kilo (kg)',
+                          ),
+                        ],
+                      ),
+                      gap,
+                      TextFormField(
+                        controller: _referral,
+                        textCapitalization: TextCapitalization.characters,
+                        autocorrect: false,
+                        decoration: const InputDecoration(
+                          labelText: 'Referans kodu (isteğe bağlı)',
+                          helperText: 'Kod geçersizse kaydınız yine tamamlanır, ancak referans oluşmaz.',
+                          helperMaxLines: 2,
+                        ),
+                        validator: validateReferralCode,
+                      ),
+                      gap,
+                      CheckboxListTile(
+                        value: _kvkk,
+                        contentPadding: EdgeInsets.zero,
+                        controlAffinity: ListTileControlAffinity.leading,
+                        onChanged: (v) => setState(() {
+                          _kvkk = v ?? false;
+                          _kvkkTouched = true;
+                        }),
+                        title: const Text(
+                          'KVKK aydınlatma metnini okudum, kabul ediyorum.',
+                        ),
+                        subtitle: Align(
+                          alignment: Alignment.centerLeft,
+                          child: TextButton(
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.zero,
+                              minimumSize: const Size(0, 32),
                             ),
-                            validator: validateWeight,
+                            onPressed: () => _showText(
+                              'KVKK Aydınlatma Metni',
+                              kvkkTextVersion,
+                              kvkkText,
+                            ),
+                            child: const Text('Metni oku'),
                           ),
                         ),
-                      ],
-                    ),
-                    gap,
-                    TextFormField(
-                      controller: _referral,
-                      textCapitalization: TextCapitalization.characters,
-                      autocorrect: false,
-                      decoration: const InputDecoration(
-                        labelText: 'Referans kodu (isteğe bağlı)',
-                        helperText: 'Kod geçersizse kaydınız yine tamamlanır, ancak referans oluşmaz.',
-                        helperMaxLines: 2,
                       ),
-                      validator: validateReferralCode,
-                    ),
-                    gap,
-                    CheckboxListTile(
-                      value: _kvkk,
-                      contentPadding: EdgeInsets.zero,
-                      controlAffinity: ListTileControlAffinity.leading,
-                      onChanged: (v) => setState(() {
-                        _kvkk = v ?? false;
-                        _kvkkTouched = true;
-                      }),
-                      title: const Text(
-                        'KVKK aydınlatma metnini okudum, kabul ediyorum.',
-                      ),
-                      subtitle: Align(
-                        alignment: Alignment.centerLeft,
-                        child: TextButton(
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            minimumSize: const Size(0, 32),
+                      if (_kvkkTouched && !_kvkk)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Text(
+                            'Devam etmek için KVKK metnini kabul etmelisiniz.',
+                            style: TextStyle(color: t.colorScheme.error),
                           ),
-                          onPressed: () => _showText(
-                            'KVKK Aydınlatma Metni',
-                            kvkkTextVersion,
-                            kvkkText,
+                        ),
+                      CheckboxListTile(
+                        value: _health,
+                        contentPadding: EdgeInsets.zero,
+                        controlAffinity: ListTileControlAffinity.leading,
+                        onChanged: (v) => setState(() => _health = v ?? false),
+                        title: const Text(
+                          'Sağlık verilerimin (vücut ölçümleri) işlenmesine açık rıza veriyorum (isteğe bağlı)',
+                        ),
+                        subtitle: Align(
+                          alignment: Alignment.centerLeft,
+                          child: TextButton(
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.zero,
+                              minimumSize: const Size(0, 32),
+                            ),
+                            onPressed: () => _showText(
+                              'Sağlık Verisi Açık Rıza Metni',
+                              healthConsentTextVersion,
+                              healthConsentText,
+                            ),
+                            child: const Text('Metni oku'),
                           ),
-                          child: const Text('Metni oku'),
                         ),
                       ),
-                    ),
-                    if (_kvkkTouched && !_kvkk)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Text(
-                          'Devam etmek için KVKK metnini kabul etmelisiniz.',
-                          style: TextStyle(color: t.colorScheme.error),
-                        ),
-                      ),
-                    CheckboxListTile(
-                      value: _health,
-                      contentPadding: EdgeInsets.zero,
-                      controlAffinity: ListTileControlAffinity.leading,
-                      onChanged: (v) => setState(() => _health = v ?? false),
-                      title: const Text(
-                        'Sağlık verilerimin (vücut ölçümleri) işlenmesine açık rıza veriyorum (isteğe bağlı)',
-                      ),
-                      subtitle: Align(
-                        alignment: Alignment.centerLeft,
-                        child: TextButton(
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            minimumSize: const Size(0, 32),
+                      if (!_health)
+                        const Padding(
+                          padding: EdgeInsets.only(bottom: 8),
+                          child: WarningBox(
+                            text: 'Onay vermezseniz eğitmeniniz vücut ölçümlerinizi kaydedemez ve gelişiminizi ölçümlerle takip edemez. Üyeliğiniz ve ders rezervasyonlarınız etkilenmez. Onayı daha sonra Profil ekranından verebilirsiniz.',
                           ),
-                          onPressed: () => _showText(
-                            'Sağlık Verisi Açık Rıza Metni',
-                            healthConsentTextVersion,
-                            healthConsentText,
+                        ),
+                      if (_error != null)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Text(
+                            _error!,
+                            style: TextStyle(color: t.colorScheme.error),
                           ),
-                          child: const Text('Metni oku'),
                         ),
+                      const SizedBox(height: 8),
+                      FilledButton(
+                        onPressed: _loading ? null : _submit,
+                        child: _loading
+                            ? const SizedBox(
+                                width: 22,
+                                height: 22,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Text('Kayıt ol'),
                       ),
-                    ),
-                    if (!_health)
-                      const Padding(
-                        padding: EdgeInsets.only(bottom: 8),
-                        child: WarningBox(
-                          text: 'Onay vermezseniz eğitmeniniz vücut ölçümlerinizi kaydedemez ve gelişiminizi ölçümlerle takip edemez. Üyeliğiniz ve ders rezervasyonlarınız etkilenmez. Onayı daha sonra Profil ekranından verebilirsiniz.',
-                        ),
-                      ),
-                    if (_error != null)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Text(
-                          _error!,
-                          style: TextStyle(color: t.colorScheme.error),
-                        ),
-                      ),
-                    const SizedBox(height: 8),
-                    FilledButton(
-                      onPressed: _loading ? null : _submit,
-                      child: _loading
-                          ? const SizedBox(
-                              width: 22,
-                              height: 22,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Text('Kayıt ol'),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

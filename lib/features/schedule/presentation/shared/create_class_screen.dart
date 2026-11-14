@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/utils/error_messages.dart';
 import '../../../../core/utils/formatters.dart';
+import '../../../../core/widgets/unsaved_changes_guard.dart';
 import '../../../packages/data/package_repository.dart';
 import '../../data/schedule_repository.dart';
 import '../../domain/schedule_models.dart';
@@ -26,8 +27,32 @@ class _CreateClassScreenState extends ConsumerState<CreateClassScreen> {
   ClassType _type = ClassType.group;
   late DateTime _date = widget.initialDay ?? DateTime.now();
   TimeOfDay _time = const TimeOfDay(hour: 10, minute: 0);
+  late final DateTime _initialDate = _date;
   bool _saving = false;
   String? _error;
+
+  bool get _dirty =>
+      _title.text.isNotEmpty ||
+      _duration.text != '60' ||
+      _categoryId != null ||
+      _trainerId != null ||
+      _type != ClassType.group ||
+      _time != const TimeOfDay(hour: 10, minute: 0) ||
+      !(_date.year == _initialDate.year &&
+          _date.month == _initialDate.month &&
+          _date.day == _initialDate.day);
+
+  @override
+  void initState() {
+    super.initState();
+    _title.addListener(_onChanged);
+    _duration.addListener(_onChanged);
+  }
+
+  bool _lastDirty = false;
+  void _onChanged() {
+    if (_dirty != _lastDirty) setState(() => _lastDirty = _dirty);
+  }
 
   @override
   void dispose() {
@@ -97,103 +122,106 @@ class _CreateClassScreenState extends ConsumerState<CreateClassScreen> {
             .toList() ??
         const [];
     final trainers = ref.watch(trainersProvider).value ?? const [];
-    return Scaffold(
-      appBar: AppBar(title: const Text('Ders aç')),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          DropdownButtonFormField<String>(
-            initialValue: _categoryId,
-            decoration: const InputDecoration(labelText: 'Kategori'),
-            items: [
-              for (final c in cats)
-                DropdownMenuItem(value: c.id, child: Text(c.name)),
-            ],
-            onChanged: (v) => setState(() => _categoryId = v),
-          ),
-          if (widget.asAdmin) ...[
-            const SizedBox(height: 12),
+    return UnsavedChangesGuard(
+      dirty: _dirty,
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Ders aç')),
+        body: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
             DropdownButtonFormField<String>(
-              initialValue: _trainerId,
-              decoration: const InputDecoration(labelText: 'Antrenör'),
+              initialValue: _categoryId,
+              decoration: const InputDecoration(labelText: 'Kategori'),
               items: [
-                for (final t in trainers)
-                  DropdownMenuItem(value: t.id, child: Text(t.fullName)),
+                for (final c in cats)
+                  DropdownMenuItem(value: c.id, child: Text(c.name)),
               ],
-              onChanged: (v) => setState(() => _trainerId = v),
+              onChanged: (v) => setState(() => _categoryId = v),
             ),
-          ],
-          const SizedBox(height: 12),
-          SegmentedButton<ClassType>(
-            segments: [
-              for (final t in ClassType.values)
-                ButtonSegment(value: t, label: Text(t.label)),
+            if (widget.asAdmin) ...[
+              const SizedBox(height: 12),
+              DropdownButtonFormField<String>(
+                initialValue: _trainerId,
+                decoration: const InputDecoration(labelText: 'Antrenör'),
+                items: [
+                  for (final t in trainers)
+                    DropdownMenuItem(value: t.id, child: Text(t.fullName)),
+                ],
+                onChanged: (v) => setState(() => _trainerId = v),
+              ),
             ],
-            selected: {_type},
-            onSelectionChanged: (s) => setState(() => _type = s.first),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            _type == ClassType.individual
-                ? 'Bireysel ders: kontenjan 1'
-                : 'Grup dersi: kontenjan 6',
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-          const SizedBox(height: 12),
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.calendar_today_outlined),
-            title: const Text('Tarih'),
-            trailing: Text(formatDate(_date)),
-            onTap: () async {
-              final today = dayStart(DateTime.now());
-              final d = await showDatePicker(
-                context: context,
-                initialDate: _date.isBefore(today) ? today : _date,
-                firstDate: today,
-                lastDate: today.add(const Duration(days: 365)),
-              );
-              if (d != null) setState(() => _date = d);
-            },
-          ),
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.schedule),
-            title: const Text('Saat'),
-            trailing: Text(_time.format(context)),
-            onTap: () async {
-              final t = await showTimePicker(
-                context: context,
-                initialTime: _time,
-              );
-              if (t != null) setState(() => _time = t);
-            },
-          ),
-          TextField(
-            controller: _duration,
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(labelText: 'Süre (dakika)'),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _title,
-            decoration: const InputDecoration(
-              labelText: 'Başlık (isteğe bağlı)',
-            ),
-          ),
-          if (_error != null) ...[
             const SizedBox(height: 12),
+            SegmentedButton<ClassType>(
+              segments: [
+                for (final t in ClassType.values)
+                  ButtonSegment(value: t, label: Text(t.label)),
+              ],
+              selected: {_type},
+              onSelectionChanged: (s) => setState(() => _type = s.first),
+            ),
+            const SizedBox(height: 4),
             Text(
-              _error!,
-              style: TextStyle(color: Theme.of(context).colorScheme.error),
+              _type == ClassType.individual
+                  ? 'Bireysel ders: kontenjan 1'
+                  : 'Grup dersi: kontenjan 6',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            const SizedBox(height: 12),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.calendar_today_outlined),
+              title: const Text('Tarih'),
+              trailing: Text(formatDate(_date)),
+              onTap: () async {
+                final today = dayStart(DateTime.now());
+                final d = await showDatePicker(
+                  context: context,
+                  initialDate: _date.isBefore(today) ? today : _date,
+                  firstDate: today,
+                  lastDate: today.add(const Duration(days: 365)),
+                );
+                if (d != null) setState(() => _date = d);
+              },
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.schedule),
+              title: const Text('Saat'),
+              trailing: Text(_time.format(context)),
+              onTap: () async {
+                final t = await showTimePicker(
+                  context: context,
+                  initialTime: _time,
+                );
+                if (t != null) setState(() => _time = t);
+              },
+            ),
+            TextField(
+              controller: _duration,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(labelText: 'Süre (dakika)'),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _title,
+              decoration: const InputDecoration(
+                labelText: 'Başlık (isteğe bağlı)',
+              ),
+            ),
+            if (_error != null) ...[
+              const SizedBox(height: 12),
+              Text(
+                _error!,
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
+              ),
+            ],
+            const SizedBox(height: 16),
+            FilledButton(
+              onPressed: _saving ? null : _submit,
+              child: Text(_saving ? 'Kaydediliyor...' : 'Dersi aç'),
             ),
           ],
-          const SizedBox(height: 16),
-          FilledButton(
-            onPressed: _saving ? null : _submit,
-            child: Text(_saving ? 'Kaydediliyor...' : 'Dersi aç'),
-          ),
-        ],
+        ),
       ),
     );
   }
