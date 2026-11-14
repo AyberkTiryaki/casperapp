@@ -52,6 +52,7 @@ Yol haritasında açıkça yazmayan ek kararlar 11. bölümdedir (10 Kasım 2026
 | Y-08 | Giriş yapmamış istemci (anon) hiçbir tabloya ve fonksiyona erişemez. `service_role` anahtarı mobil uygulamada bulunmaz. |
 | Y-09 | Yöneticinin yaptığı kritik işlemler (rol, paket atama, dondurma, iptal, cüzdan) `audit_log` tablosuna yazılır. **(13.11.2026)** Eğitmen ve yöneticinin program ve ölçüm yazmaları da yazılır (O-06). |
 | Y-10 | **(13.11.2026)** "Eğitmenin üyesi": eğitmenin **son 90 gün içinde başlamış veya gelecekteki**, iptal edilmemiş bir dersinde **iptal edilmemiş rezervasyonu** (katıldı veya gelmedi) olan **aktif üye**. Bağ anlık hesaplanır (`private.is_my_member`); rezervasyon iptal edilince veya 90 gün dolunca erişim kendiliğinden biter. Kural RLS ile ve RPC'lerin içinde zorunlu kılınır; ekrandaki filtre yalnızca kolaylıktır. Eğitmen kendi üyelerini `trainer_my_members` ile listeler (ad, son ders, sonraki ders, ders sayısı); yönetici herhangi bir eğitmen için çağırabilir. | 
+| Y-11 | **(14.11.2026)** Yönetici, üye veya eğitmenin şifresini geçici bir şifreyle (4–72 karakter) sıfırlayabilir (`admin_reset_password`). Kendi şifresini ve başka yöneticinin şifresini bununla değiştiremez (e-postayla sıfırlanır). Hedefin açık oturumları kapatılır; işlem denetim kaydına yazılır, şifre yazılmaz. | `FORBIDDEN`, `WEAK_PASSWORD`, `USER_NOT_FOUND` |
 
 ## 3. Paketler (P)
 

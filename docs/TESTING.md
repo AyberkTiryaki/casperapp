@@ -14,6 +14,7 @@ Konum: `supabase/tests/database/`. Her dosya tek bir transaction içinde çalı�
 | `06_notifications.test.sql` | Bildirim kuyruğu: tetikleyici, tekrar etmeme, zamanlanmış görev, gönderici | B-01..B-03 | 59 |
 | `07_programs_measurements_reports.test.sql` | Eğitmenin üyeleri, antrenman programları, vücut ölçümleri (RLS: üye / eğitmen / yönetici / anon), yönetici raporu sayıları | Y-04..Y-06, Y-08..Y-10, A-01..A-05, O-01..O-06, RP-01..RP-10 | 102 |
 | `08_health_consent.test.sql` | Sağlık verisi açık rızası: kayıtta isteğe bağlı, rızasız ölçüm engeli, sonradan verme, geri alınca ölçümlerin silinmesi | K-09..K-12, Y-08 | 22 |
+| `09_admin_reset_password.test.sql` | Yöneticinin şifre sıfırlaması: yetki, hedef kısıtları, oturum kapatma, denetim kaydı | Y-08, Y-11 | 12 |
 
 ### Çalıştırma
 
@@ -35,7 +36,7 @@ python supabase/tests/run_remote.py supabase/tests/database/02_booking.test.sql
 
 Veri bırakmaz, yine de canlıya geçtikten sonra **yalnızca dev/staging projesinde** çalıştırın.
 
-Son çalıştırma (14.11.2026, bağlı proje, migration 20261114130000 ile): 8 dosya, 613 test, 0 başarısız.
+Son çalıştırma (14.11.2026, bağlı proje, migration 20261114130000 ile): 9 dosya, 625 test, 0 başarısız.
 
 `07_programs_measurements_reports.test.sql` (102 test), `20261113150000` migration'ı yüklenmeden önce migration + test tek transaction'da birleştirilip zorunlu geri alma ile denendi (13.11.2026): 102/102 başarılı, veritabanında iz kalmadı. Migration yüklendikten sonra `python supabase/tests/run_remote.py` ile 7 dosyanın tamamı yeniden çalıştırılmalı ve bu satır güncellenmelidir. Rapor testleri başka veriyle karışmaması için Ocak 2020'ye yerleştirilmiş kayıtlarla çalışır.
 
