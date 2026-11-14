@@ -6,7 +6,7 @@ Hazırlayan: Claude (taslak, 14.11.2026). Bu metinler hukuki görüş değildir.
 
 | Metin | Yeri | Sürüm |
 |---|---|---|
-| KVKK Aydınlatma Metni | Uygulama, kayıt ekranı (`lib/core/config/legal.dart` → `kvkkText`) | `2026-11-v2` |
+| KVKK Aydınlatma Metni | Uygulama, kayıt ekranı (`lib/core/config/legal.dart` → `kvkkText`) | `2026-11-v3` |
 | Sağlık verileri açık rıza metni | Aynı dosya (`healthConsentText`); kayıt ekranında ayrı, isteğe bağlı kutu + Profil ekranı | `2026-11-v1` |
 | Gizlilik Politikası | `docs/GIZLILIK_POLITIKASI.md`, web'de yayımlanıp mağazaya URL olarak verilecek | — |
 
@@ -27,6 +27,6 @@ Veri sorumlusu adı "Casper Training Studio" olarak yazıldı (14.11.2026). Verg
 ## Uygulamada yapılması gerekenler (yayından önce)
 
 - [x] **Sağlık verileri açık rızası** (14.11.2026): kayıtta ayrı ve isteğe bağlı kutu, Profil'den verme / geri alma, rızasız ölçüm sunucuda engelli, geri alınca ölçümler silinir (K-09..K-12).
-- [ ] Mevcut üyelerden yeni aydınlatma metni sürümü (`2026-11-v2`) onayı alınmalı (K-04, `accept_kvkk`).
+- [ ] Mevcut üyelerden yeni aydınlatma metni sürümü (`2026-11-v3`) onayı alınmalı (K-04, `accept_kvkk`).
 - [ ] Hesap silme talebi onaylandığında silme veya anonimleştirme şu an yönetici tarafından elle yapılıyor. Bu işlem bir fonksiyonla otomatik hale getirilmeli ve mali kayıtlar anonim olarak korunmalı.
 - [ ] Gizlilik politikası bir web adresinde yayımlanmalı (Play ve App Store zorunlu kılıyor). Google Play için ayrıca hesap silme talebinin web'den de yapılabildiği bir sayfa gerekiyor.

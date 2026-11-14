@@ -45,7 +45,7 @@ Uygulama yalnızca Casper Training Studio üyeleri içindir. Hesabınız stüdyo
 - App Store: Sağlık ve Fitness (Health & Fitness)
 
 ## İletişim ve bağlantılar (stüdyo dolduracak)
-- Destek e-postası: caspersporkulubu@gmail.com
+- Destek e-postası: caspertrainingstudio@gmail.com
 - Web sitesi: https://www.instagram.com/caspertrainingstudio/ (stüdyonun web sitesi yok; Play Store web sitesi alanına ve App Store "Marketing URL" alanına bu adres girilir)
 - Gizlilik politikası URL'si: `________` (zorunlu; KVKK metni yayımlandıktan sonra)
 - Hesap silme sayfası URL'si: `________` (Google Play zorunlu kılar; uygulama içinde Profil > "Hesabımı sil" var, ayrıca web'den talep yolu tarif edilmeli)

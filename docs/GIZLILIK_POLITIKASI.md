@@ -37,7 +37,7 @@ Uygulama ile sunucu arasındaki tüm iletişim şifrelidir (HTTPS). Her kullanı
 
 ## Saklama süresi ve hesap silme
 
-Bilgileriniz hesabınız açık olduğu sürece saklanır. Hesabınızın silinmesini Uygulamada **Profil → Hesabımı sil** ile ya da caspersporkulubu@gmail.com adresine yazarak isteyebilirsiniz. Talebiniz en geç 30 gün içinde sonuçlandırılır. Hesap, kimlik, iletişim, ölçüm ve program bilgileriniz silinir veya anonim hale getirilir. Satış ve bakiye hareketleri gibi mali kayıtlar ilgili mevzuatın öngördüğü süre boyunca saklanır.
+Bilgileriniz hesabınız açık olduğu sürece saklanır. Hesabınızın silinmesini Uygulamada **Profil → Hesabımı sil** ile ya da caspertrainingstudio@gmail.com adresine yazarak isteyebilirsiniz. Talebiniz en geç 30 gün içinde sonuçlandırılır. Hesap, kimlik, iletişim, ölçüm ve program bilgileriniz silinir veya anonim hale getirilir. Satış ve bakiye hareketleri gibi mali kayıtlar ilgili mevzuatın öngördüğü süre boyunca saklanır.
 
 ## Çocuklar
 
@@ -45,13 +45,13 @@ Uygulama 18 yaşından küçükler için tasarlanmamıştır. 18 yaşından kü�
 
 ## Haklarınız
 
-KVKK md. 11 kapsamında bilgilerinize erişme, bunları düzeltme ve silinmesini isteme, işlemeye itiraz etme ve açık rızanızı geri alma haklarına sahipsiniz. Başvuru için: caspersporkulubu@gmail.com.
+KVKK md. 11 kapsamında bilgilerinize erişme, bunları düzeltme ve silinmesini isteme, işlemeye itiraz etme ve açık rızanızı geri alma haklarına sahipsiniz. Başvuru için: caspertrainingstudio@gmail.com.
 
 ## İletişim
 
 Casper Training Studio
 Atatürk Mahallesi, Ahmet Karaevli Sokak, Pilatin Prime Sitesi 7/A No: 19, Süleymanpaşa / Tekirdağ
-caspersporkulubu@gmail.com
+caspertrainingstudio@gmail.com
 Instagram: https://www.instagram.com/caspertrainingstudio/
 
 Bu politika değiştiğinde güncel sürüm bu sayfada yayımlanır ve önemli değişiklikler Uygulama içinde bildirilir.

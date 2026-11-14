@@ -187,7 +187,7 @@ Yol haritasında açıkça yazmayan aşağıdaki kararlar 10 Kasım 2026'da stü
 8. Tam 2 saat kala iptal serbesttir (I-01); yönetici iptalinde iade seçimi zorunludur (I-03).
 9. Kayıt verisinde KVKK onayı yoksa (ör. panelden açılan hesap) profil yine oluşur, onay kaydı yazılmaz.
 
-**Yapılacak iş (karar değil):** KVKK aydınlatma metni ve sağlık verisi açık rıza metni yazıldı (sürüm `2026-11-v2`, taslak); hukuk danışmanı onayı ve uygulamaya bağlanması bekleniyor. Bkz. `docs/KVKK_NOTLARI.md`.
+**Yapılacak iş (karar değil):** KVKK aydınlatma metni ve sağlık verisi açık rıza metni yazıldı (sürüm `2026-11-v3`, taslak); hukuk danışmanı onayı ve uygulamaya bağlanması bekleniyor. Bkz. `docs/KVKK_NOTLARI.md`.
 
 ## 12. Onaylanan ek kararlar — adım 3: paket yönetimi
 
