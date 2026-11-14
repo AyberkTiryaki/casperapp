@@ -35,7 +35,7 @@ python supabase/tests/run_remote.py supabase/tests/database/02_booking.test.sql
 
 Veri bırakmaz, yine de canlıya geçtikten sonra **yalnızca dev/staging projesinde** çalıştırın.
 
-Son çalıştırma (13.11.2026, bağlı proje, migration 20261113150000 sonrası): 7 dosya, 589 test, 0 başarısız.
+Son çalıştırma (14.11.2026, bağlı proje, migration 20261114120000 sonrası): 8 dosya, 611 test, 0 başarısız.
 
 `07_programs_measurements_reports.test.sql` (102 test), `20261113150000` migration'ı yüklenmeden önce migration + test tek transaction'da birleştirilip zorunlu geri alma ile denendi (13.11.2026): 102/102 başarılı, veritabanında iz kalmadı. Migration yüklendikten sonra `python supabase/tests/run_remote.py` ile 7 dosyanın tamamı yeniden çalıştırılmalı ve bu satır güncellenmelidir. Rapor testleri başka veriyle karışmaması için Ocak 2020'ye yerleştirilmiş kayıtlarla çalışır.
 
