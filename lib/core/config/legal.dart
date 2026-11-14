@@ -15,7 +15,7 @@ KİŞİSEL VERİLERİN İŞLENMESİNE İLİŞKİN AYDINLATMA METNİ
 1. Veri sorumlusu
 6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") uyarınca kişisel verileriniz, veri sorumlusu sıfatıyla Casper Training Studio ("Stüdyo") tarafından aşağıda açıklanan kapsamda işlenmektedir.
 Adres: Atatürk Mahallesi, Ahmet Karaevli Sokak, Pilatin Prime Sitesi 7/A No: 19, Süleymanpaşa / Tekirdağ
-E-posta: [E-posta adresi]
+E-posta: caspersporkulubu@gmail.com
 
 2. İşlenen kişisel veriler
 • Kimlik: ad soyad, doğum tarihi
@@ -49,7 +49,7 @@ Verileriniz hesabınız açık olduğu sürece saklanır. Hesap silme talebinizd
 7. Haklarınız (KVKK md. 11)
 Kişisel verilerinizin işlenip işlenmediğini öğrenme, işlenmişse bilgi talep etme, işleme amacını ve amaca uygun kullanılıp kullanılmadığını öğrenme, aktarıldığı üçüncü kişileri bilme, eksik veya yanlış işlenmişse düzeltilmesini, silinmesini veya yok edilmesini isteme, bu işlemlerin aktarılan kişilere bildirilmesini isteme, otomatik analiz sonucu aleyhinize bir sonuca itiraz etme ve kanuna aykırı işleme nedeniyle zarara uğramanız halinde zararın giderilmesini talep etme haklarına sahipsiniz. Açık rızanızı dilediğiniz zaman geri alabilirsiniz.
 
-Başvurularınızı yukarıdaki adrese yazılı olarak veya kayıtlı e-posta adresinizden [E-posta adresi] adresine iletebilirsiniz. Hesabınızın silinmesini uygulamadaki Profil > "Hesabımı sil" ile de isteyebilirsiniz. Başvurular en geç 30 gün içinde ücretsiz olarak sonuçlandırılır.
+Başvurularınızı yukarıdaki adrese yazılı olarak veya kayıtlı e-posta adresinizden caspersporkulubu@gmail.com adresine iletebilirsiniz. Hesabınızın silinmesini uygulamadaki Profil > "Hesabımı sil" ile de isteyebilirsiniz. Başvurular en geç 30 gün içinde ücretsiz olarak sonuçlandırılır.
 ''';
 
 const healthConsentText = '''

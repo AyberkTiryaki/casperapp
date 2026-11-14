@@ -12,7 +12,7 @@ Hazırlayan: Claude (taslak, 14.11.2026). Bu metinler hukuki görüş değildir.
 
 ## Stüdyonun dolduracağı yerler
 
-`[E-posta adresi]`, `[Yayın tarihi]`. Bu bilgiler üç metinde de aynı olmalıdır.
+`[Yayın tarihi]` (gizlilik politikası yayımlanınca). Ad, adres ve e-posta 14.11.2026'da dolduruldu.
 
 Veri sorumlusu adı "Casper Training Studio" olarak yazıldı (14.11.2026). Vergi levhasındaki resmi unvan farklıysa (ör. şahıs işletmesinde "Ad Soyad - Casper Training Studio") metinlerde resmi unvan kullanılmalıdır.
 
