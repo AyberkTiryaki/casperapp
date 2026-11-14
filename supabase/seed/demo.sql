@@ -1,4 +1,6 @@
 -- Casper Training Studio — deneme (pilot) verisi. YALNIZCA dev/pilot ortamı için.
+-- NOT (14.11.2026): Pilates / Fonksiyonel / Yoga kategorileri kaldırıldı (remove_old_categories.sql).
+-- Bu dosya yeniden çalıştırılırsa eski kategorileri geri getirir; güncel paketler packages_2026_11.sql.
 --
 -- Çalıştırma (proje kökünden):
 --   supabase db query --remote --yes -f supabase/seed/demo.sql
