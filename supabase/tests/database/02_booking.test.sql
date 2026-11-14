@@ -8,7 +8,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(59);
+select plan(61);
 
 -- ---------------------------------------------------------------------------
 -- Ortak test yardımcıları. Her test dosyasında aynıdır; dosyalar birbirinden
@@ -80,14 +80,23 @@ $f$;
 create function ct.make_class(
   p_name text, p_trainer text, p_category text, p_starts_at timestamptz,
   p_type public.class_type default 'group')
-returns uuid language sql as $f$
+returns uuid language plpgsql as $f$
+declare
+  v_id uuid;
+begin
+  -- Test kategorileri 'group' türündedir. Bireysel dersler kural (S-07) öncesinden
+  -- kalan veri gibi eklenir: tür denetimi yalnızca bu ekleme için kapatılır.
+  alter table public.classes disable trigger classes_category_class_type;
   insert into public.classes
     (id, trainer_id, category_id, class_type, capacity, starts_at, ends_at, created_by)
   values
     (ct.id(p_name), ct.id(p_trainer), ct.id(p_category), p_type,
      case when p_type = 'individual' then 1 else 6 end,
      p_starts_at, p_starts_at + interval '1 hour', ct.id(p_trainer))
-  returning id
+  returning id into v_id;
+  alter table public.classes enable trigger classes_category_class_type;
+  return v_id;
+end
 $f$;
 
 -- Idempotency anahtarından kayıt kimliği (RLS'e takılmadan; yalnızca test içinde)
@@ -135,6 +144,8 @@ $do$;
 insert into public.categories (id, name) values
   (ct.id('cat_a'), 'pgTAP Kategori A'),
   (ct.id('cat_b'), 'pgTAP Kategori B');
+insert into public.categories (id, name, class_type) values
+  (ct.id('cat_ind'), 'pgTAP Özel', 'individual');
 
 insert into public.package_definitions
   (id, category_id, name, session_count, validity_days, price)
@@ -425,14 +436,22 @@ select ok(
    from public.create_class(ct.id('cat_a'), 'group', now() + interval '20 days')),
   'S-01/S-02/S-03: eğitmen kendi adına 6 kişilik, 60 dk grup dersi açar');
 select throws_ok(
-  $$select public.create_class(ct.id('cat_a'), 'individual',
+  $$select public.create_class(ct.id('cat_ind'), 'individual',
                                now() + interval '20 days 30 minutes')$$,
   'P0001', 'TRAINER_BUSY', 'S-04: aynı eğitmenin çakışan dersi açılamaz');
 select is(
   (select capacity
-   from public.create_class(ct.id('cat_a'), 'individual',
+   from public.create_class(ct.id('cat_ind'), 'individual',
                             now() + interval '20 days 60 minutes', 30)),
   1, 'S-02/S-04: bitişik saatte bireysel ders açılır, kapasite 1');
+select throws_ok(
+  $$select public.create_class(ct.id('cat_a'), 'individual',
+                               now() + interval '24 days')$$,
+  'P0001', 'CLASS_TYPE_MISMATCH', 'S-07: grup kategorisinde bireysel ders açılamaz');
+select throws_ok(
+  $$select public.create_class(ct.id('cat_ind'), 'group',
+                               now() + interval '25 days')$$,
+  'P0001', 'CLASS_TYPE_MISMATCH', 'S-07: özel ders kategorisinde grup dersi açılamaz');
 select throws_ok(
   $$select public.create_class(ct.id('cat_a'), 'group', now() - interval '1 minute')$$,
   'P0001', 'INVALID_CLASS_TIME', 'S-03: geçmişe ders açılamaz');

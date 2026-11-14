@@ -7,7 +7,7 @@ Konum: `supabase/tests/database/`. Her dosya tek bir transaction içinde çalı�
 | Dosya | Kapsam | Kurallar (BUSINESS_RULES.md) | Test sayısı |
 |---|---|---|---|
 | `01_packages.test.sql` | Paket atama, tek aktif paket, yenileme ve hak aktarımı, indirim | P-01..P-11, F-06, F-10, F-11, F-16 | 69 |
-| `02_booking.test.sql` | Rezervasyon kontrolleri, idempotency, kontenjan, ders açma | R-01..R-11, S-01..S-04, P-04, D-06, I-05 | 59 |
+| `02_booking.test.sql` | Rezervasyon kontrolleri, idempotency, kontenjan, ders açma, ders türü-kategori uyumu | R-01..R-11, S-01..S-04, S-07, P-04, D-06, I-05 | 61 |
 | `03_cancel_freeze.test.sql` | İptal (2 saat sınırı), ders iptali, dondurma, erken bitirme, elle hak düzeltme, gelmedi | I-01..I-07, S-06, D-01..D-07, P-12 | 120 |
 | `04_wallet.test.sql` | Cüzdan yükleme, ürün satışı, yetersiz bakiye, satış düzeltme | C-01..C-09 | 67 |
 | `05_rls.test.sql` | Yetki ve RLS: üye, eğitmen, yönetici, pasif hesap, anon | Y-02, Y-04..Y-08, K-06, K-07, F-13 | 113 |
@@ -35,7 +35,7 @@ python supabase/tests/run_remote.py supabase/tests/database/02_booking.test.sql
 
 Veri bırakmaz, yine de canlıya geçtikten sonra **yalnızca dev/staging projesinde** çalıştırın.
 
-Son çalıştırma (14.11.2026, bağlı proje, migration 20261114120000 sonrası): 8 dosya, 611 test, 0 başarısız.
+Son çalıştırma (14.11.2026, bağlı proje, migration 20261114130000 ile): 8 dosya, 613 test, 0 başarısız.
 
 `07_programs_measurements_reports.test.sql` (102 test), `20261113150000` migration'ı yüklenmeden önce migration + test tek transaction'da birleştirilip zorunlu geri alma ile denendi (13.11.2026): 102/102 başarılı, veritabanında iz kalmadı. Migration yüklendikten sonra `python supabase/tests/run_remote.py` ile 7 dosyanın tamamı yeniden çalıştırılmalı ve bu satır güncellenmelidir. Rapor testleri başka veriyle karışmaması için Ocak 2020'ye yerleştirilmiş kayıtlarla çalışır.
 

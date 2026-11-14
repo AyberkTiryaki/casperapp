@@ -81,14 +81,23 @@ $f$;
 create function ct.make_class(
   p_name text, p_trainer text, p_category text, p_starts_at timestamptz,
   p_type public.class_type default 'group')
-returns uuid language sql as $f$
+returns uuid language plpgsql as $f$
+declare
+  v_id uuid;
+begin
+  -- Test kategorileri 'group' türündedir. Bireysel dersler kural (S-07) öncesinden
+  -- kalan veri gibi eklenir: tür denetimi yalnızca bu ekleme için kapatılır.
+  alter table public.classes disable trigger classes_category_class_type;
   insert into public.classes
     (id, trainer_id, category_id, class_type, capacity, starts_at, ends_at, created_by)
   values
     (ct.id(p_name), ct.id(p_trainer), ct.id(p_category), p_type,
      case when p_type = 'individual' then 1 else 6 end,
      p_starts_at, p_starts_at + interval '1 hour', ct.id(p_trainer))
-  returning id
+  returning id into v_id;
+  alter table public.classes enable trigger classes_category_class_type;
+  return v_id;
+end
 $f$;
 
 -- Idempotency anahtarından kayıt kimliği (RLS'e takılmadan; yalnızca test içinde)

@@ -80,6 +80,8 @@ Yol haritasında açıkça yazmayan ek kararlar 11. bölümdedir (10 Kasım 2026
 | S-04 | Aynı eğitmenin zaman olarak çakışan iki dersi olamaz (`TRAINER_BUSY`). |
 | S-05 | Giriş yapmış herkes takvimi, kategoriyi, eğitmeni ve kalan kontenjanı (`capacity − booked_count`) görür. |
 | S-06 | Dersi eğitmeni (başlamadan önce, haklar her zaman iade edilerek) veya yönetici (her zaman, iadeyi seçerek) iptal eder; tüm rezervasyonlar iptal edilir. |
+| S-07 | **(14.11.2026)** Her kategorinin tek bir ders türü vardır (`categories.class_type`): bireysel (1 kişi) veya grup (6 kişi). Ders, kategorisinin türüyle açılır; aksi `CLASS_TYPE_MISMATCH`. Ders açma ekranında tür seçilmez, kategoriden gelir. |
+| S-08 | Güncel kategoriler: **Özel Ders** ve **Atletik Özel Ders** bireysel; **Atletik Performans Grup** grup. Böylece grup paketi olan üye yalnızca grup derslerine, özel ders paketi olan üye yalnızca özel derslere rezervasyon yapabilir (R-03 ile birlikte). |
 
 ## 5. Rezervasyon (R)
 
