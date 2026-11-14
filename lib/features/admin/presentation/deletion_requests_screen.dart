@@ -153,6 +153,7 @@ class DeletionRequestsScreen extends ConsumerWidget {
                               const SizedBox(height: 12),
                               Wrap(
                                 spacing: 8,
+                                runSpacing: 10,
                                 children: [
                                   FilledButton(
                                     onPressed: () => _decide(

@@ -199,6 +199,7 @@ class _ReferralCard extends StatelessWidget {
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
+              runSpacing: 10,
               children: [
                 if (pending) ...[
                   FilledButton(
