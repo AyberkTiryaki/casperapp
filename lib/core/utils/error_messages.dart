@@ -111,6 +111,10 @@ String friendlyError(Object e) {
     if (e.code == '23505') return 'Bu kayıt zaten var.';
     if (e.code == '23514') return 'Girilen değerler kurallara uymuyor.';
     if (e.code == '42501') return 'Bu işlem için yetkiniz yok.';
+    // Uygulama sunucudan yeni bir fonksiyon istiyor ama veritabanı güncellemesi yüklenmemiş
+    if (e.code == 'PGRST202') {
+      return 'Bu özellik için sunucu güncellemesi henüz yüklenmedi.';
+    }
     return 'Sunucu hatası oluştu. Lütfen tekrar deneyin.';
   }
   return 'Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.';

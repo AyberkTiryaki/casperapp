@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/config/env.dart';
 import 'core/config/supabase.dart';
 import 'core/theme/app_theme.dart';
+import 'core/widgets/async_value_view.dart';
 import 'features/home/auth_gate.dart';
 
 const _locale = Locale('tr', 'TR');
@@ -21,7 +22,15 @@ Future<void> main() async {
     return;
   }
   await initSupabase();
-  runApp(const ProviderScope(child: CasperApp()));
+  runApp(const ProviderScope(retry: _retry, child: CasperApp()));
+}
+
+/// Riverpod'un otomatik yeniden deneme kuralı. Varsayılan 10 deneme, sunucu hatasında
+/// bile ekranda uzun süre yükleniyor çubuğu bırakıyordu. Yalnızca bağlantı hatalarını
+/// en fazla 3 kez yeniden dene; sunucu ve yetki hatalarını hemen göster.
+Duration? _retry(int retryCount, Object error) {
+  if (retryCount >= 3 || !isNetworkError(error)) return null;
+  return Duration(milliseconds: 500 * (1 << retryCount));
 }
 
 class CasperApp extends StatelessWidget {
