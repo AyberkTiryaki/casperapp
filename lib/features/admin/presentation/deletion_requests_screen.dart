@@ -57,6 +57,8 @@ class DeletionRequestsScreen extends ConsumerWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
+        actionsOverflowDirection: VerticalDirection.up,
+        actionsOverflowButtonSpacing: 12,
         title: Text(done ? 'Tamamlandı olarak işaretle' : 'Talebi reddet'),
         content: Text(
           done

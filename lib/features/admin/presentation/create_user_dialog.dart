@@ -85,6 +85,8 @@ class _CreateUserDialogState extends ConsumerState<_CreateUserDialog> {
     return showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
+        actionsOverflowDirection: VerticalDirection.up,
+        actionsOverflowButtonSpacing: 12,
         title: const Text('Hesap açıldı'),
         content: SelectableText(text),
         actions: [
@@ -111,6 +113,8 @@ class _CreateUserDialogState extends ConsumerState<_CreateUserDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      actionsOverflowDirection: VerticalDirection.up,
+      actionsOverflowButtonSpacing: 12,
       title: Text(widget.allowTrainer ? 'Kullanıcı ekle' : 'Üye ekle'),
       content: SingleChildScrollView(
         child: Form(

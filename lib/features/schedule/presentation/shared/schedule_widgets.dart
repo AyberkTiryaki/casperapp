@@ -24,6 +24,8 @@ Future<bool> confirmDialog(
   final r = await showDialog<bool>(
     context: context,
     builder: (ctx) => AlertDialog(
+      actionsOverflowDirection: VerticalDirection.up,
+      actionsOverflowButtonSpacing: 12,
       title: Text(title),
       content: Text(message),
       actions: [

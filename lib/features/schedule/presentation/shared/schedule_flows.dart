@@ -206,6 +206,8 @@ class _RefundDialogState extends State<RefundDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      actionsOverflowDirection: VerticalDirection.up,
+      actionsOverflowButtonSpacing: 12,
       title: Text(widget.title),
       content: SingleChildScrollView(
         child: Column(

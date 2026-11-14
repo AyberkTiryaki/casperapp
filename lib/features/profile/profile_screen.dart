@@ -218,6 +218,8 @@ class _DeletionSectionState extends ConsumerState<_DeletionSection> {
       context: context,
       builder: (ctx) => TextControllerScope(
         builder: (ctx, noteCtrl) => AlertDialog(
+          actionsOverflowDirection: VerticalDirection.up,
+          actionsOverflowButtonSpacing: 12,
           title: const Text('Hesabımı sil'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -362,6 +364,8 @@ class _HealthConsentSectionState extends ConsumerState<_HealthConsentSection> {
       final go = await showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
+          actionsOverflowDirection: VerticalDirection.up,
+          actionsOverflowButtonSpacing: 12,
           title: const Text('Onay geri alınsın mı?'),
           content: const Text(
             'Onayınızı geri alırsanız kayıtlı TÜM vücut ölçümleriniz kalıcı olarak silinir. Bu işlem geri alınamaz.',

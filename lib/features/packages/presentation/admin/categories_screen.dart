@@ -22,6 +22,8 @@ class CategoriesScreen extends ConsumerWidget {
         initialText: c?.name ?? '',
         builder: (ctx, name) => StatefulBuilder(
           builder: (ctx, setS) => AlertDialog(
+            actionsOverflowDirection: VerticalDirection.up,
+            actionsOverflowButtonSpacing: 12,
             title: Text(c == null ? 'Kategori ekle' : 'Kategori düzenle'),
             content: Form(
               key: formKey,

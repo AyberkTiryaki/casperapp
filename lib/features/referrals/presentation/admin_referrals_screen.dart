@@ -36,6 +36,8 @@ class _AdminReferralsScreenState extends ConsumerState<AdminReferralsScreen> {
       context: context,
       builder: (ctx) => TextControllerScope(
         builder: (ctx, note) => AlertDialog(
+          actionsOverflowDirection: VerticalDirection.up,
+          actionsOverflowButtonSpacing: 12,
           title: Text(approve ? 'Referansı onayla' : 'Referansı reddet'),
           content: Column(
             mainAxisSize: MainAxisSize.min,

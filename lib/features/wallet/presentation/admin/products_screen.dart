@@ -138,6 +138,8 @@ class _ProductDialogState extends State<_ProductDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      actionsOverflowDirection: VerticalDirection.up,
+      actionsOverflowButtonSpacing: 12,
       title: Text(widget.product == null ? 'Ürün ekle' : 'Ürünü düzenle'),
       content: Form(
         key: _form,

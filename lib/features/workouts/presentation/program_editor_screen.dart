@@ -334,6 +334,8 @@ class _ItemDialogState extends State<_ItemDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      actionsOverflowDirection: VerticalDirection.up,
+      actionsOverflowButtonSpacing: 12,
       title: Text(
         widget.existing == null ? 'Egzersiz ekle' : 'Egzersizi düzenle',
       ),

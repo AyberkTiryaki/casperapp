@@ -216,6 +216,8 @@ class _MemberPickerDialogState extends ConsumerState<MemberPickerDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      actionsOverflowDirection: VerticalDirection.up,
+      actionsOverflowButtonSpacing: 12,
       title: const Text('Üye seçin'),
       content: SizedBox(
         width: double.maxFinite,

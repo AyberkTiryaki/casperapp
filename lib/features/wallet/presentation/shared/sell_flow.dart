@@ -77,6 +77,8 @@ class _SellDialogState extends State<_SellDialog> {
   Widget build(BuildContext context) {
     final total = _product.price * _qty;
     return AlertDialog(
+      actionsOverflowDirection: VerticalDirection.up,
+      actionsOverflowButtonSpacing: 12,
       title: Text('Ürün sat: ${widget.memberName}'),
       content: SingleChildScrollView(
         child: Column(

@@ -106,6 +106,8 @@ class _AddMeasurementDialogState extends ConsumerState<_AddMeasurementDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      actionsOverflowDirection: VerticalDirection.up,
+      actionsOverflowButtonSpacing: 12,
       title: const Text('Ölçüm ekle'),
       content: SizedBox(
         width: 400,

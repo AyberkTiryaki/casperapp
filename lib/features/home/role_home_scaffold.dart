@@ -12,6 +12,8 @@ Future<void> confirmAndSignOut(BuildContext context, WidgetRef ref) async {
   final ok = await showDialog<bool>(
     context: context,
     builder: (ctx) => AlertDialog(
+      actionsOverflowDirection: VerticalDirection.up,
+      actionsOverflowButtonSpacing: 12,
       title: const Text('Çıkış yap'),
       content: const Text('Hesabınızdan çıkmak istediğinize emin misiniz?'),
       actions: [

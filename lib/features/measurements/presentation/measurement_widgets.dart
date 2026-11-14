@@ -57,6 +57,8 @@ class MeasurementsBody extends ConsumerWidget {
     final go = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
+        actionsOverflowDirection: VerticalDirection.up,
+        actionsOverflowButtonSpacing: 12,
         title: const Text('Bu ölçüm silinsin mi?'),
         content: const Text('Bu işlem geri alınamaz.'),
         actions: [

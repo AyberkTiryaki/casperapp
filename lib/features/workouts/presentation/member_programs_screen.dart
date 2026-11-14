@@ -55,6 +55,8 @@ class MemberProgramsScreen extends ConsumerWidget {
       final ok = await showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
+          actionsOverflowDirection: VerticalDirection.up,
+          actionsOverflowButtonSpacing: 12,
           title: const Text('Programı pasife al'),
           content: Text('"${p.title}" programı pasife alınsın mı?'),
           actions: [

@@ -21,6 +21,8 @@ Future<bool> _confirm(
   final r = await showDialog<bool>(
     context: context,
     builder: (ctx) => AlertDialog(
+      actionsOverflowDirection: VerticalDirection.up,
+      actionsOverflowButtonSpacing: 12,
       title: Text(title),
       content: Text(message),
       actions: [
@@ -158,6 +160,8 @@ Future<void> runFreezeFlow(
     context: context,
     builder: (ctx) => TextControllerScope(
       builder: (ctx, note) => AlertDialog(
+        actionsOverflowDirection: VerticalDirection.up,
+        actionsOverflowButtonSpacing: 12,
         title: const Text('Paketi dondur'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -412,6 +416,8 @@ class _AdjustDialogState extends State<_AdjustDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      actionsOverflowDirection: VerticalDirection.up,
+      actionsOverflowButtonSpacing: 12,
       title: const Text('Hak düzelt'),
       content: SingleChildScrollView(
         child: Column(
@@ -509,6 +515,8 @@ class _AssignDialogState extends ConsumerState<_AssignDialog> {
       (d.price * (100 - applied) / 100).toStringAsFixed(2),
     );
     return AlertDialog(
+      actionsOverflowDirection: VerticalDirection.up,
+      actionsOverflowButtonSpacing: 12,
       title: const Text('Paket ata'),
       content: SingleChildScrollView(
         child: Column(
