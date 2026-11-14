@@ -6,7 +6,7 @@ import '../../core/widgets/brand.dart';
 import '../auth/auth_providers.dart';
 import '../notifications/notifications_screen.dart';
 import '../profile/profile.dart';
-import '../profile/profile_screen.dart';
+import 'home_tab.dart';
 
 Future<void> confirmAndSignOut(BuildContext context, WidgetRef ref) async {
   final ok = await showDialog<bool>(
@@ -49,10 +49,18 @@ class RoleHomeScaffold extends ConsumerWidget {
     super.key,
     required this.profile,
     required this.modules,
+    this.dashboard,
+    this.onRefresh,
   });
 
   final Profile profile;
   final List<ComingModule> modules;
+
+  /// Karşılama başlığının altında gösterilen canlı bilgi bölümleri.
+  final Widget? dashboard;
+
+  /// Aşağı çekince yenilenecek sağlayıcıları geçersiz kılar.
+  final VoidCallback? onRefresh;
 
   static const _mottos = {
     UserRole.member: [
@@ -123,8 +131,8 @@ class RoleHomeScaffold extends ConsumerWidget {
           IconButton(
             tooltip: 'Profilim',
             icon: const Icon(Icons.person_outline_rounded),
-            onPressed: () => Navigator.of(context)
-                .push(MaterialPageRoute(builder: (_) => const ProfileScreen())),
+            onPressed: () =>
+                ref.read(homeTabProvider.notifier).set(HomeTabs.profile),
           ),
           IconButton(
             tooltip: 'Çıkış yap',
@@ -135,50 +143,61 @@ class RoleHomeScaffold extends ConsumerWidget {
         ],
       ),
       body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
-          children: [
-            HeroHeader(
-              eyebrow: profile.role.label,
-              title: first.isEmpty ? 'Hoş geldin' : 'Merhaba,\n$first',
-              subtitle: _motto(),
-            ),
-            const SizedBox(height: 28),
-            const SectionLabel('Hızlı erişim'),
-            const SizedBox(height: 14),
-            LayoutBuilder(
-              builder: (context, c) {
-                final cols = c.maxWidth >= 900
-                    ? 4
-                    : c.maxWidth >= 600
-                    ? 3
-                    : 2;
-                return GridView.count(
-                  crossAxisCount: cols,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 12,
-                  childAspectRatio: 1.05,
-                  children: [
-                    for (final m in modules)
-                      ModuleTile(
-                        title: m.title,
-                        icon: m.icon,
-                        subtitle: m.subtitle,
-                        onTap: m.onTap,
-                      ),
-                  ],
-                );
-              },
-            ),
-            const SizedBox(height: 24),
-            OutlinedButton.icon(
-              onPressed: () => confirmAndSignOut(context, ref),
-              icon: const Icon(Icons.logout_rounded),
-              label: const Text('ÇIKIŞ YAP'),
-            ),
-          ],
+        child: RefreshIndicator(
+          onRefresh: () async {
+            onRefresh?.call();
+            await Future<void>.delayed(const Duration(milliseconds: 600));
+          },
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
+            children: [
+              HeroHeader(
+                eyebrow: profile.role.label,
+                title: first.isEmpty ? 'Hoş geldin' : 'Merhaba,\n$first',
+                subtitle: _motto(),
+              ),
+              const SizedBox(height: 20),
+              if (dashboard != null) ...[
+                dashboard!,
+                const SizedBox(height: 28),
+              ],
+              const SectionLabel('Hızlı erişim'),
+              const SizedBox(height: 14),
+              LayoutBuilder(
+                builder: (context, c) {
+                  final cols = c.maxWidth >= 900
+                      ? 4
+                      : c.maxWidth >= 600
+                      ? 3
+                      : 2;
+                  return GridView.count(
+                    crossAxisCount: cols,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                    childAspectRatio: 1.05,
+                    children: [
+                      for (final m in modules)
+                        ModuleTile(
+                          title: m.title,
+                          icon: m.icon,
+                          subtitle: m.subtitle,
+                          onTap: m.onTap,
+                        ),
+                    ],
+                  );
+                },
+              ),
+              const SizedBox(height: 24),
+              OutlinedButton.icon(
+                onPressed: () => confirmAndSignOut(context, ref),
+                icon: const Icon(Icons.logout_rounded),
+                label: const Text('ÇIKIŞ YAP'),
+              ),
+            ],
+          ),
         ),
       ),
     );

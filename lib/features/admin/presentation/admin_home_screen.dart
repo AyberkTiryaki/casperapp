@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../home/home_tab.dart';
 import '../../home/role_home_scaffold.dart';
+import '../../home/role_shell.dart';
+import '../../profile/profile_screen.dart';
+import '../../referrals/data/referral_repository.dart';
+import '../../schedule/data/schedule_repository.dart';
+import 'admin_dashboard.dart';
 import '../../packages/presentation/admin/categories_screen.dart';
 import '../../packages/presentation/admin/definitions_screen.dart';
 import '../../packages/presentation/admin/members_screen.dart';
@@ -18,18 +25,63 @@ class AdminHomeScreen extends StatelessWidget {
 
   final Profile profile;
 
+  @override
+  Widget build(BuildContext context) {
+    return RoleShell(
+      tabs: [
+        ShellTab(
+          label: 'Ana sayfa',
+          icon: Icons.home_outlined,
+          selectedIcon: Icons.home_rounded,
+          page: _AdminHomeTab(profile: profile),
+        ),
+        const ShellTab(
+          label: 'Ders programı',
+          icon: Icons.event_note_outlined,
+          selectedIcon: Icons.event_note_rounded,
+          page: AdminScheduleScreen(),
+        ),
+        const ShellTab(
+          label: 'Üyeler',
+          icon: Icons.groups_outlined,
+          selectedIcon: Icons.groups_rounded,
+          page: MembersScreen(),
+        ),
+        const ShellTab(
+          label: 'Profil',
+          icon: Icons.person_outline_rounded,
+          selectedIcon: Icons.person_rounded,
+          page: ProfileScreen(),
+        ),
+      ],
+    );
+  }
+}
+
+class _AdminHomeTab extends ConsumerWidget {
+  const _AdminHomeTab({required this.profile});
+
+  final Profile profile;
+
   void _go(BuildContext context, Widget screen) =>
       Navigator.of(context).push(MaterialPageRoute(builder: (_) => screen));
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    void goTab(int i) => ref.read(homeTabProvider.notifier).set(i);
     return RoleHomeScaffold(
       profile: profile,
+      dashboard: const AdminDashboard(),
+      onRefresh: () {
+        ref.invalidate(classesProvider);
+        ref.invalidate(adminReferralsProvider);
+        ref.invalidate(deletionRequestsProvider);
+      },
       modules: [
         ComingModule(
           'Üyeler ve paketleri',
           Icons.groups_outlined,
-          onTap: () => _go(context, const MembersScreen()),
+          onTap: () => goTab(HomeTabs.third),
         ),
         ComingModule(
           'Paket tanımları',
@@ -59,7 +111,7 @@ class AdminHomeScreen extends StatelessWidget {
         ComingModule(
           'Ders ve Rezervasyon Yönetimi',
           Icons.event_note_outlined,
-          onTap: () => _go(context, const AdminScheduleScreen()),
+          onTap: () => goTab(HomeTabs.second),
         ),
         ComingModule(
           'İşlem geçmişi',

@@ -2,7 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/utils/formatters.dart';
+import '../../home/home_tab.dart';
 import '../../home/role_home_scaffold.dart';
+import '../../home/role_shell.dart';
+import '../../packages/data/package_repository.dart';
+import '../../profile/profile_screen.dart';
+import '../../schedule/data/schedule_repository.dart';
+import 'member_dashboard.dart';
 import '../../measurements/presentation/my_measurements_screen.dart';
 import '../../packages/presentation/member/my_packages_screen.dart';
 import '../../profile/profile.dart';
@@ -13,16 +19,61 @@ import '../../wallet/data/wallet_repository.dart';
 import '../../wallet/presentation/member/my_wallet_screen.dart';
 import '../../workouts/presentation/my_programs_screen.dart';
 
-class MemberHomeScreen extends ConsumerWidget {
+class MemberHomeScreen extends StatelessWidget {
   const MemberHomeScreen({super.key, required this.profile});
 
   final Profile profile;
 
   @override
+  Widget build(BuildContext context) {
+    return RoleShell(
+      tabs: [
+        ShellTab(
+          label: 'Ana sayfa',
+          icon: Icons.home_outlined,
+          selectedIcon: Icons.home_rounded,
+          page: _MemberHomeTab(profile: profile),
+        ),
+        const ShellTab(
+          label: 'Takvim',
+          icon: Icons.calendar_month_outlined,
+          selectedIcon: Icons.calendar_month_rounded,
+          page: ClassCalendarScreen(),
+        ),
+        const ShellTab(
+          label: 'Rezervasyonlarım',
+          icon: Icons.event_available_outlined,
+          selectedIcon: Icons.event_available_rounded,
+          page: MyReservationsScreen(),
+        ),
+        const ShellTab(
+          label: 'Profil',
+          icon: Icons.person_outline_rounded,
+          selectedIcon: Icons.person_rounded,
+          page: ProfileScreen(),
+        ),
+      ],
+    );
+  }
+}
+
+class _MemberHomeTab extends ConsumerWidget {
+  const _MemberHomeTab({required this.profile});
+
+  final Profile profile;
+
+  @override
   Widget build(BuildContext context, WidgetRef ref) {
+    void goTab(int i) => ref.read(homeTabProvider.notifier).set(i);
     final balance = ref.watch(walletBalanceProvider(profile.id));
     return RoleHomeScaffold(
       profile: profile,
+      dashboard: const MemberDashboard(),
+      onRefresh: () {
+        ref.invalidate(myReservationsProvider);
+        ref.invalidate(myPackagesProvider);
+        ref.invalidate(walletBalanceProvider(profile.id));
+      },
       modules: [
         ComingModule(
           'Paketlerim',
@@ -57,16 +108,12 @@ class MemberHomeScreen extends ConsumerWidget {
         ComingModule(
           'Ders Takvimi',
           Icons.calendar_month_outlined,
-          onTap: () => Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => const ClassCalendarScreen()),
-          ),
+          onTap: () => goTab(HomeTabs.second),
         ),
         ComingModule(
           'Rezervasyonlarım',
           Icons.event_available_outlined,
-          onTap: () => Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => const MyReservationsScreen()),
-          ),
+          onTap: () => goTab(HomeTabs.third),
         ),
         ComingModule(
           'Antrenman programım',
