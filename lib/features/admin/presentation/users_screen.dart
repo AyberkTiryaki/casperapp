@@ -107,6 +107,18 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
     );
   }
 
+  Future<void> _resetPassword(ManagedUser u) async {
+    final password = await showDialog<String>(
+      context: context,
+      builder: (_) => _ResetPasswordDialog(name: u.fullName),
+    );
+    if (password == null || !mounted) return;
+    await _run(
+      () => ref.read(adminRepositoryProvider).resetPassword(u.id, password),
+      '${u.fullName} için yeni şifre kaydedildi. Şifreyi kendisine iletin.',
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final me = ref.watch(currentUserIdProvider);
@@ -186,14 +198,22 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                             trailing: self
                                 ? null
                                 : PopupMenuButton<String>(
-                                    onSelected: (v) => v == 'role'
-                                        ? _changeRole(u)
-                                        : _toggleActive(u),
+                                    onSelected: (v) => switch (v) {
+                                      'role' => _changeRole(u),
+                                      'password' => _resetPassword(u),
+                                      _ => _toggleActive(u),
+                                    },
                                     itemBuilder: (_) => [
                                       const PopupMenuItem(
                                         value: 'role',
                                         child: Text('Rolü değiştir'),
                                       ),
+                                      // Yöneticiler şifresini e-postayla sıfırlar (Y-11)
+                                      if (u.role != UserRole.admin)
+                                        const PopupMenuItem(
+                                          value: 'password',
+                                          child: Text('Şifreyi sıfırla'),
+                                        ),
                                       PopupMenuItem(
                                         value: 'active',
                                         child: Text(
@@ -212,6 +232,91 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Yeni geçici şifreyi alır; Vazgeç'te null döner.
+class _ResetPasswordDialog extends StatefulWidget {
+  const _ResetPasswordDialog({required this.name});
+  final String name;
+
+  @override
+  State<_ResetPasswordDialog> createState() => _ResetPasswordDialogState();
+}
+
+class _ResetPasswordDialogState extends State<_ResetPasswordDialog> {
+  final _form = GlobalKey<FormState>();
+  final _password = TextEditingController();
+  bool _obscure = true;
+
+  @override
+  void dispose() {
+    _password.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    if (_form.currentState!.validate()) {
+      Navigator.of(context).pop(_password.text);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      actionsOverflowDirection: VerticalDirection.up,
+      actionsOverflowButtonSpacing: 12,
+      title: const Text('Şifreyi sıfırla'),
+      content: Form(
+        key: _form,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '${widget.name} için yeni bir geçici şifre belirleyin. '
+              'Açık oturumları kapanır; yeni şifreyle giriş yapıp Profil '
+              'ekranından değiştirebilir.',
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _password,
+              autofocus: true,
+              obscureText: _obscure,
+              decoration: InputDecoration(
+                labelText: 'Yeni şifre',
+                helperText: 'En az 4 karakter (ör. 1234)',
+                suffixIcon: IconButton(
+                  tooltip: _obscure ? 'Şifreyi göster' : 'Şifreyi gizle',
+                  icon: Icon(
+                    _obscure ? Icons.visibility_outlined : Icons.visibility_off,
+                  ),
+                  onPressed: () => setState(() => _obscure = !_obscure),
+                ),
+              ),
+              validator: (v) {
+                final s = v ?? '';
+                if (s.length < 4) {
+                  return 'Şifre en az 4 karakter olmalı.';
+                }
+                if (s.length > 72) {
+                  return 'Şifre en fazla 72 karakter olabilir.';
+                }
+                return null;
+              },
+              onFieldSubmitted: (_) => _submit(),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        OutlinedButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Vazgeç'),
+        ),
+        FilledButton(onPressed: _submit, child: const Text('Kaydet')),
+      ],
     );
   }
 }

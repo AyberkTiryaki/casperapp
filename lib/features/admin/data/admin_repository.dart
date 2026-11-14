@@ -12,6 +12,9 @@ abstract class AdminRepository {
   Future<List<ManagedUser>> searchUsers(String query);
   Future<void> setRole(String userId, UserRole role);
   Future<void> setActive(String userId, bool isActive);
+
+  /// Üye veya eğitmenin şifresini geçici bir şifreyle sıfırlar (Y-11).
+  Future<void> resetPassword(String userId, String password);
   Future<List<AuditEntry>> auditLog({
     required int offset,
     required int limit,
@@ -51,6 +54,12 @@ class SupabaseAdminRepository implements AdminRepository {
   Future<void> setActive(String userId, bool isActive) => supabase.rpc(
     'admin_set_active',
     params: {'p_user_id': userId, 'p_is_active': isActive},
+  );
+
+  @override
+  Future<void> resetPassword(String userId, String password) => supabase.rpc(
+    'admin_reset_password',
+    params: {'p_user_id': userId, 'p_password': password},
   );
 
   @override
