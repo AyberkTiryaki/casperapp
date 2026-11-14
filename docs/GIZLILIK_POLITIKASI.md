@@ -52,5 +52,6 @@ KVKK md. 11 kapsamında bilgilerinize erişme, bunları düzeltme ve silinmesini
 [Stüdyonun ticari unvanı]
 [Açık adres]
 [E-posta adresi]
+Instagram: https://www.instagram.com/caspertrainingstudio/
 
 Bu politika değiştiğinde güncel sürüm bu sayfada yayımlanır ve önemli değişiklikler Uygulama içinde bildirilir.

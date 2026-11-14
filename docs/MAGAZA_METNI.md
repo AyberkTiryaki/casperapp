@@ -46,7 +46,7 @@ Uygulama yalnızca Casper Training Studio üyeleri içindir. Hesabınız stüdyo
 
 ## İletişim ve bağlantılar (stüdyo dolduracak)
 - Destek e-postası: `________`
-- Web sitesi: `________` (yoksa Instagram sayfası)
+- Web sitesi: https://www.instagram.com/caspertrainingstudio/ (stüdyonun web sitesi yok; Play Store web sitesi alanına ve App Store "Marketing URL" alanına bu adres girilir)
 - Gizlilik politikası URL'si: `________` (zorunlu; KVKK metni yayımlandıktan sonra)
 - Hesap silme sayfası URL'si: `________` (Google Play zorunlu kılar; uygulama içinde Profil > "Hesabımı sil" var, ayrıca web'den talep yolu tarif edilmeli)
 
