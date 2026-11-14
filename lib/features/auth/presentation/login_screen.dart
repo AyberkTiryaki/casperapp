@@ -61,6 +61,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    Center(
+                      child: ClipOval(
+                        child: Image.asset(
+                          'assets/branding/logo.png',
+                          width: 132,
+                          height: 132,
+                          cacheWidth: 400,
+                          semanticLabel: 'Casper Training Studio logosu',
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
                     Text(
                       'Casper Training Studio',
                       style: t.textTheme.headlineSmall,

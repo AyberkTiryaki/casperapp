@@ -10,9 +10,13 @@ class AppTheme {
     final isDark = b == Brightness.dark;
     final scheme =
         ColorScheme.fromSeed(
-          seedColor: AppColors.accent,
+          seedColor: AppColors.brandBlue,
           brightness: b,
+          // fidelity: tohum rengin doygunluğunu korur (logodaki canlı mavi)
+          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
         ).copyWith(
+          primary: isDark ? AppColors.brandBlueLight : AppColors.brandBlue,
+          onPrimary: isDark ? AppColors.onBrandBlueLight : Colors.white,
           surface: isDark ? AppColors.charcoal : AppColors.ghostWhite,
           onSurface: isDark ? AppColors.ghostWhite : AppColors.charcoal,
           error: AppColors.danger,

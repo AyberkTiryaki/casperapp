@@ -4,7 +4,18 @@ import 'package:flutter/material.dart';
 class AppColors {
   static const charcoal = Color(0xFF14161A);
   static const ghostWhite = Color(0xFFF5F6F8);
-  static const accent = Color(0xFF5B4BDB);
+
+  /// Kurumsal mavi (logodaki kraliyet mavisi). Açık temada ana renk.
+  static const brandBlue = Color(0xFF1447C8);
+
+  /// Koyu temada okunurluk için aynı mavinin açık tonu.
+  static const brandBlueLight = Color(0xFF6A97FF);
+  static const onBrandBlueLight = Color(0xFF0A1A40);
+
+  /// Logonun koyu zemini; açılış ekranı ve simge arka planıyla aynı.
+  static const logoBackground = Color(0xFF1A1B1E);
+
+  static const accent = brandBlue;
 
   static const surfaceLight = Color(0xFFFFFFFF);
   static const surfaceDark = Color(0xFF1D2025);
