@@ -221,6 +221,7 @@ class _RefundDialogState extends State<RefundDialog> {
               value: _refund,
               onChanged: (v) => setState(() => _refund = v),
             ),
+            const SizedBox(height: 12),
             TextField(
               controller: _reason,
               decoration: const InputDecoration(

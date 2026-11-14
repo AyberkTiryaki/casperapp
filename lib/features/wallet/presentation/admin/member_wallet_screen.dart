@@ -240,6 +240,7 @@ class _AmountDialogState extends State<_AmountDialog> {
                 return null;
               },
             ),
+            const SizedBox(height: 12),
             TextFormField(
               controller: _note,
               decoration: InputDecoration(

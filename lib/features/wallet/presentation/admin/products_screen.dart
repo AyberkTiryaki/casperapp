@@ -153,6 +153,7 @@ class _ProductDialogState extends State<_ProductDialog> {
               validator: (v) =>
                   (v ?? '').trim().isEmpty ? 'Ürün adı gerekli' : null,
             ),
+            const SizedBox(height: 12),
             TextFormField(
               controller: _price,
               keyboardType: const TextInputType.numberWithOptions(

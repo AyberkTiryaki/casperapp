@@ -147,11 +147,13 @@ class _ProgramEditorScreenState extends ConsumerState<ProgramEditorScreen> {
                     validator: (v) =>
                         (v ?? '').trim().isEmpty ? 'Başlık gerekli' : null,
                   ),
+                  const SizedBox(height: 12),
                   TextFormField(
                     controller: _goal,
                     maxLength: 200,
                     decoration: const InputDecoration(labelText: 'Hedef'),
                   ),
+                  const SizedBox(height: 12),
                   TextFormField(
                     controller: _notes,
                     maxLength: 2000,
@@ -351,6 +353,7 @@ class _ItemDialogState extends State<_ItemDialog> {
               decoration: const InputDecoration(labelText: 'Gün'),
               validator: (v) => (v ?? '').trim().isEmpty ? 'Gün gerekli' : null,
             ),
+            const SizedBox(height: 12),
             TextFormField(
               controller: _exercise,
               maxLength: 120,
@@ -358,12 +361,14 @@ class _ItemDialogState extends State<_ItemDialog> {
               validator: (v) =>
                   (v ?? '').trim().isEmpty ? 'Egzersiz gerekli' : null,
             ),
+            const SizedBox(height: 12),
             TextFormField(
               controller: _sets,
               keyboardType: TextInputType.number,
               decoration: const InputDecoration(labelText: 'Set'),
               validator: (v) => _intRange(v, 1, 99, 'Set 1-99 arası olmalı'),
             ),
+            const SizedBox(height: 12),
             TextFormField(
               controller: _reps,
               maxLength: 40,
@@ -372,6 +377,7 @@ class _ItemDialogState extends State<_ItemDialog> {
                 hintText: 'örn. 12, 8-10, 30 sn',
               ),
             ),
+            const SizedBox(height: 12),
             TextFormField(
               controller: _rest,
               keyboardType: TextInputType.number,
@@ -379,6 +385,7 @@ class _ItemDialogState extends State<_ItemDialog> {
               validator: (v) =>
                   _intRange(v, 0, 3600, 'Dinlenme 0-3600 arası olmalı'),
             ),
+            const SizedBox(height: 12),
             TextFormField(
               controller: _note,
               maxLength: 300,

@@ -36,6 +36,7 @@ class CategoriesScreen extends ConsumerWidget {
                     validator: (v) =>
                         (v ?? '').trim().isEmpty ? 'Ad gerekli.' : null,
                   ),
+                  const SizedBox(height: 12),
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
                     title: const Text('Aktif'),

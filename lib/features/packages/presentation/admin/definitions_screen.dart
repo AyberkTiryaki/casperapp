@@ -238,6 +238,7 @@ class _DefinitionFormScreenState extends ConsumerState<DefinitionFormScreen> {
                       return null;
                     },
                   ),
+                  const SizedBox(height: 12),
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
                     title: const Text('Aktif'),
