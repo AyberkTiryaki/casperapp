@@ -85,7 +85,7 @@ Durum 13.11.2026'daki yüklemeye göredir.
 
 Ürünler: Su, Protein Bar, Protein Shake, Elektrolit İçecek, Havlu Kiralama, Pilates Çorabı ve pasif "Yaz Kampanyası Paketi". Kategoriler: Pilates, Fonksiyonel Antrenman, Yoga.
 
-Şifreler doğrudan veritabanına yazıldığı için uzunluk kuralına takılmaz. Uygulamadan hesap açarken (`admin-create-user`) en az 8 karakter gerekir.
+Şifreler doğrudan veritabanına yazıldığı için uzunluk kuralına takılmaz. Uygulamadan yöneticinin hesap açarken (`admin-create-user`) en az 4, üyenin kendi kaydında en az 6 karakter gerekir.
 
 ## Uygulama testleri (Flutter)
 

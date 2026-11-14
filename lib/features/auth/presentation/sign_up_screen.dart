@@ -186,7 +186,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       textInputAction: TextInputAction.next,
                       decoration: const InputDecoration(
                         labelText: 'Şifre',
-                        helperText: 'En az 8 karakter',
+                        helperText: 'En az 6 karakter',
                       ),
                       validator: validatePassword,
                     ),

@@ -36,8 +36,8 @@ void main() {
   test('validators', () {
     expect(validateEmail('a@b.co'), isNull);
     expect(validateEmail('abc'), isNotNull);
-    expect(validatePassword('1234567'), isNotNull);
-    expect(validatePassword('12345678'), isNull);
+    expect(validatePassword('12345'), isNotNull);
+    expect(validatePassword('123456'), isNull);
     expect(validatePasswordConfirm('x', 'y'), isNotNull);
     expect(validatePasswordConfirm('y', 'y'), isNull);
     final now = DateTime(2026, 11, 10);

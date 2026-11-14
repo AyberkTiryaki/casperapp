@@ -53,11 +53,11 @@ Deno.serve(async (req) => {
 
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return fail("INVALID_EMAIL");
   // Yönetici açtığı hesaplarda kısa geçici şifreye izin verilir (ör. 1234); üyenin
-  // kendi kaydında 8 karakter kuralı uygulamada geçerlidir.
+  // kendi kaydında 6 karakter kuralı uygulamada geçerlidir.
   if (password.length < 4 || password.length > 72) return fail("WEAK_PASSWORD");
   if (fullName.length < 2 || fullName.length > 120) return fail("INVALID_FULL_NAME");
 
-  // Auth proje genelinde en az 8 karakter ister (üye kaydı için). Kısa geçici şifreye izin
+  // Auth proje genelinde en az 6 karakter ister (üye kaydı için). Kısa geçici şifreye izin
   // vermek için hesap önce rastgele uzun bir şifreyle açılır, sonra girilen şifre
   // admin_set_initial_password (yalnızca service_role) ile yazılır.
   const bootstrap = crypto.randomUUID() + crypto.randomUUID();

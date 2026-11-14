@@ -68,7 +68,7 @@ class _UpdatePasswordScreenState extends ConsumerState<UpdatePasswordScreen> {
                       textInputAction: TextInputAction.next,
                       decoration: const InputDecoration(
                         labelText: 'Yeni şifre',
-                        helperText: 'En az 8 karakter',
+                        helperText: 'En az 6 karakter',
                       ),
                       validator: validatePassword,
                     ),

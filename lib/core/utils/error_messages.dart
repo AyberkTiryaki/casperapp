@@ -93,7 +93,7 @@ String friendlyError(Object e) {
       return 'Bu e-posta adresiyle zaten bir hesap var.';
     }
     if (code == 'weak_password' || msg.contains('password should')) {
-      return 'Şifre çok zayıf. En az 8 karakterli daha güçlü bir şifre seçin.';
+      return 'Şifre çok zayıf. En az 6 karakterli daha güçlü bir şifre seçin.';
     }
     if (code.contains('rate_limit') ||
         msg.contains('rate limit') ||

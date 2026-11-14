@@ -6,7 +6,7 @@
 2. Her projede **Authentication → URL Configuration**:
    - Site URL: `caspertraining://auth-callback`
    - Redirect URLs: `caspertraining://auth-callback`
-3. **Authentication → Sign In / Providers → Email**: "Confirm email" açık olsun; en az şifre uzunluğu 8.
+3. **Authentication → Sign In / Providers → Email**: "Confirm email" açık olsun; en az şifre uzunluğu 6 (Supabase'in izin verdiği en kısa değer).
 
 ## 2. Migration dosyalarını çalıştırma
 

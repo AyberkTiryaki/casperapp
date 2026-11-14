@@ -25,7 +25,7 @@ Yol haritasında açıkça yazmayan ek kararlar 11. bölümdedir (10 Kasım 2026
 
 | Kimlik | Kural |
 |---|---|
-| K-01 | Kayıt e-posta + şifre ile yapılır; şifre en az 8 karakterdir. E-posta doğrulanmadan oturum açılamaz. |
+| K-01 | Kayıt e-posta + şifre ile yapılır; şifre en az 6 karakterdir (14.11.2026, Supabase Auth alt sınırı; önce 8). Yöneticinin açtığı hesaplarda geçici şifre en az 4 karakter olabilir. E-posta doğrulanmadan oturum açılamaz. |
 | K-02 | Kayıtta ad soyad, doğum tarihi, boy (cm), kilo (kg) alınır. **Kronik rahatsızlık / sağlık alanı yoktur.** |
 | K-03 | Doğum tarihi geçmişte olmalıdır. Sunucu boy için 50–260 cm, kilo için 20–400 kg kabul eder (uygulama formu 100–250 cm ve 30–300 kg ister). Aralık dışı değer sunucuda boş kaydedilir. |
 | K-04 | Kayıt, KVKK onay kutusu işaretlenmeden tamamlanamaz. Onay, **metin sürümü + onay zamanı** ile `consents` tablosuna yazılır. Metin değişince yeni sürüm ayrıca onaylanır (`accept_kvkk`). |

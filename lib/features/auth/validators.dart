@@ -19,7 +19,7 @@ String? validateFullName(String? v) {
 String? validatePassword(String? v) {
   final s = v ?? '';
   if (s.isEmpty) return 'Şifre gerekli.';
-  if (s.length < 8) return 'Şifre en az 8 karakter olmalı.';
+  if (s.length < 6) return 'Şifre en az 6 karakter olmalı.';
   return null;
 }
 

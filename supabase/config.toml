@@ -11,7 +11,7 @@ max_rows = 1000
 site_url = "caspertraining://auth-callback"
 additional_redirect_urls = ["caspertraining://auth-callback"]
 enable_signup = true
-minimum_password_length = 8
+minimum_password_length = 6
 
 [auth.email]
 enable_signup = true
