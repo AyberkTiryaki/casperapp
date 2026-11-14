@@ -114,6 +114,20 @@ void main() {
     expect(buildSignUpMetadata(d('  ')).containsKey('referral_code'), false);
     expect(buildSignUpMetadata(d(null)).containsKey('referral_code'), false);
     expect(buildSignUpMetadata(d(null))['birth_date'], '1990-05-17');
+    expect(buildSignUpMetadata(d(null)).containsKey('health_consent'), false);
+    final withConsent = buildSignUpMetadata(
+      SignUpData(
+        email: 'a@b.co',
+        password: '12345678',
+        fullName: 'Ayşe Yılmaz',
+        birthDate: DateTime(1990, 5, 17),
+        heightCm: 170,
+        weightKg: 60,
+        healthConsent: true,
+      ),
+    );
+    expect(withConsent['health_consent'], true);
+    expect(withConsent['health_version'], isNotEmpty);
   });
 
   test('geçersiz kod uyarısı kararı', () {

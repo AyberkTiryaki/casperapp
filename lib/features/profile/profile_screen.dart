@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/config/legal.dart';
 import '../../core/config/supabase.dart';
+import '../../core/theme/app_colors.dart';
 import '../../core/utils/error_messages.dart';
 import '../../core/utils/formatters.dart';
 import '../../core/widgets/async_value_view.dart';
 import '../../core/widgets/text_controller_scope.dart';
 import '../auth/validators.dart';
+import '../measurements/data/measurement_repository.dart';
 import 'deletion_request.dart';
 import 'profile.dart';
 import 'profile_providers.dart';
@@ -184,6 +187,10 @@ class _ProfileFormState extends ConsumerState<_ProfileForm> {
                 ),
           orElse: () => const SizedBox.shrink(),
         ),
+        if (widget.profile.role == UserRole.member) ...[
+          const Divider(height: 48),
+          _HealthConsentSection(memberId: widget.profile.id),
+        ],
         const Divider(height: 48),
         const _DeletionSection(),
       ],
@@ -294,6 +301,152 @@ class _DeletionSectionState extends ConsumerState<_DeletionSection> {
                   icon: const Icon(Icons.delete_outline),
                   label: const Text('Hesabımı sil'),
                 ),
+        ),
+      ],
+    );
+  }
+}
+
+class _HealthConsentSection extends ConsumerStatefulWidget {
+  const _HealthConsentSection({required this.memberId});
+  final String memberId;
+
+  @override
+  ConsumerState<_HealthConsentSection> createState() =>
+      _HealthConsentSectionState();
+}
+
+class _HealthConsentSectionState extends ConsumerState<_HealthConsentSection> {
+  bool _busy = false;
+
+  void _showText() {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (ctx) => DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.8,
+        builder: (_, controller) => ListView(
+          controller: controller,
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+          children: [
+            Text(
+              'Sağlık Verisi Açık Rıza Metni',
+              style: Theme.of(ctx).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Sürüm: $healthConsentTextVersion',
+              style: Theme.of(ctx).textTheme.bodySmall,
+            ),
+            const SizedBox(height: 16),
+            const Text(healthConsentText),
+            const SizedBox(height: 24),
+            FilledButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('Kapat'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _set(bool accept) async {
+    if (!accept) {
+      final go = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Onay geri alınsın mı?'),
+          content: const Text(
+            'Onayınızı geri alırsanız kayıtlı TÜM vücut ölçümleriniz kalıcı olarak silinir. Bu işlem geri alınamaz.',
+          ),
+          actions: [
+            OutlinedButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: const Text('Vazgeç'),
+            ),
+            FilledButton(
+              style: FilledButton.styleFrom(backgroundColor: AppColors.danger),
+              onPressed: () => Navigator.of(ctx).pop(true),
+              child: const Text('Onayı geri al'),
+            ),
+          ],
+        ),
+      );
+      if (go != true || !mounted) return;
+    }
+    setState(() => _busy = true);
+    var msg = accept
+        ? 'Sağlık verisi onayınız kaydedildi.'
+        : 'Onayınız geri alındı; ölçümleriniz silindi.';
+    try {
+      await supabase.rpc(
+        'set_health_consent',
+        params: {
+          'p_accept': accept,
+          'p_text_version': healthConsentTextVersion,
+        },
+      );
+    } catch (e) {
+      msg = friendlyError(e);
+    }
+    ref.invalidate(healthConsentProvider(widget.memberId));
+    ref.invalidate(measurementsProvider(widget.memberId));
+    if (!mounted) return;
+    setState(() => _busy = false);
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context);
+    final consent = ref.watch(healthConsentProvider(widget.memberId));
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text('Sağlık verisi onayı', style: t.textTheme.titleMedium),
+        const SizedBox(height: 8),
+        const Text(
+          'Vücut ölçümlerinizin kaydedilebilmesi için sağlık verisi açık rızanız gerekir.',
+        ),
+        const SizedBox(height: 12),
+        consent.when(
+          loading: () => const LinearProgressIndicator(),
+          error: (e, _) => Text(friendlyError(e)),
+          data: (ok) => Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    ok ? Icons.check_circle_outline : Icons.cancel_outlined,
+                    color: ok ? AppColors.success : null,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(ok ? 'Onay verildi' : 'Onay verilmedi'),
+                  const Spacer(),
+                  TextButton(
+                    onPressed: _showText,
+                    child: const Text('Metni oku'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              ok
+                  ? OutlinedButton.icon(
+                      onPressed: _busy ? null : () => _set(false),
+                      icon: const Icon(Icons.undo),
+                      label: const Text('Onayı geri al'),
+                    )
+                  : FilledButton.icon(
+                      onPressed: _busy ? null : () => _set(true),
+                      icon: const Icon(Icons.check),
+                      label: const Text('Onay ver'),
+                    ),
+            ],
+          ),
         ),
       ],
     );

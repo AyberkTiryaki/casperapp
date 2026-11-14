@@ -13,6 +13,7 @@ class MyMeasurementsScreen extends ConsumerWidget {
     appBar: AppBar(title: const Text('Ölçümlerim ve ilerleme')),
     body: MeasurementsBody(
       memberId: memberId,
+      isSelf: true,
       emptyTitle: 'Henüz ölçüm yok',
       emptyMessage: 'İlk ölçümünüzü ekleyerek ilerlemenizi takip edin.',
     ),

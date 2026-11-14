@@ -5,6 +5,7 @@ import '../../../core/utils/error_messages.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/async_value_view.dart';
 import '../../../core/widgets/empty_view.dart';
+import '../../../core/widgets/warning_box.dart';
 import '../data/measurement_repository.dart';
 import '../domain/measurement_models.dart';
 import 'measurement_form.dart';
@@ -16,13 +17,17 @@ class AddMeasurementFab extends ConsumerWidget {
   final String memberId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) =>
-      FloatingActionButton.extended(
-        onPressed: () =>
-            showAddMeasurementDialog(context, ref, memberId: memberId),
-        icon: const Icon(Icons.add),
-        label: const Text('Ölçüm ekle'),
-      );
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Onay yoksa (veya henüz bilinmiyorsa) ekleme butonu gizlenir.
+    final ok = ref.watch(healthConsentProvider(memberId)).value ?? false;
+    if (!ok) return const SizedBox.shrink();
+    return FloatingActionButton.extended(
+      onPressed: () =>
+          showAddMeasurementDialog(context, ref, memberId: memberId),
+      icon: const Icon(Icons.add),
+      label: const Text('Ölçüm ekle'),
+    );
+  }
 }
 
 /// Özet + kilo eğilimi + geçmiş; iki ekranın ortak gövdesi.
@@ -32,13 +37,17 @@ class MeasurementsBody extends ConsumerWidget {
     required this.memberId,
     required this.emptyTitle,
     this.emptyMessage,
+    this.isSelf = false,
   });
+  final bool isSelf;
   final String memberId;
   final String emptyTitle;
   final String? emptyMessage;
 
-  Future<void> _refresh(WidgetRef ref) async =>
-      ref.invalidate(measurementsProvider(memberId));
+  Future<void> _refresh(WidgetRef ref) async {
+    ref.invalidate(measurementsProvider(memberId));
+    ref.invalidate(healthConsentProvider(memberId));
+  }
 
   Future<void> _delete(
     BuildContext context,
@@ -77,6 +86,7 @@ class MeasurementsBody extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final value = ref.watch(measurementsProvider(memberId));
     final t = Theme.of(context);
+    final consent = ref.watch(healthConsentProvider(memberId)).value;
     return AsyncValueView<List<BodyMeasurement>>(
       value: value,
       onRetry: () => _refresh(ref),
@@ -88,6 +98,14 @@ class MeasurementsBody extends ConsumerWidget {
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
             physics: const AlwaysScrollableScrollPhysics(),
             children: [
+              if (consent == false) ...[
+                WarningBox(
+                  text: isSelf
+                      ? 'Vücut ölçümü kaydı için sağlık verisi onayınız yok. Profil ekranından onay verebilirsiniz.'
+                      : 'Bu üyenin sağlık verisi onayı yok; ölçüm kaydedilemez. Üye onayı Profil ekranından verebilir.',
+                ),
+                const SizedBox(height: 16),
+              ],
               if (items.isEmpty)
                 Padding(
                   padding: const EdgeInsets.only(top: 48),

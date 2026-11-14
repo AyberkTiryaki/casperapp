@@ -64,3 +64,15 @@ final measurementsProvider =
       (ref, memberId) =>
           ref.watch(measurementRepositoryProvider).measurements(memberId),
     );
+
+/// Üyenin sağlık verisi açık rızası var mı (üye kendisi, yönetici veya eğitmeni).
+final healthConsentProvider = FutureProvider.autoDispose.family<bool, String>((
+  ref,
+  memberId,
+) async {
+  final r = await supabase.rpc(
+    'member_health_consent',
+    params: {'p_member_id': memberId},
+  );
+  return r == true;
+});

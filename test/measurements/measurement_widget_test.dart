@@ -8,8 +8,15 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'fake_measurement_repo.dart';
 
-Widget app(FakeMeasurementRepository repo, Widget home) => ProviderScope(
-  overrides: [measurementRepositoryProvider.overrideWithValue(repo)],
+Widget app(
+  FakeMeasurementRepository repo,
+  Widget home, {
+  bool consent = true,
+}) => ProviderScope(
+  overrides: [
+    measurementRepositoryProvider.overrideWithValue(repo),
+    healthConsentProvider.overrideWith((ref, id) async => consent),
+  ],
   child: MaterialApp(home: home),
 );
 
@@ -53,6 +60,16 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('Ölçüm ekle'), findsOneWidget);
+  });
+
+  testWidgets('onay yoksa uyarı gösterilir, FAB gizlenir', (tester) async {
+    final repo = FakeMeasurementRepository();
+    await tester.pumpWidget(
+      app(repo, const MyMeasurementsScreen(memberId: 'm1'), consent: false),
+    );
+    await tester.pumpAndSettle();
+    expect(find.textContaining('sağlık verisi onayınız yok'), findsOneWidget);
+    expect(find.text('Ölçüm ekle'), findsNothing);
   });
 
   testWidgets('tek kilo ölçümünde grafik yerine açıklama', (tester) async {

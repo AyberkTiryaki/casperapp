@@ -11,5 +11,6 @@ class AppColors {
   static const outlineLight = Color(0xFFD9DCE2);
   static const outlineDark = Color(0xFF343840);
   static const success = Color(0xFF2E9E6B);
+  static const warning = Color(0xFFE0A100);
   static const danger = Color(0xFFD64545);
 }

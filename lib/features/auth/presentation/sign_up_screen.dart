@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/config/legal.dart';
 import '../../../core/utils/error_messages.dart';
+import '../../../core/widgets/warning_box.dart';
 import '../auth_providers.dart';
 import '../data/auth_repository.dart';
 import '../validators.dart';
@@ -27,6 +28,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   final _referral = TextEditingController();
   DateTime? _birthDate;
   bool _kvkk = false;
+  bool _health = false;
   bool _kvkkTouched = false;
   bool _loading = false;
   String? _error;
@@ -70,7 +72,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     }
   }
 
-  void _showKvkk() {
+  void _showText(String title, String version, String body) {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -83,16 +85,16 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
           children: [
             Text(
-              'KVKK Aydınlatma Metni',
+              title,
               style: Theme.of(ctx).textTheme.titleLarge,
             ),
             const SizedBox(height: 4),
             Text(
-              'Sürüm: $kvkkTextVersion',
+              'Sürüm: $version',
               style: Theme.of(ctx).textTheme.bodySmall,
             ),
             const SizedBox(height: 16),
-            const Text(kvkkText),
+            Text(body),
             const SizedBox(height: 24),
             FilledButton(
               onPressed: () => Navigator.of(ctx).pop(),
@@ -124,6 +126,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
               heightCm: parseHeight(_height.text)!,
               weightKg: parseWeight(_weight.text)!,
               referralCode: normalizeReferralCode(_referral.text),
+              healthConsent: _health,
             ),
           );
       if (!mounted) return;
@@ -271,7 +274,11 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                             padding: EdgeInsets.zero,
                             minimumSize: const Size(0, 32),
                           ),
-                          onPressed: _showKvkk,
+                          onPressed: () => _showText(
+                            'KVKK Aydınlatma Metni',
+                            kvkkTextVersion,
+                            kvkkText,
+                          ),
                           child: const Text('Metni oku'),
                         ),
                       ),
@@ -282,6 +289,38 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         child: Text(
                           'Devam etmek için KVKK metnini kabul etmelisiniz.',
                           style: TextStyle(color: t.colorScheme.error),
+                        ),
+                      ),
+                    CheckboxListTile(
+                      value: _health,
+                      contentPadding: EdgeInsets.zero,
+                      controlAffinity: ListTileControlAffinity.leading,
+                      onChanged: (v) => setState(() => _health = v ?? false),
+                      title: const Text(
+                        'Sağlık verilerimin (vücut ölçümleri) işlenmesine açık rıza veriyorum (isteğe bağlı)',
+                      ),
+                      subtitle: Align(
+                        alignment: Alignment.centerLeft,
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: const Size(0, 32),
+                          ),
+                          onPressed: () => _showText(
+                            'Sağlık Verisi Açık Rıza Metni',
+                            healthConsentTextVersion,
+                            healthConsentText,
+                          ),
+                          child: const Text('Metni oku'),
+                        ),
+                      ),
+                    ),
+                    if (!_health)
+                      const Padding(
+                        padding: EdgeInsets.only(bottom: 8),
+                        child: WarningBox(
+                          text:
+                              'Onay vermezseniz eğitmeniniz vücut ölçümlerinizi kaydedemez ve gelişiminizi ölçümlerle takip edemez. Üyeliğiniz ve ders rezervasyonlarınız etkilenmez. Onayı daha sonra Profil ekranından verebilirsiniz.',
                         ),
                       ),
                     if (_error != null)

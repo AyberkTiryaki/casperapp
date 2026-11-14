@@ -13,6 +13,7 @@ class SignUpData {
     required this.heightCm,
     required this.weightKg,
     this.referralCode,
+    this.healthConsent = false,
   });
 
   final String email;
@@ -22,6 +23,7 @@ class SignUpData {
   final int heightCm;
   final double weightKg;
   final String? referralCode;
+  final bool healthConsent;
 }
 
 /// signUp `data` (kullanıcı metadata) haritası; referans kodu boşsa eklenmez.
@@ -37,6 +39,8 @@ Map<String, Object?> buildSignUpMetadata(SignUpData d) {
     'weight_kg': d.weightKg,
     'kvkk_accepted': true,
     'kvkk_version': kvkkTextVersion,
+    if (d.healthConsent) 'health_consent': true,
+    if (d.healthConsent) 'health_version': healthConsentTextVersion,
     if (ref.isNotEmpty) 'referral_code': ref,
   };
 }
