@@ -41,7 +41,7 @@ class MemberHomeScreen extends StatelessWidget {
           page: ClassCalendarScreen(),
         ),
         const ShellTab(
-          label: 'Rezervasyonlarım',
+          label: 'Rezervasyon',
           icon: Icons.event_available_outlined,
           selectedIcon: Icons.event_available_rounded,
           page: MyReservationsScreen(),
