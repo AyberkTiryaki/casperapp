@@ -31,9 +31,12 @@ jobs:
           distribution: temurin
           java-version: "17"
 
+      # Yerel geliştirme makinesiyle aynı sürüm: yeni sürümlerdeki uyarılar derlemeyi
+      # beklenmedik şekilde kırmasın. Yerelde Flutter güncellenince burası da güncellenir.
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: "3.47.9"
           cache: true
 
       - name: Ortam dosyası
