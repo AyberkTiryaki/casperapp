@@ -48,7 +48,7 @@ Uygulama yalnızca Casper Training Studio üyeleri içindir. Hesabınız stüdyo
 - Destek e-postası: `________`
 - Web sitesi: `________` (yoksa Instagram sayfası)
 - Gizlilik politikası URL'si: `________` (zorunlu; KVKK metni yayımlandıktan sonra)
-- Hesap silme sayfası URL'si: `________` (Google Play zorunlu kılar; uygulama içinde "Hesap silme talebi" var, ayrıca web'den talep yolu tarif edilmeli)
+- Hesap silme sayfası URL'si: `________` (Google Play zorunlu kılar; uygulama içinde Profil > "Hesabımı sil" var, ayrıca web'den talep yolu tarif edilmeli)
 
 ## İnceleme ekibi için not (App Store Review / Play)
 Uygulama girişi gerektirir. İnceleme için deneme hesapları verilecek:
