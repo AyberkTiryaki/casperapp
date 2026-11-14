@@ -52,6 +52,17 @@ class _AdminScheduleScreenState extends ConsumerState<AdminScheduleScreen> {
             onSelected: (d) => setState(() => _day = d),
             startOffset: -7,
             days: 28,
+            markedDays: ref
+                .watch(
+                  classDaysProvider((
+                    from: dayStart(
+                      DateTime.now().subtract(const Duration(days: 7)),
+                    ),
+                    days: 28,
+                    trainerId: _trainerId,
+                  )),
+                )
+                .value,
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),

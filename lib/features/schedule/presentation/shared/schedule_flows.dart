@@ -10,6 +10,7 @@ import 'schedule_widgets.dart';
 /// Rezervasyon/ders değişikliklerinden sonra ilgili tüm önbellekleri yeniler.
 void invalidateSchedule(WidgetRef ref) {
   ref.invalidate(classesProvider);
+  ref.invalidate(classDaysProvider);
   ref.invalidate(myReservationsProvider);
   ref.invalidate(participantsProvider);
   ref.invalidate(adminReservationsProvider);

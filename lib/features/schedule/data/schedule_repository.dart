@@ -12,6 +12,14 @@ abstract class ScheduleRepository {
     String? trainerId,
     bool includeCancelled = false,
   });
+
+  /// [from]'dan itibaren [days] gün içinde (iptal edilmemiş) dersi olan
+  /// günlerin yerel gün başlangıçları; tek sorgu.
+  Future<Set<DateTime>> classDays({
+    required DateTime from,
+    required int days,
+    String? trainerId,
+  });
   Future<List<MyReservation>> myReservations();
   Future<List<ClassParticipant>> classParticipants(String classId);
   Future<List<AdminClassReservation>> adminClassReservations(String classId);
@@ -69,6 +77,23 @@ class SupabaseScheduleRepository implements ScheduleRepository {
       },
     );
     return _rows(r).map(StudioClass.fromJson).toList();
+  }
+
+  @override
+  Future<Set<DateTime>> classDays({
+    required DateTime from,
+    required int days,
+    String? trainerId,
+  }) async {
+    final start = dayStart(from);
+    final end = DateTime(start.year, start.month, start.day + days);
+    final list = await listClasses(
+      from: start,
+      to: end,
+      trainerId: trainerId,
+      includeCancelled: false,
+    );
+    return {for (final c in list) dayStart(c.startsAt)};
   }
 
   @override
@@ -216,6 +241,17 @@ final classesProvider = FutureProvider.family<List<StudioClass>, ClassQuery>((
         includeCancelled: q.includeCancelled,
       );
 }, retry: (_, _) => null);
+
+typedef ClassDaysQuery = ({DateTime from, int days, String? trainerId});
+
+/// Gün şeridi noktaları için tek sorgu; süs olduğundan hata sessizce boş döner.
+final classDaysProvider = FutureProvider.autoDispose
+    .family<Set<DateTime>, ClassDaysQuery>(
+      (ref, q) => ref
+          .watch(scheduleRepositoryProvider)
+          .classDays(from: q.from, days: q.days, trainerId: q.trainerId),
+      retry: (_, _) => null,
+    );
 
 final myReservationsProvider = FutureProvider<List<MyReservation>>(
   (ref) => ref.watch(scheduleRepositoryProvider).myReservations(),

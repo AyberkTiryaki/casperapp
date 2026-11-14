@@ -74,6 +74,7 @@ class _AdminHomeTab extends ConsumerWidget {
       dashboard: const AdminDashboard(),
       onRefresh: () {
         ref.invalidate(classesProvider);
+        ref.invalidate(classDaysProvider);
         ref.invalidate(adminReferralsProvider);
         ref.invalidate(deletionRequestsProvider);
       },

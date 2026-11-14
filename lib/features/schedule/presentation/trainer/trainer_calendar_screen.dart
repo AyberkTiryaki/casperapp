@@ -47,7 +47,19 @@ class _TrainerCalendarScreenState extends ConsumerState<TrainerCalendarScreen> {
       body: Column(
         children: [
           const SizedBox(height: 8),
-          DayStrip(selected: _day, onSelected: (d) => setState(() => _day = d)),
+          DayStrip(
+            selected: _day,
+            onSelected: (d) => setState(() => _day = d),
+            markedDays: ref
+                .watch(
+                  classDaysProvider((
+                    from: dayStart(DateTime.now()),
+                    days: 14,
+                    trainerId: widget.trainerId,
+                  )),
+                )
+                .value,
+          ),
           const SizedBox(height: 8),
           Expanded(
             child: ClassListView(
