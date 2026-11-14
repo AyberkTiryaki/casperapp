@@ -2,7 +2,7 @@
 
 Son güncelleme: [Yayın tarihi]
 
-Bu politika, Casper Training Studio mobil uygulamasının ("Uygulama") hangi bilgileri topladığını, bunları nasıl kullandığını ve haklarınızı açıklar. Uygulama, [Stüdyonun ticari unvanı] ("Stüdyo") üyeleri, eğitmenleri ve yöneticileri içindir.
+Bu politika, Casper Training Studio mobil uygulamasının ("Uygulama") hangi bilgileri topladığını, bunları nasıl kullandığını ve haklarınızı açıklar. Uygulama, Casper Training Studio ("Stüdyo") üyeleri, eğitmenleri ve yöneticileri içindir.
 
 Kişisel verilerin işlenmesine ilişkin ayrıntılı bilgi, Uygulamada kayıt sırasında gösterilen **KVKK Aydınlatma Metni**'nde yer alır.
 
@@ -49,7 +49,7 @@ KVKK md. 11 kapsamında bilgilerinize erişme, bunları düzeltme ve silinmesini
 
 ## İletişim
 
-[Stüdyonun ticari unvanı]
+Casper Training Studio
 [Açık adres]
 [E-posta adresi]
 Instagram: https://www.instagram.com/caspertrainingstudio/

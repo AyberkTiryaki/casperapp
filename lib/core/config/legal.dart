@@ -13,7 +13,7 @@ CASPER TRAINING STUDIO
 KİŞİSEL VERİLERİN İŞLENMESİNE İLİŞKİN AYDINLATMA METNİ
 
 1. Veri sorumlusu
-6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") uyarınca kişisel verileriniz, veri sorumlusu sıfatıyla [Stüdyonun ticari unvanı] ("Stüdyo") tarafından aşağıda açıklanan kapsamda işlenmektedir.
+6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") uyarınca kişisel verileriniz, veri sorumlusu sıfatıyla Casper Training Studio ("Stüdyo") tarafından aşağıda açıklanan kapsamda işlenmektedir.
 Adres: [Açık adres]
 E-posta: [E-posta adresi]
 
@@ -55,7 +55,7 @@ Başvurularınızı yukarıdaki adrese yazılı olarak veya kayıtlı e-posta ad
 const healthConsentText = '''
 SAĞLIK VERİLERİ AÇIK RIZA METNİ
 
-Aydınlatma Metni'ni okudum. Eğitmenimin veya benim kaydedeceğim vücut ölçümlerimin (kilo, yağ oranı, kas kütlesi, çevre ölçüleri ve ölçüm notları) bana uygun antrenman programı hazırlanması ve gelişimimin izlenmesi amacıyla [Stüdyonun ticari unvanı] tarafından işlenmesine, Stüdyo yöneticileri ile derslerime giren eğitmenlerin görmesine ve bu verilerin uygulamanın altyapı sağlayıcısının yurt dışındaki (Avrupa Birliği) sunucularında saklanmasına açık rızam ile onay veriyorum.
+Aydınlatma Metni'ni okudum. Eğitmenimin veya benim kaydedeceğim vücut ölçümlerimin (kilo, yağ oranı, kas kütlesi, çevre ölçüleri ve ölçüm notları) bana uygun antrenman programı hazırlanması ve gelişimimin izlenmesi amacıyla Casper Training Studio tarafından işlenmesine, Stüdyo yöneticileri ile derslerime giren eğitmenlerin görmesine ve bu verilerin uygulamanın altyapı sağlayıcısının yurt dışındaki (Avrupa Birliği) sunucularında saklanmasına açık rızam ile onay veriyorum.
 
 Bu onayı vermemem üyeliğimi ve ders rezervasyonu yapmamı etkilemez. Onayımı dilediğim zaman Stüdyoya başvurarak geri alabilirim; geri almam halinde ölçümlerim silinir.
 ''';
