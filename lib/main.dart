@@ -1,3 +1,5 @@
+import 'dart:ui' show PointerDeviceKind;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -41,6 +43,7 @@ class CasperApp extends StatelessWidget {
     return MaterialApp(
       title: 'Casper Training Studio',
       debugShowCheckedModeBanner: false,
+      scrollBehavior: const _AppScrollBehavior(),
       locale: _locale,
       supportedLocales: const [_locale],
       localizationsDelegates: _delegates,
@@ -61,6 +64,7 @@ class _MissingConfigApp extends StatelessWidget {
     return MaterialApp(
       title: 'Casper Training Studio',
       debugShowCheckedModeBanner: false,
+      scrollBehavior: const _AppScrollBehavior(),
       locale: _locale,
       supportedLocales: const [_locale],
       localizationsDelegates: _delegates,
@@ -101,4 +105,18 @@ class _MissingConfigApp extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Masaüstünde (Windows) yatay listeler fareyle de sürüklenebilsin.
+/// Telefonda dokunmatik kaydırma zaten varsayılan olarak açıktır.
+class _AppScrollBehavior extends MaterialScrollBehavior {
+  const _AppScrollBehavior();
+
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+    PointerDeviceKind.touch,
+    PointerDeviceKind.mouse,
+    PointerDeviceKind.trackpad,
+    PointerDeviceKind.stylus,
+  };
 }
