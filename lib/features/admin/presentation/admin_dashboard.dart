@@ -36,43 +36,49 @@ class AdminDashboard extends ConsumerWidget {
       children: [
         const SectionLabel('Bugün'),
         const SizedBox(height: 12),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: StatTile(
-                icon: Icons.event_note_outlined,
-                label: 'Bugünkü ders',
-                value: classes.whenData(
-                  (l) => l.where((c) => !c.isCancelled).length,
+        // Kaydırılabilir sayfada stretch sonsuz yükseklik ister; IntrinsicHeight
+        // kutuları en uzununa eşitler.
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: StatTile(
+                  icon: Icons.event_note_outlined,
+                  label: 'Bugünkü ders',
+                  value: classes.whenData(
+                    (l) => l.where((c) => !c.isCancelled).length,
+                  ),
+                  onTap: () =>
+                      ref.read(homeTabProvider.notifier).set(HomeTabs.second),
                 ),
-                onTap: () =>
-                    ref.read(homeTabProvider.notifier).set(HomeTabs.second),
               ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: StatTile(
-                icon: Icons.group_add_outlined,
-                label: 'Bekleyen referans',
-                value: referrals.whenData((l) => l.length),
-                onTap: () => open(const AdminReferralsScreen()),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: StatTile(
-                icon: Icons.person_remove_outlined,
-                label: 'Silme talebi',
-                value: deletions.whenData(
-                  (l) => l
-                      .where((i) => i.request.status == DeletionStatus.pending)
-                      .length,
+              const SizedBox(width: 10),
+              Expanded(
+                child: StatTile(
+                  icon: Icons.group_add_outlined,
+                  label: 'Bekleyen referans',
+                  value: referrals.whenData((l) => l.length),
+                  onTap: () => open(const AdminReferralsScreen()),
                 ),
-                onTap: () => open(const DeletionRequestsScreen()),
               ),
-            ),
-          ],
+              const SizedBox(width: 10),
+              Expanded(
+                child: StatTile(
+                  icon: Icons.person_remove_outlined,
+                  label: 'Silme talebi',
+                  value: deletions.whenData(
+                    (l) => l
+                        .where(
+                          (i) => i.request.status == DeletionStatus.pending,
+                        )
+                        .length,
+                  ),
+                  onTap: () => open(const DeletionRequestsScreen()),
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );
