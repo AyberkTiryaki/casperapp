@@ -50,7 +50,7 @@ KVKK md. 11 kapsamında bilgilerinize erişme, bunları düzeltme ve silinmesini
 ## İletişim
 
 Casper Training Studio
-[Açık adres]
+Atatürk Mahallesi, Ahmet Karaevli Sokak, Pilatin Prime Sitesi 7/A No: 19, Süleymanpaşa / Tekirdağ
 [E-posta adresi]
 Instagram: https://www.instagram.com/caspertrainingstudio/
 

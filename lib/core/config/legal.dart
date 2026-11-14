@@ -14,7 +14,7 @@ KİŞİSEL VERİLERİN İŞLENMESİNE İLİŞKİN AYDINLATMA METNİ
 
 1. Veri sorumlusu
 6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") uyarınca kişisel verileriniz, veri sorumlusu sıfatıyla Casper Training Studio ("Stüdyo") tarafından aşağıda açıklanan kapsamda işlenmektedir.
-Adres: [Açık adres]
+Adres: Atatürk Mahallesi, Ahmet Karaevli Sokak, Pilatin Prime Sitesi 7/A No: 19, Süleymanpaşa / Tekirdağ
 E-posta: [E-posta adresi]
 
 2. İşlenen kişisel veriler
