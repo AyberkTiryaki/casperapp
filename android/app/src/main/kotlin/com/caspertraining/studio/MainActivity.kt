@@ -1,4 +1,4 @@
-package com.example.caspertrainingstudio
+package com.caspertraining.studio
 
 import io.flutter.embedding.android.FlutterActivity
 
