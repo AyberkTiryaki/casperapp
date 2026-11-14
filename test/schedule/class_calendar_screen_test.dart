@@ -1,3 +1,5 @@
+import 'package:caspertrainingstudio/features/packages/data/package_repository.dart';
+import 'package:caspertrainingstudio/features/packages/domain/package_models.dart';
 import 'package:caspertrainingstudio/features/schedule/data/schedule_repository.dart';
 import 'package:caspertrainingstudio/features/schedule/domain/schedule_models.dart';
 import 'package:caspertrainingstudio/features/schedule/presentation/member/class_calendar_screen.dart';
@@ -36,13 +38,31 @@ void main() {
     _c('c', tomorrow, 10, cat: 'c2', catName: 'Yoga'),
   ];
 
-  Future<void> pump(WidgetTester tester, List<StudioClass> data) async {
+  MemberPackage pkg(String cat) => MemberPackage(
+    id: 'p-$cat',
+    memberId: 'm',
+    definitionId: 'd',
+    categoryId: cat,
+    totalCredits: 8,
+    remainingCredits: 5,
+    pricePaid: 100,
+    activatedAt: DateTime.now().subtract(const Duration(days: 2)),
+    endsAt: DateTime.now().add(const Duration(days: 20)),
+    status: 'active',
+  );
+
+  Future<void> pump(
+    WidgetTester tester,
+    List<StudioClass> data, {
+    List<MemberPackage> packages = const [],
+  }) async {
     tester.view.physicalSize = const Size(360, 800);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          myPackagesProvider.overrideWith((ref) async => packages),
           classesProvider.overrideWith(
             (ref, q) async =>
                 data.where((c) => dayStart(c.startsAt) == q.day).toList(),
@@ -88,5 +108,40 @@ void main() {
     await tester.tap(find.text('${day2.day}').first);
     await tester.pumpAndSettle();
     expect(find.text('Bu gün için ders yok'), findsOneWidget);
+  });
+
+  testWidgets('Paketime uygun is default and hides other categories', (
+    tester,
+  ) async {
+    await pump(tester, all, packages: [pkg('c1')]);
+    expect(
+      tester
+          .widget<ChoiceChip>(find.widgetWithText(ChoiceChip, 'Paketime uygun'))
+          .selected,
+      isTrue,
+    );
+    // Bugün: c1 (a) görünür, c2 (b) gizli.
+    expect(find.text('Dolu'), findsOneWidget);
+    expect(find.text('1 yer kaldı'), findsNothing);
+    expect(find.text('Paketin bu ders için geçerli değil'), findsNothing);
+    // Tümü: kapsanmayan ders kilit satırıyla görünür.
+    await tester.tap(find.widgetWithText(ChoiceChip, 'Tümü'));
+    await tester.pumpAndSettle();
+    expect(find.text('1 yer kaldı'), findsOneWidget);
+    expect(find.text('Paketin bu ders için geçerli değil'), findsOneWidget);
+  });
+
+  testWidgets('without active package default is Tümü, no lock line', (
+    tester,
+  ) async {
+    await pump(tester, all);
+    expect(
+      tester
+          .widget<ChoiceChip>(find.widgetWithText(ChoiceChip, 'Tümü'))
+          .selected,
+      isTrue,
+    );
+    expect(find.text('1 yer kaldı'), findsOneWidget);
+    expect(find.text('Paketin bu ders için geçerli değil'), findsNothing);
   });
 }

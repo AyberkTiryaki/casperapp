@@ -2,15 +2,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/config/supabase.dart';
 import '../../../core/utils/formatters.dart';
+import '../../schedule/domain/schedule_models.dart' show ClassType;
 import '../domain/package_models.dart';
 
 abstract class PackageRepository {
   Future<List<Category>> categories();
-  Future<void> createCategory({required String name, required bool isActive});
+  Future<void> createCategory({
+    required String name,
+    required bool isActive,
+    required ClassType classType,
+  });
   Future<void> updateCategory({
     required String id,
     required String name,
     required bool isActive,
+    required ClassType classType,
   });
 
   Future<List<PackageDefinition>> definitions();
@@ -71,17 +77,29 @@ class SupabasePackageRepository implements PackageRepository {
   }
 
   @override
-  Future<void> createCategory({required String name, required bool isActive}) =>
-      supabase.from('categories').insert({'name': name, 'is_active': isActive});
+  Future<void> createCategory({
+    required String name,
+    required bool isActive,
+    required ClassType classType,
+  }) => supabase.from('categories').insert({
+    'name': name,
+    'is_active': isActive,
+    'class_type': classType.apiValue,
+  });
 
   @override
   Future<void> updateCategory({
     required String id,
     required String name,
     required bool isActive,
+    required ClassType classType,
   }) => supabase
       .from('categories')
-      .update({'name': name, 'is_active': isActive})
+      .update({
+        'name': name,
+        'is_active': isActive,
+        'class_type': classType.apiValue,
+      })
       .eq('id', id);
 
   @override

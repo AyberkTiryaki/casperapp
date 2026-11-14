@@ -34,7 +34,10 @@ const _serverCodeMessages = <String, String>{
   'CLASS_NOT_FOUND': 'Ders bulunamadı.',
   'INVALID_CLASS_TIME': 'Ders zamanı geçersiz (geçmişte olamaz).',
   'INVALID_DURATION': 'Ders süresi geçersiz.',
-  'NO_ACTIVE_PACKAGE': 'Bu kategoride aktif paketiniz yok.',
+  'NO_ACTIVE_PACKAGE':
+      'Bu derse katılmak için bu kategoride aktif paketiniz olmalı.',
+  'CLASS_TYPE_MISMATCH':
+      'Ders türü kategoriyle uyuşmuyor. Kategoriyi kontrol edin.',
   'NO_CREDITS': 'Paketinizde kalan ders hakkı yok.',
   'PACKAGE_EXPIRED': 'Paketinizin süresi dolmuş.',
   'PACKAGE_FROZEN': 'Paketiniz dondurulmuş durumda.',

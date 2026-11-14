@@ -251,10 +251,14 @@ class ClassCard extends StatelessWidget {
     this.showTrainer = true,
     this.showBookedBadge = true,
     this.staff = false,
+    this.packageNotCovered = false,
   });
 
   final StudioClass item;
   final VoidCallback onTap;
+
+  /// Üye takviminde: aktif paketin bu dersin kategorisini kapsamıyor.
+  final bool packageNotCovered;
   final bool showTrainer;
   final bool showBookedBadge;
   final bool staff;
@@ -347,6 +351,28 @@ class ClassCard extends StatelessWidget {
                           ),
                       ],
                     ),
+                    if (packageNotCovered) ...[
+                      const SizedBox(height: 6),
+                      Row(
+                        key: const Key('packageNotCoveredLine'),
+                        children: [
+                          const Icon(
+                            Icons.lock_outline,
+                            size: 14,
+                            color: AppColors.nightMuted,
+                          ),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              'Paketin bu ders için geçerli değil',
+                              style: t.bodySmall?.copyWith(
+                                color: AppColors.nightMuted,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ],
                 ),
               ),

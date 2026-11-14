@@ -1,5 +1,7 @@
 import 'package:caspertrainingstudio/features/packages/data/package_repository.dart';
 import 'package:caspertrainingstudio/features/packages/domain/package_models.dart';
+import 'package:caspertrainingstudio/features/schedule/domain/schedule_models.dart'
+    show ClassType;
 
 class AssignCall {
   AssignCall(
@@ -29,12 +31,14 @@ class FakePackageRepository implements PackageRepository {
   Future<void> createCategory({
     required String name,
     required bool isActive,
+    required ClassType classType,
   }) async => createdCats.add(name);
   @override
   Future<void> updateCategory({
     required String id,
     required String name,
     required bool isActive,
+    required ClassType classType,
   }) async {}
   @override
   Future<List<PackageDefinition>> definitions() async => defs;

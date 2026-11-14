@@ -5,6 +5,7 @@ import '../../../../core/utils/error_messages.dart';
 import '../../../../core/widgets/async_value_view.dart';
 import '../../../../core/widgets/empty_view.dart';
 import '../../../../core/widgets/text_controller_scope.dart';
+import '../../../schedule/domain/schedule_models.dart' show ClassType;
 import '../../data/package_repository.dart';
 import '../../domain/package_models.dart';
 import '../../../../core/widgets/home_button.dart';
@@ -14,6 +15,7 @@ class CategoriesScreen extends ConsumerWidget {
 
   Future<void> _edit(BuildContext context, WidgetRef ref, Category? c) async {
     var active = c?.isActive ?? true;
+    var type = c?.classType ?? ClassType.group;
     final formKey = GlobalKey<FormState>();
     // Kaydet: girilen ad döner; Vazgeç / dışarı dokunma: null
     final text = await showDialog<String>(
@@ -35,6 +37,29 @@ class CategoriesScreen extends ConsumerWidget {
                     decoration: const InputDecoration(labelText: 'Ad'),
                     validator: (v) =>
                         (v ?? '').trim().isEmpty ? 'Ad gerekli.' : null,
+                  ),
+                  const SizedBox(height: 12),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Ders türü',
+                      style: Theme.of(ctx).textTheme.labelLarge,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  SegmentedButton<ClassType>(
+                    segments: const [
+                      ButtonSegment(
+                        value: ClassType.individual,
+                        label: Text('Özel (1 kişi)'),
+                      ),
+                      ButtonSegment(
+                        value: ClassType.group,
+                        label: Text('Grup (6 kişi)'),
+                      ),
+                    ],
+                    selected: {type},
+                    onSelectionChanged: (s) => setS(() => type = s.first),
                   ),
                   const SizedBox(height: 12),
                   SwitchListTile(
@@ -69,9 +94,18 @@ class CategoriesScreen extends ConsumerWidget {
     final messenger = ScaffoldMessenger.of(context);
     try {
       if (c == null) {
-        await repo.createCategory(name: text, isActive: active);
+        await repo.createCategory(
+          name: text,
+          isActive: active,
+          classType: type,
+        );
       } else {
-        await repo.updateCategory(id: c.id, name: text, isActive: active);
+        await repo.updateCategory(
+          id: c.id,
+          name: text,
+          isActive: active,
+          classType: type,
+        );
       }
       ref.invalidate(categoriesProvider);
       messenger.showSnackBar(
@@ -123,7 +157,23 @@ class CategoriesScreen extends ConsumerWidget {
                       child: ListTile(
                         title: Text(c.name),
                         subtitle: Text(c.isActive ? 'Aktif' : 'Pasif'),
-                        trailing: const Icon(Icons.edit_outlined),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Chip(
+                              label: Text(
+                                c.classType == ClassType.individual
+                                    ? 'Özel'
+                                    : 'Grup',
+                              ),
+                              visualDensity: VisualDensity.compact,
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            const SizedBox(width: 8),
+                            const Icon(Icons.edit_outlined),
+                          ],
+                        ),
                         onTap: () => _edit(context, ref, c),
                       ),
                     );

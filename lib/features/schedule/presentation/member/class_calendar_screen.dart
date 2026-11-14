@@ -4,12 +4,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/widgets/async_value_view.dart';
 import '../../../../core/widgets/empty_view.dart';
 import '../../../../core/widgets/home_button.dart';
+import '../../../packages/data/package_repository.dart';
+import '../../../packages/domain/package_models.dart';
 import '../../data/schedule_repository.dart';
 import '../../domain/schedule_models.dart';
 import '../shared/schedule_flows.dart';
 import '../shared/schedule_widgets.dart';
 
 const _calendarDays = 14;
+const _kMine = '__mine__';
+const _kAll = '__all__';
 
 ClassQuery _dayQuery(DateTime d) =>
     (day: d, categoryId: null, trainerId: null, includeCancelled: false);
@@ -24,7 +28,9 @@ class ClassCalendarScreen extends ConsumerStatefulWidget {
 
 class _ClassCalendarScreenState extends ConsumerState<ClassCalendarScreen> {
   DateTime? _pickedDay;
-  String? _categoryId;
+
+  /// null: kullanıcı seçmedi (varsayılan); _kMine; _kAll; ya da kategori id.
+  String? _filter;
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +58,17 @@ class _ClassCalendarScreenState extends ConsumerState<ClassCalendarScreen> {
         if (c.categoryId.isNotEmpty) cats[c.categoryId] = c.categoryName;
       }
     }
-    final selectedCat = cats.containsKey(_categoryId) ? _categoryId : null;
+    // Aktif (süresi dolmamış, dondurulmamış) paketlerin kategorileri.
+    final now = DateTime.now();
+    final myCats = <String>{
+      for (final p
+          in ref.watch(myPackagesProvider).value ?? const <MemberPackage>[])
+        if (p.displayStatus(now) == PackageDisplayStatus.active) p.categoryId,
+    };
+    final hasActive = myCats.isNotEmpty;
+    final filter = _filter ?? (hasActive ? _kMine : _kAll);
+    final mineSelected = filter == _kMine && hasActive;
+    final selectedCat = cats.containsKey(filter) ? filter : null;
 
     final dayAsync = asyncs[day]!;
     DateTime? nextDay;
@@ -84,14 +100,19 @@ class _ClassCalendarScreenState extends ConsumerState<ClassCalendarScreen> {
             _CategoryChips(
               categories: cats,
               selected: selectedCat,
-              onSelected: (id) => setState(() => _categoryId = id),
+              showMine: hasActive,
+              mineSelected: mineSelected,
+              onSelected: (id) => setState(() => _filter = id ?? _kAll),
+              onMine: () => setState(() => _filter = _kMine),
             ),
           Expanded(
             child: AsyncValueView<List<StudioClass>>(
               value: dayAsync,
               onRetry: () => ref.invalidate(classesProvider(_dayQuery(day))),
               data: (items) {
-                final shown = selectedCat == null
+                final shown = mineSelected
+                    ? items.where((c) => myCats.contains(c.categoryId)).toList()
+                    : selectedCat == null
                     ? items
                     : items.where((c) => c.categoryId == selectedCat).toList();
                 final jump = nextDay;
@@ -122,8 +143,10 @@ class _ClassCalendarScreenState extends ConsumerState<ClassCalendarScreen> {
                                       ),
                               )
                             else
-                              const EmptyView(
-                                title: 'Bu kategoride ders yok',
+                              EmptyView(
+                                title: mineSelected
+                                    ? 'Paketine uygun ders yok'
+                                    : 'Bu kategoride ders yok',
                                 icon: Icons.filter_alt_off_outlined,
                               ),
                           ],
@@ -136,6 +159,9 @@ class _ClassCalendarScreenState extends ConsumerState<ClassCalendarScreen> {
                               const SizedBox(height: 10),
                           itemBuilder: (_, i) => ClassCard(
                             item: shown[i],
+                            packageNotCovered:
+                                hasActive &&
+                                !myCats.contains(shown[i].categoryId),
                             onTap: () => showModalBottomSheet<void>(
                               context: context,
                               isScrollControlled: true,
@@ -158,12 +184,18 @@ class _CategoryChips extends StatelessWidget {
   const _CategoryChips({
     required this.categories,
     required this.selected,
+    required this.showMine,
+    required this.mineSelected,
     required this.onSelected,
+    required this.onMine,
   });
 
   final Map<String, String> categories;
   final String? selected;
+  final bool showMine;
+  final bool mineSelected;
   final ValueChanged<String?> onSelected;
+  final VoidCallback onMine;
 
   @override
   Widget build(BuildContext context) {
@@ -173,9 +205,17 @@ class _CategoryChips extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         children: [
+          if (showMine) ...[
+            ChoiceChip(
+              label: const Text('Paketime uygun'),
+              selected: mineSelected,
+              onSelected: (_) => onMine(),
+            ),
+            const SizedBox(width: 8),
+          ],
           ChoiceChip(
             label: const Text('Tümü'),
-            selected: selected == null,
+            selected: selected == null && !mineSelected,
             onSelected: (_) => onSelected(null),
           ),
           for (final e in categories.entries) ...[

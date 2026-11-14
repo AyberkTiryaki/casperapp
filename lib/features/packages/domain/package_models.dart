@@ -1,3 +1,5 @@
+import '../../schedule/domain/schedule_models.dart' show ClassType;
+
 /// Ders sayısına göre geçerlilik günü. YALNIZCA tanım formunda ön doldurma/gönderme için.
 int validityDaysFor(int sessionCount) => sessionCount <= 12 ? 30 : 40;
 
@@ -10,15 +12,18 @@ class Category {
     required this.id,
     required this.name,
     required this.isActive,
+    this.classType = ClassType.group,
   });
   final String id;
   final String name;
   final bool isActive;
+  final ClassType classType;
 
   factory Category.fromJson(Map<String, dynamic> j) => Category(
     id: j['id'] as String,
     name: (j['name'] as String?) ?? '',
     isActive: (j['is_active'] as bool?) ?? true,
+    classType: ClassType.fromString(j['class_type'] as String?),
   );
 }
 

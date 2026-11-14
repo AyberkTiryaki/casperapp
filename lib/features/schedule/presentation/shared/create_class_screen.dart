@@ -24,7 +24,7 @@ class _CreateClassScreenState extends ConsumerState<CreateClassScreen> {
   final _duration = TextEditingController(text: '60');
   String? _categoryId;
   String? _trainerId;
-  ClassType _type = ClassType.group;
+  ClassType? _type; // seçilen kategoriden türetilir
   late DateTime _date = widget.initialDay ?? DateTime.now();
   TimeOfDay _time = const TimeOfDay(hour: 10, minute: 0);
   late final DateTime _initialDate = _date;
@@ -36,7 +36,6 @@ class _CreateClassScreenState extends ConsumerState<CreateClassScreen> {
       _duration.text != '60' ||
       _categoryId != null ||
       _trainerId != null ||
-      _type != ClassType.group ||
       _time != const TimeOfDay(hour: 10, minute: 0) ||
       !(_date.year == _initialDate.year &&
           _date.month == _initialDate.month &&
@@ -63,7 +62,7 @@ class _CreateClassScreenState extends ConsumerState<CreateClassScreen> {
 
   Future<void> _submit() async {
     final duration = int.tryParse(_duration.text.trim());
-    if (_categoryId == null) {
+    if (_categoryId == null || _type == null) {
       setState(() => _error = 'Kategori seçin.');
       return;
     }
@@ -93,7 +92,7 @@ class _CreateClassScreenState extends ConsumerState<CreateClassScreen> {
           .read(scheduleRepositoryProvider)
           .createClass(
             categoryId: _categoryId!,
-            classType: _type,
+            classType: _type!,
             startsAt: startsAt,
             durationMinutes: duration,
             title: _title.text,
@@ -130,13 +129,17 @@ class _CreateClassScreenState extends ConsumerState<CreateClassScreen> {
           padding: const EdgeInsets.all(16),
           children: [
             DropdownButtonFormField<String>(
+              isExpanded: true,
               initialValue: _categoryId,
               decoration: const InputDecoration(labelText: 'Kategori'),
               items: [
                 for (final c in cats)
                   DropdownMenuItem(value: c.id, child: Text(c.name)),
               ],
-              onChanged: (v) => setState(() => _categoryId = v),
+              onChanged: (v) => setState(() {
+                _categoryId = v;
+                _type = cats.where((c) => c.id == v).firstOrNull?.classType;
+              }),
             ),
             if (widget.asAdmin) ...[
               const SizedBox(height: 12),
@@ -150,22 +153,29 @@ class _CreateClassScreenState extends ConsumerState<CreateClassScreen> {
                 onChanged: (v) => setState(() => _trainerId = v),
               ),
             ],
-            const SizedBox(height: 12),
-            SegmentedButton<ClassType>(
-              segments: [
-                for (final t in ClassType.values)
-                  ButtonSegment(value: t, label: Text(t.label)),
-              ],
-              selected: {_type},
-              onSelectionChanged: (s) => setState(() => _type = s.first),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              _type == ClassType.individual
-                  ? 'Bireysel ders: kontenjan 1'
-                  : 'Grup dersi: kontenjan 6',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
+            if (_type != null) ...[
+              const SizedBox(height: 8),
+              Row(
+                key: const Key('categoryClassTypeInfo'),
+                children: [
+                  Icon(
+                    _type == ClassType.individual
+                        ? Icons.person_outline
+                        : Icons.groups_outlined,
+                    size: 18,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      _type == ClassType.individual
+                          ? 'Bu kategoride dersler: Özel ders (1 kişi)'
+                          : 'Bu kategoride dersler: Grup dersi (6 kişi)',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ),
+                ],
+              ),
+            ],
             const SizedBox(height: 12),
             ListTile(
               contentPadding: EdgeInsets.zero,

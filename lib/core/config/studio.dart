@@ -10,6 +10,7 @@ class Studio {
   static const phoneDisplay = '+90 531 013 23 17';
   static const phoneUrl = 'tel:+905310132317';
   static const whatsappUrl = 'https://wa.me/905310132317';
+
   /// E-posta uygulamasını alıcı ve konu dolu olarak açar.
   static const emailUrl =
       'mailto:$email?subject=Casper%20Training%20Studio%20uygulamas%C4%B1';
