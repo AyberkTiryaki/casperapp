@@ -10,6 +10,7 @@ import '../../core/widgets/async_value_view.dart';
 import '../../core/widgets/text_controller_scope.dart';
 import '../auth/validators.dart';
 import '../measurements/data/measurement_repository.dart';
+import '../home/studio_card.dart';
 import 'deletion_request.dart';
 import 'profile.dart';
 import 'profile_providers.dart';
@@ -195,6 +196,8 @@ class _ProfileFormState extends ConsumerState<_ProfileForm> {
           const Divider(height: 48),
           _HealthConsentSection(memberId: widget.profile.id),
         ],
+        const Divider(height: 48),
+        const StudioSection(),
         const Divider(height: 48),
         const _DeletionSection(),
       ],
