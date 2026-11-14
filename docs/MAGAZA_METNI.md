@@ -36,9 +36,9 @@ Casper Training Studio uygulaması stüdyomuzun üyeleri, eğitmenleri ve yönet
 Uygulama yalnızca Casper Training Studio üyeleri içindir. Hesabınız stüdyomuzda açılır ya da uygulamadan kayıt olabilirsiniz.
 
 ## Anahtar kelimeler — yalnızca App Store (100, virgülle)
-`pilates,fitness,stüdyo,ders,rezervasyon,antrenman,paket,spor,eğitmen,grup dersi`
+`atletik performans,özel ders,personal trainer,fitness,stüdyo,rezervasyon,antrenman,spor,eğitmen,grup dersi`
 
-> Not: Kategori adları (pilates, yoga vb.) stüdyonun gerçekte verdiği derslere göre düzeltilmeli.
+> Kategoriler 14.11.2026 itibarıyla: Atletik Özel Ders, Atletik Performans Grup, Özel Ders.
 
 ## Kategori
 - Google Play: Sağlık ve Fitness

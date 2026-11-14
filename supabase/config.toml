@@ -18,21 +18,31 @@ enable_signup = true
 enable_confirmations = true
 double_confirm_changes = true
 
+# Özel SMTP: salonun Gmail hesabı. Şifre repoda değil; env/smtp.env dosyasındaki
+# SMTP_PASS değerinden okunur (git'e girmez). config push öncesi:
+#   set -a; . env/smtp.env; set +a; supabase config push
+[auth.email.smtp]
+enabled = true
+host = "smtp.gmail.com"
+port = 465
+user = "caspersporkulubu@gmail.com"
+pass = "env(SMTP_PASS)"
+admin_email = "caspersporkulubu@gmail.com"
+sender_name = "Casper Training Studio"
+
 # Türkçe, Casper markalı e-posta şablonları (supabase/templates/).
-# Ücretsiz planda Supabase şablon değişikliğine yalnızca özel SMTP tanımlıysa izin verir.
-# SMTP (ör. Gmail uygulama şifresi) panelden girildikten sonra aşağıdaki satırları açıp
-# `supabase config push` çalıştırın. Bkz. docs/KURULUM.md bölüm 7.
-# [auth.email.template.confirmation]
-# subject = "Casper Training Studio: e-postanızı doğrulayın"
-# content_path = "./supabase/templates/confirmation.html"
+# Ücretsiz planda şablonlar yalnızca özel SMTP ile çalışır (aşağıdaki [auth.email.smtp]).
+[auth.email.template.confirmation]
+subject = "Casper Training Studio: e-postanızı doğrulayın"
+content_path = "./supabase/templates/confirmation.html"
 
-# [auth.email.template.recovery]
-# subject = "Casper Training Studio: şifre sıfırlama"
-# content_path = "./supabase/templates/recovery.html"
+[auth.email.template.recovery]
+subject = "Casper Training Studio: şifre sıfırlama"
+content_path = "./supabase/templates/recovery.html"
 
-# [auth.email.template.email_change]
-# subject = "Casper Training Studio: e-posta değişikliğini onaylayın"
-# content_path = "./supabase/templates/email_change.html"
+[auth.email.template.email_change]
+subject = "Casper Training Studio: e-posta değişikliğini onaylayın"
+content_path = "./supabase/templates/email_change.html"
 
 # Bildirim gönderici: zamanlanmış görev çağırır; kimlik doğrulama x-cron-secret ile yapılır.
 [functions.send-notifications]
