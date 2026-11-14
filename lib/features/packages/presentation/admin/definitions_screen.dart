@@ -28,6 +28,7 @@ class DefinitionsScreen extends ConsumerWidget {
         title: const Text('Paket tanımları'),
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: null,
         onPressed: () => _open(context, null),
         icon: const Icon(Icons.add),
         label: const Text('Paket tanımı ekle'),

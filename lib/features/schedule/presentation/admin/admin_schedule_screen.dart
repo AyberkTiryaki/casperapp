@@ -35,6 +35,7 @@ class _AdminScheduleScreenState extends ConsumerState<AdminScheduleScreen> {
         title: const Text('Ders ve Rezervasyon Yönetimi'),
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: null,
         onPressed: () => Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => CreateClassScreen(asAdmin: true, initialDay: _day),

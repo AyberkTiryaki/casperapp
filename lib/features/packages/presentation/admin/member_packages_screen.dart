@@ -63,6 +63,7 @@ class AdminMemberPackagesScreen extends ConsumerWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: null,
         onPressed: () => runAssignFlow(context, ref, member),
         icon: const Icon(Icons.add),
         label: const Text('Paket ata'),

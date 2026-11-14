@@ -116,6 +116,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
         title: const Text('Kullanıcı ve rol yönetimi'),
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: null,
         onPressed: () async {
           final id = await showCreateUserDialog(context);
           if (id != null && mounted) await _search(_controller.text);

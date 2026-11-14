@@ -35,6 +35,7 @@ class _TrainerCalendarScreenState extends ConsumerState<TrainerCalendarScreen> {
         title: const Text('Takvimim'),
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: null,
         onPressed: () => Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => CreateClassScreen(initialDay: _day),

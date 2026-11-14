@@ -69,8 +69,7 @@ const _serverCodeMessages = <String, String>{
   'MEASUREMENT_EMPTY': 'En az bir ölçüm değeri girin.',
   'MEASUREMENT_NOT_FOUND': 'Ölçüm bulunamadı veya silme yetkiniz yok.',
   'INVALID_DATE_RANGE': 'Tarih aralığı geçersiz (en fazla 366 gün).',
-  'HEALTH_CONSENT_REQUIRED':
-      'Bu üyenin sağlık verisi onayı yok; ölçüm kaydedilemez. Üye onayı Profil ekranından verebilir.',
+  'HEALTH_CONSENT_REQUIRED': 'Bu üyenin sağlık verisi onayı yok; ölçüm kaydedilemez. Üye onayı Profil ekranından verebilir.',
   'ROLE_UPDATE_FAILED': 'Hesap açıldı ancak rol atanamadı. Rolü kullanıcı listesinden değiştirin.',
 };
 

@@ -63,6 +63,7 @@ class ProductsScreen extends ConsumerWidget {
         title: const Text('Ürünler ve fiyatlar'),
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: null,
         onPressed: () => _edit(context, ref, null),
         icon: const Icon(Icons.add),
         label: const Text('Ürün ekle'),

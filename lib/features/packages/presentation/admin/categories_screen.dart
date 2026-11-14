@@ -91,6 +91,7 @@ class CategoriesScreen extends ConsumerWidget {
         title: const Text('Kategoriler'),
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: null,
         onPressed: () => _edit(context, ref, null),
         icon: const Icon(Icons.add),
         label: const Text('Kategori ekle'),

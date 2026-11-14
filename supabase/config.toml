@@ -18,16 +18,16 @@ enable_signup = true
 enable_confirmations = true
 double_confirm_changes = true
 
-# Özel SMTP: salonun Gmail hesabı. Şifre repoda değil; env/smtp.env dosyasındaki
+# Özel SMTP: gönderim için ayrı Gmail hesabı (caspertrainingstudio@gmail.com). Şifre repoda değil; env/smtp.env dosyasındaki
 # SMTP_PASS değerinden okunur (git'e girmez). config push öncesi:
 #   set -a; . env/smtp.env; set +a; supabase config push
 [auth.email.smtp]
 enabled = true
 host = "smtp.gmail.com"
 port = 465
-user = "caspersporkulubu@gmail.com"
+user = "caspertrainingstudio@gmail.com"
 pass = "env(SMTP_PASS)"
-admin_email = "caspersporkulubu@gmail.com"
+admin_email = "caspertrainingstudio@gmail.com"
 sender_name = "Casper Training Studio"
 
 # Türkçe, Casper markalı e-posta şablonları (supabase/templates/).

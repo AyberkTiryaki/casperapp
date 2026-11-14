@@ -22,6 +22,7 @@ class AddMeasurementFab extends ConsumerWidget {
     final ok = ref.watch(healthConsentProvider(memberId)).value ?? false;
     if (!ok) return const SizedBox.shrink();
     return FloatingActionButton.extended(
+      heroTag: null,
       onPressed: () =>
           showAddMeasurementDialog(context, ref, memberId: memberId),
       icon: const Icon(Icons.add),
