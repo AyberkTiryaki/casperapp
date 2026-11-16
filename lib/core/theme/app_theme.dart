@@ -194,8 +194,13 @@ class AppTheme {
         backgroundColor: raised,
         selectedColor: primary,
         side: BorderSide(color: outline),
-        labelStyle: TextStyle(color: text, fontWeight: FontWeight.w600),
+        labelStyle: TextStyle(
+          fontFamily: AppFonts.body,
+          color: text,
+          fontWeight: FontWeight.w600,
+        ),
         secondaryLabelStyle: const TextStyle(
+          fontFamily: AppFonts.body,
           color: Colors.white,
           fontWeight: FontWeight.w600,
         ),
