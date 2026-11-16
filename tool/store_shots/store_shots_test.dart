@@ -29,6 +29,17 @@ import 'package:caspertrainingstudio/features/schedule/presentation/member/class
 import 'package:caspertrainingstudio/features/workouts/data/workout_repository.dart';
 import 'package:caspertrainingstudio/features/workouts/domain/workout_models.dart';
 import 'package:caspertrainingstudio/features/workouts/presentation/my_programs_screen.dart';
+import 'package:caspertrainingstudio/features/admin/presentation/admin_dashboard.dart';
+import 'package:caspertrainingstudio/features/admin/presentation/deletion_requests_screen.dart';
+import 'package:caspertrainingstudio/features/packages/presentation/admin/member_packages_screen.dart';
+import 'package:caspertrainingstudio/features/protocols/presentation/admin_protocols_screen.dart';
+import 'package:caspertrainingstudio/features/referrals/data/referral_repository.dart';
+import 'package:caspertrainingstudio/features/schedule/presentation/admin/admin_schedule_screen.dart';
+import 'package:caspertrainingstudio/features/schedule/presentation/trainer/trainer_calendar_screen.dart';
+import 'package:caspertrainingstudio/features/trainer/data/trainer_repository.dart';
+import 'package:caspertrainingstudio/features/trainer/domain/trainer_models.dart';
+import 'package:caspertrainingstudio/features/trainer/presentation/my_members_screen.dart';
+import 'package:caspertrainingstudio/features/trainer/presentation/trainer_dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -36,7 +47,10 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../test/packages/fake_repo.dart';
 import '../../test/protocols/fake_protocol_repo.dart';
+import '../../test/referrals/referrals_test.dart' show FakeReferralRepository;
+import '../../test/trainer/fake_trainer_repo.dart';
 import '../../test/workouts/fake_workout_repo.dart';
 
 final _out = Directory('store/play');
@@ -150,7 +164,7 @@ StudioClass _cls(
   final group = cat == _group;
   return StudioClass(
     id: id,
-    trainerId: trainer,
+    trainerId: trainer == 'Ayşe Yılmaz' ? 't1' : 't2',
     trainerName: trainer,
     categoryId: group ? 'cg' : 'co',
     categoryName: cat,
@@ -195,6 +209,52 @@ List<StudioClass> _classesOn(DateTime day) {
     _cls('d$plus', _group, _day(plus, 19, 30), 'Mert Kaya', booked: 5),
   ];
 }
+
+final _trainerMembers = [
+  TrainerMember(
+    memberId: 'u1',
+    fullName: 'Deniz Arslan',
+    lastClassAt: _day(-2, 18, 30),
+    nextClassAt: _day(1, 18, 30),
+    classCount: 6,
+  ),
+  TrainerMember(
+    memberId: 'u2',
+    fullName: 'Ece Demir',
+    lastClassAt: _day(-3, 18, 30),
+    nextClassAt: _day(1, 18, 30),
+    classCount: 4,
+  ),
+  TrainerMember(
+    memberId: 'u4',
+    fullName: 'Selin Aydın',
+    lastClassAt: _day(-1, 17),
+    nextClassAt: _day(2, 17),
+    classCount: 9,
+  ),
+  TrainerMember(
+    memberId: 'u5',
+    fullName: 'Emre Koç',
+    lastClassAt: _day(-5, 10),
+    classCount: 3,
+  ),
+];
+
+final _protocols = [
+  Protocol(
+    id: 'pr1',
+    name: 'Örnek Eğitim Sendikası',
+    discountPercent: 15,
+    isActive: true,
+    validUntil: DateTime(_now.year + 1, 12, 31),
+  ),
+  const Protocol(
+    id: 'pr2',
+    name: 'Örnek Sağlık Çalışanları Derneği',
+    discountPercent: 10,
+    isActive: true,
+  ),
+];
 
 final _priceList = PublicPriceList(
   categories: [
@@ -306,13 +366,42 @@ const _profile = Profile(
 final _boundary = GlobalKey();
 
 Widget _app(Widget home, {ThemeMode mode = ThemeMode.light}) {
-  final repo = FakeProtocolRepository()..priceList = _priceList;
+  final repo = FakeProtocolRepository()
+    ..priceList = _priceList
+    ..protocols = _protocols
+    ..memberProtocols['u1'] = _protocols.first;
   final workouts = FakeWorkoutRepository()..list = [_program];
   return ProviderScope(
     overrides: [
       myPackagesProvider.overrideWith((ref) async => _packages),
       myReservationsProvider.overrideWith((ref) async => _reservations),
-      classesProvider.overrideWith((ref, q) async => _classesOn(q.day)),
+      classesProvider.overrideWith(
+        (ref, q) async =>
+            _classesOn(q.day)
+                .where((c) => q.trainerId == null || c.trainerId == q.trainerId)
+                .toList(),
+      ),
+      classDaysProvider.overrideWith(
+        (ref, q) async => {
+          for (var i = 0; i < q.days; i++)
+            DateTime(q.from.year, q.from.month, q.from.day + i),
+        },
+      ),
+      trainersProvider.overrideWith(
+        (ref) async => const [
+          TrainerSummary(id: 't1', fullName: 'Ayşe Yılmaz'),
+          TrainerSummary(id: 't2', fullName: 'Mert Kaya'),
+        ],
+      ),
+      adminReferralsProvider.overrideWith((ref, status) async => const []),
+      deletionRequestsProvider.overrideWith((ref) async => const []),
+      trainerRepositoryProvider.overrideWithValue(
+        FakeTrainerRepository(_trainerMembers),
+      ),
+      packageRepositoryProvider.overrideWithValue(
+        FakePackageRepository()..pkgs = _packages,
+      ),
+      referralRepositoryProvider.overrideWithValue(FakeReferralRepository()),
       protocolRepositoryProvider.overrideWithValue(repo),
       workoutRepositoryProvider.overrideWithValue(workouts),
     ],
@@ -357,6 +446,12 @@ Future<void> _shot(
   if (before != null) await before();
   await tester.pumpAndSettle();
   await _settleImages(tester);
+  // Test ortamı gölgeleri düz siyah çizer; çekim anında gerçek gölgeleri aç
+  debugDisableShadows = false;
+  for (final e in tester.allElements) {
+    e.renderObject?.markNeedsPaint();
+  }
+  await tester.pump();
   await tester.runAsync(() async {
     final ro =
         _boundary.currentContext!.findRenderObject()! as RenderRepaintBoundary;
@@ -365,20 +460,26 @@ Future<void> _shot(
     _out.createSync(recursive: true);
     File('${_out.path}/$name.png').writeAsBytesSync(data!.buffer.asUint8List());
   });
+  debugDisableShadows = true;
 }
 
 Widget _memberShell(Widget firstPage) {
   final modules = [
-    ComingModule('Paketlerim', Icons.confirmation_number_outlined),
+    ComingModule(
+      'Paketlerim',
+      Icons.confirmation_number_outlined,
+      onTap: _noop,
+    ),
     ComingModule(
       'Cüzdanım',
       Icons.account_balance_wallet_outlined,
       subtitle: 'Bakiye: ${formatTl(500)}',
+      onTap: _noop,
     ),
-    ComingModule('Paketler ve fiyatlar', Icons.sell_outlined),
-    ComingModule('Referanslarım', Icons.group_add_outlined),
-    ComingModule('Ders Takvimi', Icons.calendar_month_outlined),
-    ComingModule('Antrenman programım', Icons.fitness_center),
+    ComingModule('Paketler ve fiyatlar', Icons.sell_outlined, onTap: _noop),
+    ComingModule('Referanslarım', Icons.group_add_outlined, onTap: _noop),
+    ComingModule('Ders Takvimi', Icons.calendar_month_outlined, onTap: _noop),
+    ComingModule('Antrenman programım', Icons.fitness_center, onTap: _noop),
   ];
   return RoleShell(
     tabs: [
@@ -409,6 +510,148 @@ Widget _memberShell(Widget firstPage) {
         icon: Icons.person_outline_rounded,
         selectedIcon: Icons.person_rounded,
         page: SizedBox(),
+      ),
+    ],
+  );
+}
+
+Profile _staff(String id, String name, UserRole role) =>
+    Profile(id: id, fullName: name, role: role, isActive: true);
+
+ShellTab _tab(String label, IconData icon, IconData sel, Widget page) =>
+    ShellTab(label: label, icon: icon, selectedIcon: sel, page: page);
+
+Widget _trainerShell({
+  Widget second = const SizedBox(),
+  Widget third = const SizedBox(),
+}) {
+  final p = _staff('t1', 'Ayşe Yılmaz', UserRole.trainer);
+  return RoleShell(
+    tabs: [
+      _tab(
+        'Ana sayfa',
+        Icons.home_outlined,
+        Icons.home_rounded,
+        RoleHomeScaffold(
+          profile: p,
+          dashboard: const TrainerDashboard(trainerId: 't1'),
+          modules: [
+            ComingModule(
+              'Takvimim',
+              Icons.calendar_month_outlined,
+              onTap: _noop,
+            ),
+            ComingModule(
+              'Ürün satışı',
+              Icons.shopping_cart_outlined,
+              onTap: _noop,
+            ),
+            ComingModule(
+              'Satışlarım',
+              Icons.receipt_long_outlined,
+              onTap: _noop,
+            ),
+            ComingModule('Üyelerim', Icons.groups_outlined, onTap: _noop),
+            ComingModule(
+              'Antrenman programı hazırlama',
+              Icons.fitness_center,
+              onTap: _noop,
+            ),
+            ComingModule(
+              'Üye ölçümleri',
+              Icons.monitor_weight_outlined,
+              onTap: _noop,
+            ),
+          ],
+        ),
+      ),
+      _tab(
+        'Takvim',
+        Icons.calendar_month_outlined,
+        Icons.calendar_month_rounded,
+        second,
+      ),
+      _tab('Üyelerim', Icons.groups_outlined, Icons.groups_rounded, third),
+      _tab(
+        'Profil',
+        Icons.person_outline_rounded,
+        Icons.person_rounded,
+        const SizedBox(),
+      ),
+    ],
+  );
+}
+
+Widget _adminShell({Widget second = const SizedBox()}) {
+  final p = _staff('a1', 'Demo Yönetici', UserRole.admin);
+  return RoleShell(
+    tabs: [
+      _tab(
+        'Ana sayfa',
+        Icons.home_outlined,
+        Icons.home_rounded,
+        RoleHomeScaffold(
+          profile: p,
+          dashboard: const AdminDashboard(),
+          modules: [
+            ComingModule(
+              'Üyeler ve paketleri',
+              Icons.groups_outlined,
+              onTap: _noop,
+            ),
+            ComingModule(
+              'Paket tanımları',
+              Icons.inventory_2_outlined,
+              onTap: _noop,
+            ),
+            ComingModule('Kategoriler', Icons.category_outlined, onTap: _noop),
+            ComingModule(
+              'Protokoller (kurum indirimleri)',
+              Icons.handshake_outlined,
+              onTap: _noop,
+            ),
+            ComingModule(
+              'Fiyat listesi (üyelerin gördüğü)',
+              Icons.sell_outlined,
+              onTap: _noop,
+            ),
+            ComingModule('Referanslar', Icons.group_add_outlined, onTap: _noop),
+            ComingModule(
+              'Kullanıcı ve rol yönetimi',
+              Icons.manage_accounts_outlined,
+              onTap: _noop,
+            ),
+            ComingModule(
+              'Ürünler ve fiyatlar',
+              Icons.sell_outlined,
+              onTap: _noop,
+            ),
+            ComingModule(
+              'Ders ve Rezervasyon Yönetimi',
+              Icons.event_note_outlined,
+              onTap: _noop,
+            ),
+            ComingModule('Raporlar', Icons.bar_chart_outlined, onTap: _noop),
+          ],
+        ),
+      ),
+      _tab(
+        'Ders programı',
+        Icons.event_note_outlined,
+        Icons.event_note_rounded,
+        second,
+      ),
+      _tab(
+        'Üyeler',
+        Icons.groups_outlined,
+        Icons.groups_rounded,
+        const SizedBox(),
+      ),
+      _tab(
+        'Profil',
+        Icons.person_outline_rounded,
+        Icons.person_rounded,
+        const SizedBox(),
       ),
     ],
   );
@@ -478,6 +721,8 @@ class _FeatureGraphic extends StatelessWidget {
   }
 }
 
+void _noop() {}
+
 void main() {
   setUpAll(_loadFonts);
 
@@ -532,6 +777,67 @@ void main() {
       ratio: 1,
       mode: ThemeMode.dark,
     );
+  });
+
+  testWidgets('07 egitmen ana sayfa', (t) async {
+    await _shot(t, '07_egitmen_ana_sayfa', _trainerShell());
+  });
+
+  testWidgets('08 egitmen takvim', (t) async {
+    await _shot(
+      t,
+      '08_egitmen_takvim',
+      _trainerShell(second: const TrainerCalendarScreen(trainerId: 't1')),
+      before: () async {
+        await t.tap(find.text('Takvim').last);
+        await t.pumpAndSettle();
+        await t.tap(find.text('${_day(1, 0).day}').first);
+      },
+    );
+  });
+
+  testWidgets('09 egitmen uyelerim', (t) async {
+    await _shot(
+      t,
+      '09_egitmen_uyelerim',
+      _trainerShell(
+        third: MyMembersScreen(trainerId: 't1', onMemberTap: (_, _) {}),
+      ),
+      before: () async {
+        await t.tap(find.text('Üyelerim').last);
+      },
+    );
+  });
+
+  testWidgets('10 yonetici ana sayfa', (t) async {
+    await _shot(t, '10_yonetici_ana_sayfa', _adminShell());
+  });
+
+  testWidgets('11 yonetici ders programi', (t) async {
+    await _shot(
+      t,
+      '11_yonetici_ders_programi',
+      _adminShell(second: const AdminScheduleScreen()),
+      before: () async {
+        await t.tap(find.text('Ders programı').last);
+        await t.pumpAndSettle();
+        await t.tap(find.text('${_day(1, 0).day}').first);
+      },
+    );
+  });
+
+  testWidgets('12 yonetici uye detayi', (t) async {
+    await _shot(
+      t,
+      '12_yonetici_uye_detayi',
+      const AdminMemberPackagesScreen(
+        member: MemberSummary(id: 'u1', fullName: 'Deniz Arslan'),
+      ),
+    );
+  });
+
+  testWidgets('13 yonetici protokoller', (t) async {
+    await _shot(t, '13_yonetici_protokoller', const AdminProtocolsScreen());
   });
 
   testWidgets('simge 512x512', (t) async {
