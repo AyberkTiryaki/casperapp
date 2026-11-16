@@ -77,8 +77,8 @@ class TrainerDashboard extends ConsumerWidget {
                           const SizedBox(width: 8),
                           Text(
                             '${c.bookedCount}/${c.capacity}',
-                            style: const TextStyle(
-                              color: AppColors.nightMuted,
+                            style: TextStyle(
+                              color: context.palette.muted,
                               fontWeight: FontWeight.w700,
                             ),
                           ),

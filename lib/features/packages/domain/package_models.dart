@@ -144,6 +144,7 @@ class MemberPackage {
     this.freezes = const [],
     double? listPrice,
     this.discountPercent = 0,
+    this.protocolDiscountPercent = 0,
   }) : listPrice = listPrice ?? pricePaid;
   final String id;
   final String memberId;
@@ -157,7 +158,12 @@ class MemberPackage {
 
   /// İndirimsiz liste fiyatı (yoksa ödenen fiyat).
   final double listPrice;
+
+  /// Toplam indirim (referans + protokol, tavan %50).
   final int discountPercent;
+
+  /// Toplamın içindeki protokol payı (atama anındaki).
+  final int protocolDiscountPercent;
   final DateTime activatedAt;
   final DateTime endsAt;
 
@@ -184,6 +190,8 @@ class MemberPackage {
       status: (j['status'] as String?) ?? 'active',
       listPrice: (j['list_price'] as num?)?.toDouble(),
       discountPercent: (j['discount_percent'] as num?)?.toInt() ?? 0,
+      protocolDiscountPercent:
+          (j['protocol_discount_percent'] as num?)?.toInt() ?? 0,
       freezes: fr is List
           ? fr
                 .map(

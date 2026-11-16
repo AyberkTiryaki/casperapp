@@ -247,14 +247,14 @@ class PackageProgressCard extends StatelessWidget {
             value: progress,
             minHeight: 8,
             color: tone,
-            backgroundColor: AppColors.nightRaised,
+            backgroundColor: context.palette.raised,
             borderRadius: BorderRadius.circular(4),
           ),
           const SizedBox(height: 8),
           Text(
             frozen ? 'Dondurulmuş · $days gün kaldı' : '$days gün kaldı',
             style: TextStyle(
-              color: low ? AppColors.warning : AppColors.nightMuted,
+              color: low ? AppColors.warning : context.palette.muted,
               fontWeight: low ? FontWeight.w700 : FontWeight.w500,
             ),
           ),

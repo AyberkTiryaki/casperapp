@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/notifications/notification_sync.dart';
 import '../../../core/utils/formatters.dart';
 import '../../home/home_tab.dart';
+import '../../protocols/presentation/price_list_screen.dart';
 import '../../home/role_home_scaffold.dart';
 import '../../home/role_shell.dart';
 import '../../packages/data/package_repository.dart';
@@ -26,33 +28,35 @@ class MemberHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RoleShell(
-      tabs: [
-        ShellTab(
-          label: 'Ana sayfa',
-          icon: Icons.home_outlined,
-          selectedIcon: Icons.home_rounded,
-          page: _MemberHomeTab(profile: profile),
-        ),
-        const ShellTab(
-          label: 'Takvim',
-          icon: Icons.calendar_month_outlined,
-          selectedIcon: Icons.calendar_month_rounded,
-          page: ClassCalendarScreen(),
-        ),
-        const ShellTab(
-          label: 'Rezervasyon',
-          icon: Icons.event_available_outlined,
-          selectedIcon: Icons.event_available_rounded,
-          page: MyReservationsScreen(),
-        ),
-        const ShellTab(
-          label: 'Profil',
-          icon: Icons.person_outline_rounded,
-          selectedIcon: Icons.person_rounded,
-          page: ProfileScreen(),
-        ),
-      ],
+    return NotificationSync(
+      child: RoleShell(
+        tabs: [
+          ShellTab(
+            label: 'Ana sayfa',
+            icon: Icons.home_outlined,
+            selectedIcon: Icons.home_rounded,
+            page: _MemberHomeTab(profile: profile),
+          ),
+          const ShellTab(
+            label: 'Takvim',
+            icon: Icons.calendar_month_outlined,
+            selectedIcon: Icons.calendar_month_rounded,
+            page: ClassCalendarScreen(),
+          ),
+          const ShellTab(
+            label: 'Rezervasyon',
+            icon: Icons.event_available_outlined,
+            selectedIcon: Icons.event_available_rounded,
+            page: MyReservationsScreen(),
+          ),
+          const ShellTab(
+            label: 'Profil',
+            icon: Icons.person_outline_rounded,
+            selectedIcon: Icons.person_rounded,
+            page: ProfileScreen(),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -97,6 +101,12 @@ class _MemberHomeTab extends ConsumerWidget {
             // Cüzdan ekranından dönünce güncel bakiye
             ref.invalidate(walletBalanceProvider(profile.id));
           },
+        ),
+        ComingModule(
+          'Paketler ve fiyatlar',
+          Icons.sell_outlined,
+          onTap: () => Navigator.of(context)
+              .push(MaterialPageRoute(builder: (_) => const PriceListScreen())),
         ),
         ComingModule(
           'Referanslarım',

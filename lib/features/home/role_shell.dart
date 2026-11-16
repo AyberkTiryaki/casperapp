@@ -34,14 +34,14 @@ class RoleShell extends ConsumerWidget {
       ),
       bottomNavigationBar: NavigationBarTheme(
         data: NavigationBarThemeData(
-          backgroundColor: AppColors.nightCard,
+          backgroundColor: context.palette.card,
           indicatorColor: AppColors.electricBlue.withValues(alpha: 0.28),
           labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
           iconTheme: WidgetStateProperty.resolveWith(
             (s) => IconThemeData(
               color: s.contains(WidgetState.selected)
-                  ? AppColors.skyBlue
-                  : AppColors.nightMuted,
+                  ? context.palette.link
+                  : context.palette.muted,
             ),
           ),
           labelTextStyle: WidgetStateProperty.resolveWith(
@@ -51,8 +51,8 @@ class RoleShell extends ConsumerWidget {
                   ? FontWeight.w700
                   : FontWeight.w500,
               color: s.contains(WidgetState.selected)
-                  ? AppColors.skyBlue
-                  : AppColors.nightMuted,
+                  ? context.palette.link
+                  : context.palette.muted,
             ),
           ),
         ),

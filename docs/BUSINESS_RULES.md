@@ -19,7 +19,7 @@ Yol haritasındaki açık kararlar 10 Kasım 2026'da stüdyo tarafından aşağ�
 | b | Dondurma süresi bitişe eklenir mi? | **Evet.** Dondurulan gün sayısı paketin bitiş tarihine eklenir. | D-04 | `freeze_package` |
 | c | Yenilemede/aktarımda rezervasyonlar | Gelecek rezervasyon yalnızca yeni paket **aynı kategorideyse, hakkı kaldıysa ve ders tarihinde geçerliyse** aktarılır. Aksi halde iptal edilir ve hak **eski paketin** hareketlerine iade edilir. | P-08, P-09 | `assign_package` |
 
-Yol haritasında açıkça yazmayan ek kararlar 11. bölümdedir (10 Kasım 2026'da onaylandı). Adım 3 ek kararları 12. bölümdedir (onaylandı). Referans sistemi kuralları 13. bölümde, onaylanan referans kararları 14. bölümde, henüz onaylanmamış yeni varsayımlar 15. bölümdedir. Antrenman programı, vücut ölçümü, eğitmenin üyeleri ve rapor kuralları (13.11.2026) 16. bölümdedir.
+Yol haritasında açıkça yazmayan ek kararlar 11. bölümdedir (10 Kasım 2026'da onaylandı). Adım 3 ek kararları 12. bölümdedir (onaylandı). Referans sistemi kuralları 13. bölümde, onaylanan referans kararları 14. bölümde, henüz onaylanmamış yeni varsayımlar 15. bölümdedir. Antrenman programı, vücut ölçümü, eğitmenin üyeleri ve rapor kuralları (13.11.2026) 16. bölümdedir. Kurum protokolleri ve herkese açık fiyat listesi (16.11.2026) 17. bölümdedir.
 
 ## 1. Kayıt, profil, KVKK (K)
 
@@ -320,3 +320,31 @@ Vücut ölçümleri (kilo, yağ oranı, çevre ölçüleri) **sağlık verisi** 
 3. Profildeki kilo (`profiles.weight_kg`) ile ölçümlerdeki kilo birbirinden bağımsızdır; ölçüm girmek profili güncellemez (K-05).
 4. Yönetici, üyenin programlarına ve ölçümlerine "Üyeler ve paketleri → üye → ⋮" menüsünden ulaşır; yöneticiye ayrı bir "eğitmenin üyeleri" ekranı yapılmadı (`trainer_my_members(p_trainer_id)` sunucuda hazır).
 5. Raporda cüzdan yüklemeleri "gelir" başlığında gösterilir ama ürün satışlarıyla **toplanmaz** (aynı para önce yüklenir, sonra harcanır); toplam ciro satırı bu yüzden yoktur.
+
+## 17. Kurum protokolleri ve herkese açık fiyat listesi (PR) — 16.11.2026
+
+Stüdyo; sendika, dernek gibi kurumlarla indirim anlaşması (protokol) yapabilir. Kararlar stüdyo tarafından 16.11.2026'da verildi: indirimler toplanır (tavan %50), üyeyi protokole yönetici bağlar, indirim yalnızca paketlere uygulanır, fiyat listesi giriş yapmadan görülür.
+
+| Kimlik | Kural | Hata kodu |
+|---|---|---|
+| PR-01 | Protokol: kurum adı (benzersiz, 1-80 karakter), indirim oranı (%1-50 tam sayı), isteğe bağlı son geçerlilik günü (dahil, İstanbul günü), aktif/pasif, isteğe bağlı not (en fazla 300 karakter, yalnızca yönetici görür). | `23514` (kısıt) |
+| PR-02 | Protokolü yalnızca yönetici ekler ve düzenler. Protokol silinmez, pasife alınır. Üye yalnızca bağlı olduğu protokolü okuyabilir; eğitmen hiçbirini göremez. | `42501` |
+| PR-03 | Üyeyi protokole yalnızca yönetici bağlar veya bağlantıyı kaldırır (`admin_set_member_protocol`). Üye kendisi seçemez; belge kontrolü stüdyoda yapılır. Her değişiklik denetim kaydına yazılır. | `FORBIDDEN` |
+| PR-04 | Yalnızca **geçerli** protokole bağlanılabilir (aktif ve son günü geçmemiş). Yalnızca üye rolündeki hesaplar bağlanabilir. Bir üyenin en fazla bir protokolü olur. | `PROTOCOL_NOT_FOUND`, `MEMBER_NOT_ELIGIBLE` |
+| PR-05 | Paket atamasında üyenin geçerli protokolünün oranı **otomatik** eklenir. Toplam indirim = yöneticinin seçtiği referans oranı + protokol oranı. Referans payı yine hak edilen oranı aşamaz (F-09). | `DISCOUNT_EXCEEDS_ENTITLEMENT` |
+| PR-06 | Toplam indirim en fazla **%50**'dir; aşan kısım uygulanmaz. | — |
+| PR-07 | Pakete liste fiyatı, toplam oran (`discount_percent`), protokol payı (`protocol_discount_percent`), protokol (`protocol_id`) ve ödenen fiyat kopyalanır. Protokolün oranı sonradan değişse, protokol pasife alınsa veya süresi dolsa da atanmış paket değişmez. | — |
+| PR-08 | Protokolü pasif veya süresi dolmuş üyeye protokol indirimi uygulanmaz; bağlantı kaydı durur, yönetici kaldırabilir veya başka protokole bağlayabilir. | — |
+| PR-09 | Fiyat listesi (`public_price_list`) giriş yapmamış kişiye de açıktır: giriş ekranında **Paketleri keşfet**, üye ana sayfasında **Paketler ve fiyatlar**. Sayfada "Tüm fiyatlara KDV dahildir" notu bulunur. | — |
+| PR-10 | Listede yalnızca aktif kategoriler ve bunların aktif paket tanımları (ad, ders sayısı, geçerlilik günü, fiyat) bulunur. Aktif paketi olmayan kategori gösterilmez. | — |
+| PR-11 | Listede yalnızca geçerli protokoller (ad, oran, son gün) bulunur; protokol notu ve kişisel veri dönmez. | — |
+| PR-12 | Protokol indirimi ürün ve cüzdan satışlarına uygulanmaz. | — |
+
+### Onaylanan kararlar (16.11.2026)
+
+1. Protokol oranı yöneticinin seçimine bırakılmaz, otomatik uygulanır. İndirim istenmiyorsa üyenin protokol bağlantısı kaldırılır.
+2. Paket tanımındaki fiyat **KDV dahil** tutardır; fiyat listesinde "Tüm fiyatlara KDV dahildir" notu gösterilir.
+
+### Yeni varsayımlar — onay bekliyor
+
+1. Toplam %50'yi aşınca kesilen kısım referans payından düşülmüş sayılır (pakette protokol payı tam saklanır; ör. referans %40 + protokol %15 → toplam %50, protokol payı %15).

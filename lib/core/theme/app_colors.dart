@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 /// Tüm marka renkleri burada; tek yerden değiştirilebilir.
 ///
-/// Kimlik: logodaki gibi gece mavisi zemin üzerinde elektrik mavisi.
-/// Uygulama varsayılan olarak koyu temada açılır (bkz. main.dart).
+/// Kimlik: logodaki kraliyet ve elektrik mavisi.
+/// Varsayılan açık tema (ferah, mavi-beyaz); kullanıcı profilden koyu temayı seçebilir.
+/// Ekranlarda sabit renk yerine `context.palette` kullanın; tema değişince doğru tonu verir.
 class AppColors {
   // --- Marka mavileri ---------------------------------------------------
   /// Logodaki kraliyet mavisi. Açık temada ana renk.
@@ -22,20 +23,25 @@ class AppColors {
   static const deepBlue = Color(0xFF0B2370);
 
   // --- Koyu tema zeminleri (gece mavisi) -------------------------------
-  static const night = Color(0xFF070B16); // sayfa zemini
-  static const nightCard = Color(0xFF0E1530); // kart
+  // Eskisine göre bir tık aydınlatıldı: simsiyah yerine lacivert gece.
+  static const night = Color(0xFF0C1222); // sayfa zemini
+  static const nightCard = Color(0xFF141D38); // kart
   static const nightRaised = Color(
-    0xFF16204A,
+    0xFF1D2852,
   ); // giriş alanı, yükseltilmiş yüzey
-  static const nightOutline = Color(0xFF243266);
+  static const nightOutline = Color(0xFF2A3870);
   static const nightText = Color(0xFFEEF2FF);
   static const nightMuted = Color(0xFF9AA8D0);
 
   // --- Açık tema zeminleri ---------------------------------------------
-  static const mist = Color(0xFFF2F5FD);
-  static const surfaceLight = Color(0xFFFFFFFF);
-  static const outlineLight = Color(0xFFD5DDF2);
+  static const mist = Color(0xFFF3F6FD); // sayfa zemini: çok hafif mavi
+  static const surfaceLight = Color(0xFFFFFFFF); // kart
+  static const raisedLight = Color(
+    0xFFEAF0FC,
+  ); // giriş alanı, ilerleme izi, gün kutusu
+  static const outlineLight = Color(0xFFDCE3F4);
   static const ink = Color(0xFF0D1430);
+  static const inkMuted = Color(0xFF5A6585);
 
   /// Logonun koyu zemini; açılış ekranı ve simge arka planıyla aynı.
   static const logoBackground = Color(0xFF1A1B1E);
@@ -71,4 +77,39 @@ class AppGradients {
     colors: [AppColors.deepBlue, AppColors.brandBlue, AppColors.electricBlue],
     stops: [0, 0.55, 1],
   );
+}
+
+/// Temaya duyarlı yüzey ve yazı renkleri.
+class AppPalette {
+  const AppPalette._(this.isDark);
+  final bool isDark;
+
+  Color get background => isDark ? AppColors.night : AppColors.mist;
+  Color get card => isDark ? AppColors.nightCard : AppColors.surfaceLight;
+  Color get raised => isDark ? AppColors.nightRaised : AppColors.raisedLight;
+  Color get outline => isDark ? AppColors.nightOutline : AppColors.outlineLight;
+  Color get text => isDark ? AppColors.nightText : AppColors.ink;
+  Color get muted => isDark ? AppColors.nightMuted : AppColors.inkMuted;
+
+  /// Mavi yazı, seçili ikon, bağlantı.
+  Color get link => isDark ? AppColors.skyBlue : AppColors.brandBlue;
+
+  /// Kahraman başlığı altındaki vurgu yazısı vb.
+  Color get accent => isDark ? AppColors.cyan : AppColors.brandBlue;
+
+  /// Açık temada kartlara hafif derinlik; koyu temada gölge yok.
+  List<BoxShadow>? get cardShadow => isDark
+      ? null
+      : const [
+          BoxShadow(
+            color: Color(0x0F1447C8),
+            blurRadius: 18,
+            offset: Offset(0, 6),
+          ),
+        ];
+}
+
+extension AppPaletteX on BuildContext {
+  AppPalette get palette =>
+      AppPalette._(Theme.of(this).brightness == Brightness.dark);
 }

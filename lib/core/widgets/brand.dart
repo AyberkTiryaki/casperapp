@@ -83,7 +83,7 @@ class BrandWordmark extends StatelessWidget {
             fontWeight: FontWeight.w600,
             fontSize: size * 0.34,
             letterSpacing: size * 0.13,
-            color: AppColors.skyBlue,
+            color: context.palette.link,
           ),
         ),
       ],
@@ -332,9 +332,7 @@ class ModuleTile extends StatelessWidget {
                       fontFamily: AppFonts.body,
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
-                      color: t.brightness == Brightness.dark
-                          ? AppColors.cyan
-                          : AppColors.brandBlue,
+                      color: context.palette.accent,
                     ),
                   ),
                 ],

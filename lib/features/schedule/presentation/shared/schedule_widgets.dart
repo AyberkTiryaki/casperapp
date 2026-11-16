@@ -178,8 +178,9 @@ class DayChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fg = selected ? Colors.white : AppColors.nightText;
-    final muted = selected ? Colors.white : AppColors.nightMuted;
+    final pal = context.palette;
+    final fg = selected ? Colors.white : pal.text;
+    final muted = selected ? Colors.white : pal.muted;
     return Semantics(
       button: true,
       selected: selected,
@@ -190,9 +191,9 @@ class DayChip extends StatelessWidget {
           width: 58,
           decoration: BoxDecoration(
             gradient: selected ? AppGradients.brand : null,
-            color: selected ? null : AppColors.nightRaised,
+            color: selected ? null : pal.raised,
             border: Border.all(
-              color: selected ? AppColors.electricBlue : AppColors.nightOutline,
+              color: selected ? AppColors.electricBlue : pal.outline,
             ),
             borderRadius: BorderRadius.circular(14),
           ),
@@ -275,10 +276,10 @@ class ClassCard extends StatelessWidget {
       if (staff) item.classType.label,
     ].join(' • ');
     return Material(
-      color: AppColors.nightCard,
+      color: context.palette.card,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: AppColors.nightOutline),
+        side: BorderSide(color: context.palette.outline),
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
@@ -302,7 +303,7 @@ class ClassCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     '$minutes dk',
-                    style: t.bodySmall?.copyWith(color: AppColors.nightMuted),
+                    style: t.bodySmall?.copyWith(color: context.palette.muted),
                   ),
                 ],
               ),
@@ -323,7 +324,7 @@ class ClassCard extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: t.bodySmall?.copyWith(
-                          color: AppColors.nightMuted,
+                          color: context.palette.muted,
                         ),
                       ),
                     const SizedBox(height: 6),
@@ -337,7 +338,7 @@ class ClassCard extends StatelessWidget {
                           Text(
                             '${item.bookedCount}/${item.capacity}',
                             style: t.bodySmall?.copyWith(
-                              color: AppColors.nightMuted,
+                              color: context.palette.muted,
                             ),
                           ),
                         if (showBookedBadge && item.isBookedByMe)
@@ -356,17 +357,17 @@ class ClassCard extends StatelessWidget {
                       Row(
                         key: const Key('packageNotCoveredLine'),
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.lock_outline,
                             size: 14,
-                            color: AppColors.nightMuted,
+                            color: context.palette.muted,
                           ),
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
                               'Paketin bu ders için geçerli değil',
                               style: t.bodySmall?.copyWith(
-                                color: AppColors.nightMuted,
+                                color: context.palette.muted,
                               ),
                             ),
                           ),
@@ -397,7 +398,7 @@ class CapacityBadge extends StatelessWidget {
       color = AppColors.danger;
     } else if (item.isFull) {
       text = 'Dolu';
-      color = AppColors.nightMuted;
+      color = context.palette.muted;
     } else if (item.remainingSpots <= 2) {
       text = '${item.remainingSpots} yer kaldı';
       color = AppColors.warning;

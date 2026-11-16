@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/utils/error_messages.dart';
 import '../../../core/widgets/brand.dart';
+import '../../protocols/presentation/price_list_screen.dart';
 import '../auth_providers.dart';
 import '../validators.dart';
 import 'forgot_password_screen.dart';
@@ -145,6 +146,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 ),
                               ),
                         child: const Text('Hesabın yok mu? Kayıt ol'),
+                      ),
+                      const SizedBox(height: 8),
+                      OutlinedButton.icon(
+                        onPressed: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const PriceListScreen(),
+                          ),
+                        ),
+                        icon: const Icon(Icons.sell_outlined),
+                        label: const Text('Paketleri keşfet'),
                       ),
                     ],
                   ),

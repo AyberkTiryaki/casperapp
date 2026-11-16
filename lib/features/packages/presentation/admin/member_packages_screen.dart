@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/widgets/async_value_view.dart';
 import '../../../../core/widgets/empty_view.dart';
 import '../../../measurements/presentation/member_measurements_screen.dart';
+import '../../../protocols/data/protocol_repository.dart';
+import '../../../protocols/presentation/admin_protocols_screen.dart';
 import '../../../referrals/data/referral_repository.dart';
 import '../../../wallet/presentation/admin/member_wallet_screen.dart';
 import '../../../workouts/presentation/member_programs_screen.dart';
@@ -85,9 +87,10 @@ class AdminMemberPackagesScreen extends ConsumerWidget {
                 ref.invalidate(memberPackagesProvider(member.id)),
             child: sorted.isEmpty
                 ? ListView(
-                    children: const [
-                      SizedBox(height: 120),
-                      EmptyView(
+                    children: [
+                      _ProtocolHeader(member: member),
+                      const SizedBox(height: 120),
+                      const EmptyView(
                         title: 'Bu üyenin paketi yok',
                         icon: Icons.confirmation_number_outlined,
                       ),
@@ -96,11 +99,12 @@ class AdminMemberPackagesScreen extends ConsumerWidget {
                 : ListView.separated(
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
                     physics: const AlwaysScrollableScrollPhysics(),
-                    itemCount: sorted.length + 1,
+                    itemCount: sorted.length + 2,
                     separatorBuilder: (_, _) => const SizedBox(height: 12),
                     itemBuilder: (_, i) {
                       if (i == 0) return _ReferralHeader(memberId: member.id);
-                      final p = sorted[i - 1];
+                      if (i == 1) return _ProtocolHeader(member: member);
+                      final p = sorted[i - 2];
                       return PackageCard(
                         package: p,
                         showPrice: true,
@@ -167,6 +171,50 @@ class _ReferralHeader extends ConsumerWidget {
         title: Text('Referans kodu: ${s.referralCode ?? '-'}'),
         subtitle: Text(
           'Güncel indirim hakkı: %${s.discountPercent} (${s.activeCount} aktif referans)',
+        ),
+      ),
+    );
+  }
+}
+
+class _ProtocolHeader extends ConsumerWidget {
+  const _ProtocolHeader({required this.member});
+  final MemberSummary member;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final async = ref.watch(memberProtocolProvider(member.id));
+    final p = async.value;
+    final now = DateTime.now();
+    final String subtitle;
+    if (async.isLoading && p == null) {
+      subtitle = 'Yükleniyor…';
+    } else if (async.hasError && p == null) {
+      subtitle = 'Protokol bilgisi alınamadı.';
+    } else if (p == null) {
+      subtitle = 'Bağlı protokol yok';
+    } else if (!p.isValidOn(now)) {
+      subtitle = '${p.name}: ${protocolStatusText(p, now)}, indirim uygulanmaz';
+    } else {
+      subtitle =
+          '${p.name}: %${p.discountPercent}, paket atamada otomatik uygulanır';
+    }
+    return Card(
+      child: ListTile(
+        leading: const Icon(Icons.handshake_outlined),
+        title: const Text('Kurum protokolü'),
+        subtitle: Text(subtitle),
+        trailing: TextButton(
+          onPressed: async.isLoading && p == null
+              ? null
+              : () => runSetMemberProtocolFlow(
+                  context,
+                  ref,
+                  memberId: member.id,
+                  memberName: member.fullName,
+                  current: p,
+                ),
+          child: Text(p == null ? 'Bağla' : 'Değiştir'),
         ),
       ),
     );

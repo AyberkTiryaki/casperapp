@@ -98,7 +98,7 @@ class PackageCard extends StatelessWidget {
               ),
               if (showPrice && package.discountPercent > 0) ...[
                 Text('Liste fiyatı: ${formatTl(package.listPrice)}'),
-                Text('İndirim: %${package.discountPercent}'),
+                Text(discountBreakdown(package)),
               ],
               if (showPrice) Text('Ödenen: ${formatTl(package.pricePaid)}'),
               for (final f in upcomingFreezes)
@@ -206,4 +206,13 @@ class LedgerScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+/// "İndirim: %20 (referans %5 + protokol %15)" — toplam tavana takıldıysa yalnızca toplam.
+String discountBreakdown(MemberPackage p) {
+  final proto = p.protocolDiscountPercent;
+  final referral = p.discountPercent - proto;
+  if (proto <= 0) return 'İndirim: %${p.discountPercent}';
+  if (referral <= 0) return 'İndirim: %${p.discountPercent} (protokol)';
+  return 'İndirim: %${p.discountPercent} (referans %$referral + protokol %$proto)';
 }

@@ -6,7 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/config/env.dart';
 import 'core/config/supabase.dart';
+import 'core/notifications/local_notifications.dart';
 import 'core/theme/app_theme.dart';
+import 'core/theme/theme_mode.dart';
 import 'core/widgets/async_value_view.dart';
 import 'features/home/auth_gate.dart';
 
@@ -24,7 +26,21 @@ Future<void> main() async {
     return;
   }
   await initSupabase();
-  runApp(const ProviderScope(retry: _retry, child: CasperApp()));
+  final notifications = LocalNotifications();
+  try {
+    await notifications.init();
+  } catch (_) {}
+  final themeMode = await loadThemeMode();
+  runApp(
+    ProviderScope(
+      retry: _retry,
+      overrides: [
+        localNotificationsProvider.overrideWithValue(notifications),
+        themeModeProvider.overrideWith(() => ThemeModeController(themeMode)),
+      ],
+      child: const CasperApp(),
+    ),
+  );
 }
 
 /// Riverpod'un otomatik yeniden deneme kuralı. Varsayılan 10 deneme, sunucu hatasında
@@ -35,11 +51,11 @@ Duration? _retry(int retryCount, Object error) {
   return Duration(milliseconds: 500 * (1 << retryCount));
 }
 
-class CasperApp extends StatelessWidget {
+class CasperApp extends ConsumerWidget {
   const CasperApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
       title: 'Casper Training Studio',
       debugShowCheckedModeBanner: false,
@@ -49,8 +65,9 @@ class CasperApp extends StatelessWidget {
       localizationsDelegates: _delegates,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
-      // Marka kimliği koyu: gece mavisi zemin + elektrik mavisi
-      themeMode: ThemeMode.dark,
+      // Varsayılan açık; Profil > Görünüm'den koyu veya sistem seçilebilir
+      themeMode: ref.watch(themeModeProvider),
+      themeAnimationDuration: const Duration(milliseconds: 350),
       home: const AuthGate(),
     );
   }
@@ -70,8 +87,7 @@ class _MissingConfigApp extends StatelessWidget {
       localizationsDelegates: _delegates,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
-      // Marka kimliği koyu: gece mavisi zemin + elektrik mavisi
-      themeMode: ThemeMode.dark,
+      themeMode: defaultThemeMode,
       home: const Scaffold(
         body: SafeArea(
           child: Center(

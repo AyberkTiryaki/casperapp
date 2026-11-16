@@ -134,9 +134,9 @@ class StatTile extends StatelessWidget {
             label,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
-              color: AppColors.nightMuted,
+              color: context.palette.muted,
               fontWeight: FontWeight.w600,
             ),
           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/notifications/local_notifications.dart';
 import '../../../../core/utils/error_messages.dart';
 import '../../../packages/data/package_repository.dart';
 import '../../data/schedule_repository.dart';
@@ -53,6 +54,15 @@ Future<bool> runBookFlow(
     );
     invalidateSchedule(ref);
     _snack(messenger, 'Rezervasyon yapıldı.');
+    if (memberId == null) {
+      notifyBookingConfirmed(
+        ref,
+        classId: c.id,
+        categoryName: c.categoryName,
+        startsAt: c.startsAt,
+        trainerName: c.trainerName,
+      );
+    }
     return true;
   } catch (e) {
     invalidateSchedule(ref);

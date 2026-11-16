@@ -17,10 +17,10 @@ class AppTheme {
 
     final bg = isDark ? AppColors.night : AppColors.mist;
     final card = isDark ? AppColors.nightCard : AppColors.surfaceLight;
-    final raised = isDark ? AppColors.nightRaised : AppColors.surfaceLight;
+    final raised = isDark ? AppColors.nightRaised : AppColors.raisedLight;
     final outline = isDark ? AppColors.nightOutline : AppColors.outlineLight;
     final text = isDark ? AppColors.nightText : AppColors.ink;
-    final muted = isDark ? AppColors.nightMuted : const Color(0xFF55607F);
+    final muted = isDark ? AppColors.nightMuted : AppColors.inkMuted;
     final primary = isDark ? AppColors.electricBlue : AppColors.brandBlue;
     final link = isDark ? AppColors.skyBlue : AppColors.brandBlue;
 

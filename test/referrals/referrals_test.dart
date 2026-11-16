@@ -4,6 +4,8 @@ import 'package:caspertrainingstudio/features/auth/validators.dart';
 import 'package:caspertrainingstudio/features/packages/data/package_repository.dart';
 import 'package:caspertrainingstudio/features/packages/domain/package_models.dart';
 import 'package:caspertrainingstudio/features/packages/presentation/admin/member_packages_screen.dart';
+import 'package:caspertrainingstudio/features/protocols/data/protocol_repository.dart';
+import 'package:caspertrainingstudio/features/protocols/domain/protocol_models.dart';
 import 'package:caspertrainingstudio/features/referrals/data/referral_repository.dart';
 import 'package:caspertrainingstudio/features/referrals/domain/referral_models.dart';
 import 'package:caspertrainingstudio/features/referrals/presentation/admin_referrals_screen.dart';
@@ -14,6 +16,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../packages/fake_repo.dart';
+import '../protocols/fake_protocol_repo.dart';
 
 class FakeReferralRepository implements ReferralRepository {
   ReferralSummary summaryData = const ReferralSummary(
@@ -238,8 +241,9 @@ void main() {
 
   Future<FakePackageRepository> pumpAssign(
     WidgetTester tester,
-    FakeReferralRepository refRepo,
-  ) async {
+    FakeReferralRepository refRepo, {
+    FakeProtocolRepository? protoRepo,
+  }) async {
     final pkgRepo = FakePackageRepository()
       ..defs = const [
         PackageDefinition(
@@ -258,6 +262,9 @@ void main() {
         overrides: [
           packageRepositoryProvider.overrideWithValue(pkgRepo),
           referralRepositoryProvider.overrideWithValue(refRepo),
+          protocolRepositoryProvider.overrideWithValue(
+            protoRepo ?? FakeProtocolRepository(),
+          ),
         ],
         child: const MaterialApp(
           home: AdminMemberPackagesScreen(
@@ -319,5 +326,54 @@ void main() {
     await tester.tap(find.text('Onayla'));
     await tester.pumpAndSettle();
     expect(pkgRepo.assignCalls.single.discount, 0);
+  });
+
+  const unionX = Protocol(
+    id: 'px',
+    name: 'X Sendikası',
+    discountPercent: 15,
+    isActive: true,
+  );
+
+  testWidgets(
+    'Paket ata: protokol %15 + referans %15 = %30; sunucuya yalnızca referans payı gider',
+    (tester) async {
+      final refRepo = FakeReferralRepository()..summaryData = entitled15;
+      final protoRepo = FakeProtocolRepository()
+        ..memberProtocols['m1'] = unionX;
+      final pkgRepo = await pumpAssign(tester, refRepo, protoRepo: protoRepo);
+      expect(
+        find.textContaining('Protokol indirimi: %15 (X Sendikası)'),
+        findsOneWidget,
+      );
+      // Yalnızca protokol: 4000 x 0,85 = 3400
+      expect(find.text('Toplam indirim: %15'), findsOneWidget);
+      await tester.tap(find.byType(Switch));
+      await tester.pumpAndSettle();
+      expect(find.text('Toplam indirim: %30'), findsOneWidget);
+      expect(find.textContaining('2.800 ₺'), findsOneWidget);
+      await tester.tap(find.text('Onayla'));
+      await tester.pumpAndSettle();
+      expect(pkgRepo.assignCalls.single.discount, 15);
+    },
+  );
+
+  testWidgets('Paket ata: süresi dolmuş protokol indirim vermez', (
+    tester,
+  ) async {
+    final protoRepo = FakeProtocolRepository()
+      ..memberProtocols['m1'] = Protocol(
+        id: 'old',
+        name: 'Eski Sendika',
+        discountPercent: 20,
+        isActive: true,
+        validUntil: DateTime(2020, 1, 1),
+      );
+    await pumpAssign(tester, FakeReferralRepository(), protoRepo: protoRepo);
+    expect(
+      find.textContaining('Protokol (Eski Sendika) geçerli değil'),
+      findsOneWidget,
+    );
+    expect(find.text('Toplam indirim: %0'), findsOneWidget);
   });
 }

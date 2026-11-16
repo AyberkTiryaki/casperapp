@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/config/legal.dart';
 import '../../core/config/supabase.dart';
+import '../../core/notifications/local_notifications.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/theme_mode.dart';
 import '../../core/utils/error_messages.dart';
 import '../../core/utils/formatters.dart';
 import '../../core/widgets/async_value_view.dart';
@@ -195,7 +197,11 @@ class _ProfileFormState extends ConsumerState<_ProfileForm> {
         if (widget.profile.role == UserRole.member) ...[
           const Divider(height: 48),
           _HealthConsentSection(memberId: widget.profile.id),
+          const Divider(height: 48),
+          const _NotificationsSection(),
         ],
+        const Divider(height: 48),
+        const _AppearanceSection(),
         const Divider(height: 48),
         const StudioSection(),
         const Divider(height: 48),
@@ -458,6 +464,64 @@ class _HealthConsentSectionState extends ConsumerState<_HealthConsentSection> {
                     ),
             ],
           ),
+        ),
+      ],
+    );
+  }
+}
+
+class _NotificationsSection extends ConsumerWidget {
+  const _NotificationsSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final on = ref.watch(notificationsEnabledProvider);
+    return SwitchListTile(
+      contentPadding: EdgeInsets.zero,
+      title: const Text('Bildirimler'),
+      subtitle: const Text('Ders hatırlatmaları ve paket uyarıları'),
+      value: on,
+      onChanged: (v) async {
+        await ref.read(notificationsEnabledProvider.notifier).set(v);
+        if (!v) await ref.read(localNotificationsProvider).cancelAll();
+      },
+    );
+  }
+}
+
+class _AppearanceSection extends ConsumerWidget {
+  const _AppearanceSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final mode = ref.watch(themeModeProvider);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text('Görünüm', style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: 12),
+        SegmentedButton<ThemeMode>(
+          showSelectedIcon: false,
+          segments: const [
+            ButtonSegment(
+              value: ThemeMode.light,
+              icon: Icon(Icons.light_mode_outlined),
+              label: Text('Açık'),
+            ),
+            ButtonSegment(
+              value: ThemeMode.dark,
+              icon: Icon(Icons.dark_mode_outlined),
+              label: Text('Koyu'),
+            ),
+            ButtonSegment(
+              value: ThemeMode.system,
+              icon: Icon(Icons.brightness_auto_outlined),
+              label: Text('Sistem'),
+            ),
+          ],
+          selected: {mode},
+          onSelectionChanged: (s) =>
+              ref.read(themeModeProvider.notifier).set(s.first),
         ),
       ],
     );

@@ -21,6 +21,7 @@ const _serverCodeMessages = <String, String>{
   'USER_NOT_FOUND': 'Kullanıcı bulunamadı.',
   'INVALID_DISCOUNT': 'İndirim oranı geçersiz.',
   'DISCOUNT_EXCEEDS_ENTITLEMENT': 'İndirim, üyenin güncel referans indirimi hakkını aşıyor. Lütfen oranı yenileyip tekrar deneyin.',
+  'PROTOCOL_NOT_FOUND': 'Protokol bulunamadı, pasif veya süresi dolmuş.',
   'REFERRAL_NOT_FOUND': 'Referans kaydı bulunamadı.',
   'DECISION_REQUIRED': 'Bu işlem için bir karar (onay/ret) belirtilmeli.',
   'ALREADY_BOOKED': 'Bu derse zaten rezervasyonunuz var.',

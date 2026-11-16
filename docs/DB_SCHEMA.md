@@ -692,6 +692,40 @@ Kilit: `save_workout_program` ve `set_workout_program_active` yalnızca kilit s�
 | `TRAINER_REQUIRED` | Yönetici `trainer_my_members` için eğitmen belirtmedi |
 | `FORBIDDEN`, `MEMBER_NOT_ELIGIBLE` | Yetki yok (42501) / hedef aktif üye değil |
 
+## Kurum protokolleri ve fiyat listesi (16.11.2026)
+
+Kurallar: BUSINESS_RULES §17 (PR-01 .. PR-12).
+
+### `protocols`
+
+| sütun | tür | not |
+|---|---|---|
+| `id` | uuid PK | |
+| `name` | text, benzersiz | 1-80 karakter |
+| `discount_percent` | integer | 1-50 |
+| `valid_until` | date, boş olabilir | son geçerli gün (dahil, İstanbul); boş = süresiz |
+| `is_active` | boolean | varsayılan `true`; silme yok, pasife alınır |
+| `note` | text, boş olabilir | en fazla 300 karakter, yalnızca yönetici |
+| `created_at`, `updated_at` | timestamptz | `protocols_touch` tetikleyicisi |
+
+RLS: yönetici tümünü okur, ekler, günceller; üye yalnızca `profiles.protocol_id` ile bağlı olduğu satırı okur; silme politikası yok.
+
+### Eklenen sütunlar
+
+- `profiles.protocol_id` → `protocols(id)`, `on delete set null`. Yalnızca `admin_set_member_protocol` ile değişir (sütuna istemci yazma yetkisi yok).
+- `member_packages.protocol_id` → `protocols(id)`, `on delete set null`; `member_packages.protocol_discount_percent` integer 0-50, varsayılan 0. `discount_percent` artık **toplam** orandır (referans + protokol, tavan 50).
+
+### Fonksiyonlar
+
+| fonksiyon | kim | ne yapar |
+|---|---|---|
+| `private.protocol_is_valid(protocols)` | iç | aktif ve `valid_until` İstanbul bugününden önce değil |
+| `admin_set_member_protocol(p_member_id, p_protocol_id)` | yönetici | üyeyi geçerli protokole bağlar; `null` bağlantıyı kaldırır; denetim kaydı `set_member_protocol` |
+| `public_price_list()` | **anon** ve authenticated | `{categories: [{id, name, class_type, packages: [{id, name, session_count, validity_days, price}]}], protocols: [{name, discount_percent, valid_until}]}`; yalnızca aktif kategori/paket ve geçerli protokoller |
+| `assign_package(...)` | yönetici | imza aynı; `p_discount_percent` referans payıdır, protokol payı otomatik eklenir; denetim kaydına `referral_percent`, `protocol_id`, `protocol_percent` eklendi |
+
+Yeni hata kodu: `PROTOCOL_NOT_FOUND` (P0002), protokol yok, pasif veya süresi dolmuş.
+
 ## Migration dosyaları
 
 | dosya | içerik |
@@ -704,3 +738,4 @@ Kilit: `save_workout_program` ve `set_workout_program_active` yalnızca kilit s�
 | `20261111100000_referrals.sql` | adım 3b: referans kodu, `referrals` tablosu, sayım/indirim fonksiyonları, kayıt tetikleyicisi güncellemesi, `assign_package` indirim parametresi |
 | `20261111110000_referral_manual_and_schedule_views.sql` | `short_name` STABLE düzeltmesi; elle referans (`admin_create_referral`, `admin_search_users`); takvim okuma RPC'leri (`list_classes`, `my_reservations`, `admin_class_reservations`) |
 | `20261113150000_programs_measurements_reports.sql` | `workout_programs`, `workout_program_items`, `body_measurements` tabloları ve RLS; `private.is_my_member`, `private.can_coach_member`; `trainer_my_members`, `save_workout_program`, `set_workout_program_active`, `add_body_measurement`, `delete_body_measurement`, `admin_report` |
+| `20261116120000_protocols.sql` | `protocols` tablosu ve RLS; `profiles.protocol_id`; `member_packages.protocol_id`, `protocol_discount_percent`; `private.protocol_is_valid`; `admin_set_member_protocol`, `public_price_list` (anon); `assign_package` protokol indirimi |

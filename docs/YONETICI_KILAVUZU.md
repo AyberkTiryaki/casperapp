@@ -16,7 +16,7 @@ Bu kılavuz, uygulamayı **Yönetici** rolüyle kullanan stüdyo sahibi ve yöne
 10. Ürünler ve fiyatlar
 11. Bakiye yükleme ve ürün satışı
 12. Ters kayıt ve düzeltme
-13. Referanslar ve indirim
+13. Referanslar, kurum protokolleri ve indirim
 14. Raporlar
 15. İşlem geçmişi
 16. Hesap silme talepleri
@@ -410,7 +410,7 @@ Ders hakkı (paketteki hak) düzeltmesi için bölüm 6'daki **Hak düzelt**'e b
 
 ---
 
-## 13. Referanslar ve indirim
+## 13. Referanslar, kurum protokolleri ve indirim
 
 Üyeler kayıt olurken isteğe bağlı bir **referans kodu** girebilir. Kod geçerliyse yöneticiye onay bekleyen bir referans düşer.
 
@@ -443,6 +443,38 @@ Kararı sonradan değiştirmek için kartta **Kararı değiştir** düğmesini k
 Uygulama bu üç tutarı pakete kaydeder: liste fiyatı, indirim oranı, ödenen tutar. Daha önce atanmış paketlerin fiyatı, sonradan referans sayısı değişse de değişmez.
 
 > **Dikkat:** Üyenin hak ettiği oran siz pencereyi açtıktan sonra değişirse (örneğin bir referansın paketi bitti), uygulama "hak edilen oranı aşıyor" diye uyarıp atamayı yapmaz. Atamayı yeniden başlatın.
+
+### Kurum protokolleri (sendika, dernek vb.)
+
+Bir kurumla indirim anlaşması yaptığınızda (örneğin "X Sendikası üyelerine %15"), önce protokolü tanımlayın:
+
+1. Ana sayfada **Protokoller (kurum indirimleri)** kartına girin.
+2. **Protokol ekle** deyin. **Kurum adı** ve **İndirim oranı (%)** girin (1-50).
+3. Anlaşmanın bitiş tarihi varsa **Tarih seç** ile **son geçerlilik gününü** seçin; yoksa süresiz kalır.
+4. İsterseniz **Not** yazın (ör. "üye kartı fotokopisi alınır"). Notu yalnızca yöneticiler görür.
+5. **Kaydet** deyin.
+
+Anlaşma bitince protokolü silmezsiniz; düzenleyip **Aktif** anahtarını kapatırsınız.
+
+### Üyeyi protokole bağlamak
+
+1. Üyenin belgesini (ör. sendika üye kartı) kontrol edin.
+2. **Üyeler ve paketleri** → üyeyi seçin. Üstteki **Kurum protokolü** kartında **Bağla** (veya **Değiştir**) deyin.
+3. Listeden protokolü seçin. Bağlantıyı kaldırmak için **Protokolü kaldır** seçeneğini kullanın.
+
+Her değişiklik **İşlem geçmişi**ne yazılır.
+
+### Protokol indirimi nasıl uygulanır?
+
+- Protokol indirimi paket atarken **kendiliğinden** uygulanır; **Paket ata** penceresinde "Protokol indirimi: %15 (X Sendikası), otomatik uygulanır" yazar.
+- Üyenin referans indirimi de varsa ikisi **toplanır**: referans %5 + protokol %15 = **%20**. Toplam en fazla **%50** olur.
+- Protokol indirimi yalnızca **paketlere** uygulanır; ürün satışlarında ve cüzdanda uygulanmaz.
+- Protokolün süresi dolmuşsa veya pasifse indirim uygulanmaz; pencere bunu yazar.
+- Atanmış paketin fiyatı, protokolün oranı sonradan değişse de değişmez. Paket kartında indirim "İndirim: %20 (referans %5 + protokol %15)" biçiminde görünür.
+
+### Fiyat listesi
+
+Aktif paketleriniz ve geçerli protokolleriniz herkese açık **fiyat listesinde** görünür. Üye olmayanlar giriş ekranındaki **Paketleri keşfet** düğmesiyle, üyeler ana sayfadaki **Paketler ve fiyatlar** kartıyla açar. Sayfanın başında "Tüm fiyatlara KDV dahildir" notu yer alır; fiyat tanımlarken KDV dahil tutarı girin. Siz de ana sayfadaki **Fiyat listesi (üyelerin gördüğü)** kartından kontrol edebilirsiniz. Pasif paket tanımları, pasif kategoriler ve protokol notları listede görünmez.
 
 ---
 

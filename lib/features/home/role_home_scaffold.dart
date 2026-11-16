@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/notifications/local_notifications.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/brand.dart';
 import '../auth/auth_providers.dart';
@@ -28,7 +29,9 @@ Future<void> confirmAndSignOut(BuildContext context, WidgetRef ref) async {
       ],
     ),
   );
-  if (ok == true) await ref.read(authRepositoryProvider).signOut();
+  if (ok != true) return;
+  await ref.read(localNotificationsProvider).cancelAll();
+  await ref.read(authRepositoryProvider).signOut();
 }
 
 class ComingModule {
@@ -154,7 +157,9 @@ class RoleHomeScaffold extends ConsumerWidget {
             children: [
               HeroHeader(
                 eyebrow: profile.role.label,
-                title: first.isEmpty ? 'Hoş geldin' : 'Merhaba,\n$first',
+                title: first.isEmpty
+                    ? 'Hoş geldin'
+                    : '${greetingFor(DateTime.now())},\n$first',
                 subtitle: _motto(),
               ),
               const SizedBox(height: 20),
@@ -202,4 +207,13 @@ class RoleHomeScaffold extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// Günün saatine göre karşılama.
+String greetingFor(DateTime now) {
+  final h = now.hour;
+  if (h >= 5 && h < 11) return 'Günaydın';
+  if (h >= 11 && h < 17) return 'İyi günler';
+  if (h >= 17 && h < 22) return 'İyi akşamlar';
+  return 'İyi geceler';
 }

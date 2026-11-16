@@ -1,5 +1,6 @@
 import 'package:caspertrainingstudio/features/packages/data/package_repository.dart';
 import 'package:caspertrainingstudio/features/packages/domain/package_models.dart';
+import 'package:caspertrainingstudio/features/protocols/data/protocol_repository.dart';
 import 'package:caspertrainingstudio/features/referrals/data/referral_repository.dart';
 import 'package:caspertrainingstudio/features/packages/presentation/admin/definitions_screen.dart';
 import 'package:caspertrainingstudio/features/packages/presentation/admin/categories_screen.dart';
@@ -11,12 +12,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../referrals/referrals_test.dart' show FakeReferralRepository;
+import '../protocols/fake_protocol_repo.dart';
 import 'fake_repo.dart';
 
 Widget app(FakePackageRepository repo, Widget home) => ProviderScope(
   overrides: [
     packageRepositoryProvider.overrideWithValue(repo),
     referralRepositoryProvider.overrideWithValue(FakeReferralRepository()),
+    protocolRepositoryProvider.overrideWithValue(FakeProtocolRepository()),
   ],
   child: MaterialApp(home: home),
 );

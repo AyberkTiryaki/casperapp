@@ -8,6 +8,8 @@ import '../../../../core/utils/uuid.dart';
 import '../../../../core/widgets/async_value_view.dart' show isNetworkError;
 import '../../../../core/widgets/text_controller_scope.dart';
 import '../../data/package_repository.dart';
+import '../../../protocols/data/protocol_repository.dart';
+import '../../../protocols/domain/protocol_models.dart';
 import '../../../referrals/data/referral_repository.dart';
 import '../../../referrals/domain/referral_models.dart';
 import '../../domain/package_models.dart';
@@ -102,6 +104,7 @@ Future<void> runAssignFlow(
         discountPercent: discount,
       );
       ref.invalidate(memberPackagesProvider(member.id));
+      ref.invalidate(memberProtocolProvider(member.id));
       messenger.showSnackBar(const SnackBar(content: Text('Paket atandı.')));
       return;
     } catch (e) {
@@ -479,6 +482,7 @@ class _AssignDialog extends ConsumerStatefulWidget {
 
 class _AssignDialogState extends ConsumerState<_AssignDialog> {
   ReferralSummary? _summary;
+  Protocol? _protocol;
   Object? _error;
   bool _apply = false;
   int _percent = 0;
@@ -492,12 +496,15 @@ class _AssignDialogState extends ConsumerState<_AssignDialog> {
   Future<void> _load() async {
     setState(() => _error = null);
     try {
-      final s = await ref
-          .read(referralRepositoryProvider)
-          .summary(userId: widget.member.id);
+      final results = await Future.wait([
+        ref.read(referralRepositoryProvider).summary(userId: widget.member.id),
+        ref.read(protocolRepositoryProvider).memberProtocol(widget.member.id),
+      ]);
+      final s = results[0] as ReferralSummary;
       if (!mounted) return;
       setState(() {
         _summary = s;
+        _protocol = results[1] as Protocol?;
         _percent = s.discountPercent;
       });
     } catch (e) {
@@ -511,9 +518,12 @@ class _AssignDialogState extends ConsumerState<_AssignDialog> {
     final s = _summary;
     final entitlement = s?.discountPercent ?? 0;
     final applied = (_apply && entitlement > 0) ? _percent : 0;
-    final result = double.parse(
-      (d.price * (100 - applied) / 100).toStringAsFixed(2),
-    );
+    final proto = _protocol;
+    final protoPercent = (proto != null && proto.isValidOn(DateTime.now()))
+        ? proto.discountPercent
+        : 0;
+    final total = combinedDiscount(applied, protoPercent);
+    final result = discountedPrice(d.price, total);
     return AlertDialog(
       actionsOverflowDirection: VerticalDirection.up,
       actionsOverflowButtonSpacing: 12,
@@ -559,9 +569,21 @@ class _AssignDialogState extends ConsumerState<_AssignDialog> {
                   onChanged: (v) => setState(() => _percent = v ?? _percent),
                 ),
             ],
+            if (s != null && proto != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                protoPercent > 0
+                    ? 'Protokol indirimi: %$protoPercent (${proto.name}), otomatik uygulanır'
+                    : 'Protokol (${proto.name}) geçerli değil, indirim uygulanmaz',
+              ),
+            ],
             const SizedBox(height: 12),
             Text('Liste fiyatı: ${formatTl(d.price)}'),
-            Text('İndirim: %$applied'),
+            Text(
+              applied + protoPercent > maxTotalDiscount
+                  ? 'Toplam indirim: %$total (en fazla %$maxTotalDiscount)'
+                  : 'Toplam indirim: %$total',
+            ),
             Text('Ödenecek tutar: ${formatTl(result)}'),
           ],
         ),

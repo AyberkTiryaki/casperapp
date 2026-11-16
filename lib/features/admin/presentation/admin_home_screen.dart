@@ -12,6 +12,8 @@ import '../../packages/presentation/admin/categories_screen.dart';
 import '../../packages/presentation/admin/definitions_screen.dart';
 import '../../packages/presentation/admin/members_screen.dart';
 import '../../profile/profile.dart';
+import '../../protocols/presentation/admin_protocols_screen.dart';
+import '../../protocols/presentation/price_list_screen.dart';
 import '../../referrals/presentation/admin_referrals_screen.dart';
 import '../../reports/presentation/admin_reports_screen.dart';
 import '../../schedule/presentation/admin/admin_schedule_screen.dart';
@@ -93,6 +95,16 @@ class _AdminHomeTab extends ConsumerWidget {
           'Kategoriler',
           Icons.category_outlined,
           onTap: () => _go(context, const CategoriesScreen()),
+        ),
+        ComingModule(
+          'Protokoller (kurum indirimleri)',
+          Icons.handshake_outlined,
+          onTap: () => _go(context, const AdminProtocolsScreen()),
+        ),
+        ComingModule(
+          'Fiyat listesi (üyelerin gördüğü)',
+          Icons.sell_outlined,
+          onTap: () => _go(context, const PriceListScreen()),
         ),
         ComingModule(
           'Referanslar',

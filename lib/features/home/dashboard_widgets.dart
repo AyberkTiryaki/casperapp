@@ -24,10 +24,10 @@ class DashCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final shape = RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(18),
-      side: BorderSide(color: borderColor ?? AppColors.nightOutline),
+      side: BorderSide(color: borderColor ?? context.palette.outline),
     );
-    return Material(
-      color: AppColors.nightCard,
+    final material = Material(
+      color: context.palette.card,
       shape: shape,
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -35,6 +35,15 @@ class DashCard extends StatelessWidget {
         customBorder: shape,
         child: Padding(padding: padding, child: child),
       ),
+    );
+    final shadow = context.palette.cardShadow;
+    if (shadow == null) return material;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: shadow,
+      ),
+      child: material,
     );
   }
 }
