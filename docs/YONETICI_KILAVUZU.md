@@ -44,6 +44,18 @@ Bu kılavuz, uygulamayı **Yönetici** rolüyle kullanan stüdyo sahibi ve yöne
 
 > **Dikkat:** Yöneticiler kendi rollerini düşüremez ve kendi hesaplarını pasif yapamaz. Bu kural yanlışlıkla kilitlenmenizi önler.
 
+**Bilgisayarda (Windows) kullanmak**
+
+Stüdyo bilgisayarı için ayrı bir masaüstü uygulaması vardır. **Yalnızca yönetici** içindir; üye veya eğitmen hesabıyla girilirse "Masaüstü uygulaması yönetici içindir" mesajı çıkar.
+
+1. `Casper-Kurulum-….exe` dosyasını açın.
+2. Windows "Windows bilgisayarınızı korudu" derse **Ek bilgi** → **Yine de çalıştır** deyin. (Dosya kod imzalama sertifikasıyla imzalı olmadığı için çıkar; bir kez sorulur.)
+3. **İleri** deyip kurulumu bitirin. Masaüstünde ve Başlat menüsünde **Casper Training Studio** simgesi oluşur.
+
+Yeni sürüm geldiğinde yeni kurulum dosyasını aynı şekilde çalıştırmanız yeterlidir; eski sürümün üzerine kurulur. Kaldırmak için Başlat menüsünde **Casper Training Studio → Kaldır**.
+
+> **Dikkat:** Bilgisayarda e-postadaki şifre sıfırlama bağlantısı uygulamayı açamaz. Kendi şifrenizi telefondan sıfırlayın; üye ve eğitmen şifrelerini **Kullanıcı ve rol yönetimi** ekranındaki **Şifreyi sıfırla** ile belirleyin.
+
 ---
 
 ## 2. Ana sayfa

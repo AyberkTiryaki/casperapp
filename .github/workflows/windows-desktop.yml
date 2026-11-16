@@ -1,0 +1,83 @@
+# Yönetici masaüstü uygulaması: Windows sürümünü derler ve kurulum dosyası (.exe) üretir.
+# Kurulum dosyası çalıştırmanın "Artifacts" bölümünden (casper-windows-kurulum) indirilir.
+#
+# Uygulama kodu değiştiğinde main'e gönderimle veya Actions sekmesinden elle başlar.
+# Gerekli gizli değerler Android iş akışıyla aynı: SUPABASE_URL, SUPABASE_ANON_KEY.
+#
+# Not: Kurulum dosyası kod imzalama sertifikasıyla imzalanmaz; ilk açılışta Windows
+# "bilgisayarınızı korudu" uyarısı verir → "Ek bilgi" → "Yine de çalıştır".
+
+name: Windows masaüstü (yönetici)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "lib/**"
+      - "windows/**"
+      - "assets/**"
+      - "pubspec.yaml"
+      - "pubspec.lock"
+      - ".github/workflows/windows-desktop.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: windows-desktop-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      # Yerel geliştirme makinesiyle aynı sürüm (bkz. android-apk.yml)
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: "3.47.9"
+          cache: true
+
+      - name: Ortam dosyası
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "::error::SUPABASE_URL ve SUPABASE_ANON_KEY repo gizli değerleri tanımlı değil."
+            exit 1
+          fi
+          mkdir -p env
+          jq -n --arg url "$SUPABASE_URL" --arg key "$SUPABASE_ANON_KEY" \
+            '{SUPABASE_URL: $url, SUPABASE_ANON_KEY: $key, APP_ENV: "dev"}' > env/ci.json
+
+      - run: flutter pub get
+
+      - name: Windows derle
+        run: flutter build windows --release --build-number=${{ github.run_number }} --dart-define-from-file=env/ci.json
+
+      - name: Sürüm
+        id: ver
+        run: |
+          v=$(grep -E '^version:' pubspec.yaml | sed -E 's/version:[[:space:]]*([0-9.]+).*/\1/')
+          echo "app=$v" >> "$GITHUB_OUTPUT"
+
+      - name: Kurulum dosyası (Inno Setup)
+        shell: pwsh
+        run: |
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) {
+            choco install innosetup -y --no-progress
+          }
+          & $iscc "/DAppVersion=${{ steps.ver.outputs.app }}" "/DBuildNumber=${{ github.run_number }}" windows\installer\casper.iss
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: casper-windows-kurulum
+          path: build/installer/Casper-Kurulum-*.exe
+          retention-days: 30
