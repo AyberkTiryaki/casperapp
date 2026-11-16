@@ -18,7 +18,7 @@ Veri sorumlusu adı "Casper Training Studio" olarak yazıldı (14.11.2026). Verg
 
 ## Danışmanın karar vermesi gereken konular
 
-1. **Yurt dışına aktarım (md. 9):** Veritabanı Supabase üzerinde, AWS İsveç (eu-north-1) sunucularında. Bildirim için Google Firebase kullanılacak. Düzenli aktarım için Kurul'un **standart sözleşmesi** imzalanıp 5 iş günü içinde Kurum'a bildirilmesi mi, yoksa başka bir güvence mi uygun? Açık rıza md. 9'un yeni halinde yalnızca arızi aktarım için kullanılabildiğinden düzenli aktarımın tek dayanağı yapılmamalıdır.
+1. **Yurt dışına aktarım (md. 9):** Veritabanı Supabase üzerinde, AWS İsveç (eu-north-1) sunucularında. Bildirimler cihazda yerel olarak üretilir (16.11.2026); Firebase kullanılmıyor. Düzenli aktarım için Kurul'un **standart sözleşmesi** imzalanıp 5 iş günü içinde Kurum'a bildirilmesi mi, yoksa başka bir güvence mi uygun? Açık rıza md. 9'un yeni halinde yalnızca arızi aktarım için kullanılabildiğinden düzenli aktarımın tek dayanağı yapılmamalıdır.
 2. **Sağlık verisi (md. 6):** Vücut ölçümleri özel nitelikli veri kabul edildi ve açık rızaya bağlandı. Kayıtta zorunlu alınan boy ve kilo (yol haritası §4) profil bilgisi olarak işleniyor, rıza metnine dahil edilmedi. Bunların da açık rızaya bağlanması gerekip gerekmediği danışmana sorulmalı.
 3. **VERBİS kaydı:** Çalışan sayısı 50'den az ve yıllık mali bilanço eşiğin altındaysa, ana faaliyet özel nitelikli veri işlemek olmadığı sürece muafiyet olabilir. Stüdyonun durumu danışmanla teyit edilmeli.
 4. **Saklama süreleri:** Mali kayıtlar için "10 yıla kadar" yazıldı (TTK md. 82, VUK). Kesin süre ve bir saklama-imha politikası danışmanla belirlenmeli.

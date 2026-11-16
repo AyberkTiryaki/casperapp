@@ -3,7 +3,7 @@
 /// DURUM: Claude tarafından hazırlanmış taslak (14.11.2026). Yayından önce
 /// hukuk danışmanı tarafından gözden geçirilmeli; [ ] içindeki stüdyo bilgileri
 /// doldurulmalıdır. Ayrıntı: docs/KVKK_NOTLARI.md
-const kvkkTextVersion = '2026-11-v3';
+const kvkkTextVersion = '2026-11-v4';
 
 /// Sağlık verisi açık rıza metninin sürümü (aydınlatma metninden ayrı onaylanır).
 const healthConsentTextVersion = '2026-11-v1';
@@ -22,7 +22,7 @@ E-posta: caspertrainingstudio@gmail.com
 • İletişim: e-posta adresi
 • Fiziksel ve sağlık bilgileri: boy, kilo; eğitmeninizin kaydettiği vücut ölçümleri (kilo, yağ oranı, kas kütlesi, bel, kalça, göğüs, kol, bacak ölçüleri ve ölçüm notları)
 • Müşteri işlem bilgileri: üyelik paketleri, ders rezervasyonları ve katılım durumu, cüzdan bakiyesi ve hareketleri, ürün satışları, referans kodu ve referans kayıtları, antrenman programlarınız
-• İşlem güvenliği bilgileri: giriş kayıtları, IP adresi, uygulama içinde yapılan işlemlerin kayıtları, bildirim için cihaz anahtarı
+• İşlem güvenliği bilgileri: giriş kayıtları, IP adresi, uygulama içinde yapılan işlemlerin kayıtları
 • Onay kayıtları: bu metnin ve açık rıza metninin onaylandığı sürüm ve tarih
 
 Kronik rahatsızlık, tanı veya tedavi bilgisi istenmez ve işlenmez.
@@ -40,7 +40,7 @@ Verileriniz mobil uygulama üzerinden sizin girdiğiniz bilgilerle ve Stüdyo y�
 • Stüdyo içinde: yöneticiler tüm üyelik bilgilerine; eğitmenler yalnızca derslerine katılan üyelerin ders, program ve ölçüm bilgilerine görevleri gereği erişir.
 • Referans sistemi: kodunuzla kayıt olan kişiler yalnızca adınızı ve soyadınızın baş harfini görür; siz de getirdiğiniz kişiler için yalnızca bu bilgiyi ve referans durumunu görürsünüz.
 • Yurt içi: talep halinde kanunen yetkili kamu kurum ve kuruluşları.
-• Yurt dışı: uygulamanın çalışması için hizmet aldığımız altyapı sağlayıcıları: veritabanı ve kimlik doğrulama (Supabase; sunucular Avrupa Birliği'nde, İsveç), telefon bildirimleri (Google Firebase) ve e-posta gönderimi sağlayıcısı. Bu aktarımlar KVKK md. 9'da öngörülen güvencelere uygun olarak yapılır.
+• Yurt dışı: uygulamanın çalışması için hizmet aldığımız altyapı sağlayıcıları: veritabanı ve kimlik doğrulama (Supabase; sunucular Avrupa Birliği'nde, İsveç) ve e-posta gönderimi sağlayıcısı. Ders hatırlatmaları ve paket bildirimleri telefonunuzun kendisinde oluşturulur; bunun için bir bildirim sağlayıcısına veri aktarılmaz. Bu aktarımlar KVKK md. 9'da öngörülen güvencelere uygun olarak yapılır.
 Verileriniz reklam amacıyla kullanılmaz ve satılmaz.
 
 6. Saklama süresi

@@ -60,3 +60,4 @@ app.*.map.json
 
 # SMTP uygulama şifresi gibi gizli değerler
 /env/*.env
+web/legal/site/

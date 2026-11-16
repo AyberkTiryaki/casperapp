@@ -11,7 +11,7 @@ Kişisel verilerin işlenmesine ilişkin ayrıntılı bilgi, Uygulamada kayıt s
 - **Hesap bilgileri:** ad soyad, e-posta adresi, doğum tarihi.
 - **Fiziksel ve sağlık bilgileri:** boy ve kilo. Açık rızanız varsa eğitmeninizin kaydettiği vücut ölçümleri (yağ oranı, kas kütlesi, çevre ölçüleri).
 - **Üyelik ve işlem bilgileri:** paketler, ders rezervasyonları, katılım, cüzdan bakiyesi ve hareketleri, ürün satışları, referans kayıtları, antrenman programları.
-- **Teknik bilgiler:** giriş kayıtları, IP adresi, bildirim gönderimi için cihaz anahtarı.
+- **Teknik bilgiler:** giriş kayıtları, IP adresi.
 
 Kronik rahatsızlık, tanı veya tedavi bilgisi toplanmaz. Konum, kişi listesi, fotoğraf veya mikrofon erişimi istenmez. Uygulamada reklam ve reklam amaçlı takip yoktur.
 
@@ -28,7 +28,7 @@ Bilgileriniz satılmaz ve reklam amacıyla paylaşılmaz.
 ## Bilgileri kimlerle paylaşıyoruz
 
 - **Stüdyo yöneticileri ve eğitmenleri:** Eğitmenler yalnızca derslerine katılan üyelerin gerekli bilgilerini görür.
-- **Hizmet sağlayıcılar:** Supabase (veritabanı ve giriş, sunucular AB/İsveç), Google Firebase (telefon bildirimleri) ve e-posta gönderim sağlayıcısı. Bu sağlayıcılar bilgileri yalnızca Stüdyo adına hizmet vermek için işler.
+- **Hizmet sağlayıcılar:** Supabase (veritabanı ve giriş, sunucular AB/İsveç) ve e-posta gönderim sağlayıcısı. Ders hatırlatmaları ve paket bildirimleri telefonunuzun kendisinde oluşturulur; bunun için üçüncü bir bildirim servisine veri gönderilmez. Bu sağlayıcılar bilgileri yalnızca Stüdyo adına hizmet vermek için işler.
 - **Yetkili kurumlar:** Yasal zorunluluk olduğunda.
 
 ## Güvenlik

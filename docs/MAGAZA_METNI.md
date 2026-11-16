@@ -47,15 +47,20 @@ Uygulama yalnızca Casper Training Studio üyeleri içindir. Hesabınız stüdyo
 ## İletişim ve bağlantılar (stüdyo dolduracak)
 - Destek e-postası: caspertrainingstudio@gmail.com
 - Web sitesi: https://www.instagram.com/caspertrainingstudio/ (stüdyonun web sitesi yok; Play Store web sitesi alanına ve App Store "Marketing URL" alanına bu adres girilir)
-- Gizlilik politikası URL'si: `________` (zorunlu; KVKK metni yayımlandıktan sonra)
-- Hesap silme sayfası URL'si: `________` (Google Play zorunlu kılar; uygulama içinde Profil > "Hesabımı sil" var, ayrıca web'den talep yolu tarif edilmeli)
+- Gizlilik politikası URL'si: https://gsenlik.github.io/casper-studio/gizlilik.html
+- Hesap silme sayfası URL'si: https://gsenlik.github.io/casper-studio/hesap-silme.html
+
+Bu iki sayfa herkese açık `gsenlik/casper-studio` deposunda GitHub Pages ile yayınlanır (16.11.2026). Kaynak: `docs/GIZLILIK_POLITIKASI.md` ve `web/legal/hesap-silme.md`; `python web/legal/build.py` ile üretilip o depoya gönderilir. Gizlilik metni değişince sayfa da güncellenmelidir.
 
 ## İnceleme ekibi için not (App Store Review / Play)
-Uygulama girişi gerektirir. İnceleme için deneme hesapları verilecek:
-- Üye: `________` / `________`
-- Eğitmen: `________` / `________`
+Uygulama girişi gerektirir. İnceleme hesapları (`supabase/seed/play_review_reset.sql`, 16.11.2026):
+- Üye: `uye1@casper.test` / `1234` (paketli, rezervasyonlu, programı ve ölçümü olan hesap)
+- Eğitmen: `egitmen1@casper.test` / `1234`
 
-Bu hesaplar canlı ortamda açılır; içinde gerçek üye verisi bulunmaz.
+Play Console > Uygulama içeriği > Uygulama erişimi alanına girilecek not:
+"Uygulama stüdyo üyeleri içindir ve giriş gerektirir. Üye hesabı ile giriş yapın: uye1@casper.test / 1234. Ders takvimi, rezervasyon, paketler, cüzdan, antrenman programı ve ölçümler bu hesapta deneme verisiyle doludur. Kayıt ol ekranından yeni hesap da açılabilir."
+
+Bu hesaplar canlı ortamdadır; içinde gerçek üye verisi yoktur. Yayından önce yönetici hesabının (`yonetici@casper.test`) şifresi değiştirilmelidir.
 
 ## Ekran görüntüleri (çekilecek)
 Telefon: en az 2 (Play), 6,7" ve 6,5" iPhone için (App Store). Önerilen sıra:
@@ -66,7 +71,7 @@ Telefon: en az 2 (Play), 6,7" ve 6,5" iPhone için (App Store). Önerilen sıra:
 5. Eğitmen takvimi
 6. Yönetici ana sayfası
 
-Ekran görüntüleri deneme verisiyle (`supabase/seed/demo*.sql`) geliştirme projesinde çekilir; gerçek üye adı görünmez.
+Ekran görüntüleri inceleme verisiyle (`supabase/seed/play_review_reset.sql`) çekilir; gerçek üye adı görünmez.
 
 ## Veri güvenliği formu (Google Play) / Gizlilik etiketi (App Store) — özet
 Toplanan veriler: ad soyad, e-posta, doğum tarihi, boy, kilo, vücut ölçümleri (sağlık/fitness), uygulama içi işlem kayıtları (rezervasyon, bakiye hareketi). Reklam ya da üçüncü tarafla paylaşım yok, takip yok. Veriler aktarım sırasında şifrelenir (HTTPS). Kullanıcı hesap silme talep edebilir.
