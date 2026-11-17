@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/widgets/async_value_view.dart';
 import '../../../../core/widgets/empty_view.dart';
 import '../../../../core/widgets/home_button.dart';
+import '../../../../core/widgets/warning_box.dart';
+import '../../../protocols/presentation/price_list_screen.dart';
 import '../../../packages/data/package_repository.dart';
 import '../../../packages/domain/package_models.dart';
 import '../../data/schedule_repository.dart';
@@ -240,6 +242,14 @@ class ClassDetailSheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final now = DateTime.now();
     final started = item.hasStarted(now);
+    // Paketler yüklenmediyse (null) ön kontrol yapılmaz; sunucu yine denetler.
+    final packages = ref.watch(myPackagesProvider).value;
+    final activeCats = <String>{
+      for (final p in packages ?? const <MemberPackage>[])
+        if (p.displayStatus(now) == PackageDisplayStatus.active) p.categoryId,
+    };
+    final hasAnyActive = activeCats.isNotEmpty;
+    final covered = activeCats.contains(item.categoryId);
     Widget action;
     if (item.isCancelled) {
       action = const Text('Bu ders iptal edildi.');
@@ -279,6 +289,25 @@ class ClassDetailSheet extends ConsumerWidget {
       action = const Text('Ders başladığı için rezervasyon yapılamaz.');
     } else if (item.isFull) {
       action = const FilledButton(onPressed: null, child: Text('Dolu'));
+    } else if (packages != null && !covered) {
+      action = Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          WarningBox(
+            text: hasAnyActive
+                ? 'Aktif paketiniz bu dersin kategorisini (${item.categoryName}) kapsamıyor, bu yüzden rezervasyon yapamazsınız. Uygun paket için stüdyo ile iletişime geçin.'
+                : 'Ders hakkınız yok: aktif bir paketiniz bulunmuyor. Rezervasyon yapabilmek için stüdyodan paket almanız gerekir.',
+          ),
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const PriceListScreen()),
+            ),
+            icon: const Icon(Icons.sell_outlined),
+            label: const Text('Paketler ve fiyatlar'),
+          ),
+        ],
+      );
     } else {
       action = FilledButton(
         onPressed: () async {

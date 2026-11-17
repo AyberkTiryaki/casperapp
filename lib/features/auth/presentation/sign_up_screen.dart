@@ -5,6 +5,7 @@ import '../../../core/config/legal.dart';
 import '../../../core/utils/error_messages.dart';
 import '../../../core/widgets/unsaved_changes_guard.dart';
 import '../../../core/widgets/warning_box.dart';
+import '../../protocols/presentation/price_list_screen.dart';
 import '../auth_providers.dart';
 import '../data/auth_repository.dart';
 import '../validators.dart';
@@ -32,7 +33,17 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   bool _health = false;
   bool _kvkkTouched = false;
   bool _loading = false;
+  bool _obscure = true;
   String? _error;
+
+  /// İki şifre alanını birlikte gösterir/gizler; kullanıcı farkı görebilsin.
+  Widget _eye() => IconButton(
+    tooltip: _obscure ? 'Şifreyi göster' : 'Şifreyi gizle',
+    icon: Icon(
+      _obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+    ),
+    onPressed: () => setState(() => _obscure = !_obscure),
+  );
 
   bool get _dirty =>
       _kvkk ||
@@ -196,6 +207,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      const _PackageInfoBox(),
+                      gap,
                       TextFormField(
                         controller: _name,
                         textCapitalization: TextCapitalization.words,
@@ -216,21 +229,23 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       gap,
                       TextFormField(
                         controller: _password,
-                        obscureText: true,
+                        obscureText: _obscure,
                         textInputAction: TextInputAction.next,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           labelText: 'Şifre',
                           helperText: 'En az 6 karakter',
+                          suffixIcon: _eye(),
                         ),
                         validator: validatePassword,
                       ),
                       gap,
                       TextFormField(
                         controller: _password2,
-                        obscureText: true,
+                        obscureText: _obscure,
                         textInputAction: TextInputAction.next,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           labelText: 'Şifre tekrar',
+                          suffixIcon: _eye(),
                         ),
                         validator: (v) =>
                             validatePasswordConfirm(v, _password.text),
@@ -385,6 +400,52 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Kayıt ekranının başında: üyeliğin nasıl işlediği ve paketlere bağlantı.
+class _PackageInfoBox extends StatelessWidget {
+  const _PackageInfoBox();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
+      decoration: BoxDecoration(
+        color: t.colorScheme.primary.withValues(alpha: 0.08),
+        border: Border.all(color: t.colorScheme.primary.withValues(alpha: 0.4)),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(Icons.info_outline, color: t.colorScheme.primary),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'Kayıt ücretsizdir. Derslere rezervasyon yapabilmek için bir paketiniz olmalı. '
+                  'Paketinizi stüdyodan alırsınız; tanımlandığında uygulamada görünür.',
+                ),
+              ),
+            ],
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton.icon(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const PriceListScreen()),
+              ),
+              icon: const Icon(Icons.sell_outlined, size: 18),
+              label: const Text('Paketler ve fiyatlar'),
+            ),
+          ),
+        ],
       ),
     );
   }

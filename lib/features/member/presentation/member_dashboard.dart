@@ -11,6 +11,7 @@ import '../../packages/domain/package_models.dart';
 import '../../schedule/data/schedule_repository.dart';
 import '../../schedule/domain/schedule_models.dart';
 import '../../home/studio_card.dart';
+import '../../protocols/presentation/price_list_screen.dart';
 
 const _weekdays = [
   'Pazartesi',
@@ -281,6 +282,14 @@ class NoPackageCard extends StatelessWidget {
           const SizedBox(height: 8),
           const Text(
             'Paketinizi stüdyoda alabilirsiniz. Bize ulaşın, size uygun paketi birlikte seçelim.',
+          ),
+          const SizedBox(height: 10),
+          OutlinedButton.icon(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const PriceListScreen()),
+            ),
+            icon: const Icon(Icons.sell_outlined),
+            label: const Text('Paketleri ve fiyatları incele'),
           ),
           const SizedBox(height: 14),
           const StudioCard(),

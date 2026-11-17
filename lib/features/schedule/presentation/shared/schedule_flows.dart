@@ -66,10 +66,36 @@ Future<bool> runBookFlow(
     return true;
   } catch (e) {
     invalidateSchedule(ref);
-    _snack(messenger, friendlyError(e));
+    // Akış genellikle alt sayfadan çağrılır; snackbar sayfanın arkasında
+    // kalıp görünmüyordu. Hata diyalogla en üstte gösterilir.
+    if (context.mounted) {
+      await infoDialog(context, 'Rezervasyon yapılamadı', friendlyError(e));
+    } else {
+      _snack(messenger, friendlyError(e));
+    }
     return false;
   }
 }
+
+/// Tek düğmeli bilgi diyaloğu (alt sayfaların üstünde görünür).
+Future<void> infoDialog(
+  BuildContext context,
+  String title,
+  String message,
+) => showDialog<void>(
+  context: context,
+  builder: (ctx) => AlertDialog(
+    icon: const Icon(Icons.info_outline),
+    title: Text(title),
+    content: Text(message),
+    actions: [
+      FilledButton(
+        onPressed: () => Navigator.of(ctx).pop(),
+        child: const Text('Tamam'),
+      ),
+    ],
+  ),
+);
 
 /// Üyenin kendi rezervasyonunu iptali (2 saat kuralı sunucuda da denetlenir).
 Future<bool> runMemberCancelFlow(
@@ -80,8 +106,9 @@ Future<bool> runMemberCancelFlow(
 }) async {
   final messenger = ScaffoldMessenger.of(context);
   if (!canMemberCancel(startsAt, DateTime.now())) {
-    _snack(
-      messenger,
+    await infoDialog(
+      context,
+      'İptal edilemez',
       'Dersin başlamasına 2 saatten az kaldığı için iptal edilemez.',
     );
     return false;
@@ -102,7 +129,11 @@ Future<bool> runMemberCancelFlow(
     return true;
   } catch (e) {
     invalidateSchedule(ref);
-    _snack(messenger, friendlyError(e));
+    if (context.mounted) {
+      await infoDialog(context, 'İptal edilemedi', friendlyError(e));
+    } else {
+      _snack(messenger, friendlyError(e));
+    }
     return false;
   }
 }
