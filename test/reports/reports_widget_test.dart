@@ -52,7 +52,10 @@ void main() {
 
     final now = DateTime.now();
     final month = currentMonthRange(now);
-    expect(repo.calls.single, month);
+    expect(repo.calls.first, month);
+    // Önceki dönem de karşılaştırma için istenir
+    expect(repo.calls, contains(comparisonRange(month, now)));
+    expect(find.text('12.720 ₺'), findsOneWidget); // toplam satış
   });
 
   testWidgets('Geçen ay çipi önceki ay aralığıyla çağırır', (tester) async {
@@ -62,8 +65,7 @@ void main() {
     await tester.tap(find.text('Geçen ay'));
     await tester.pumpAndSettle();
 
-    expect(repo.calls.length, 2);
-    expect(repo.calls.last, previousMonthRange(DateTime.now()));
+    expect(repo.calls, contains(previousMonthRange(DateTime.now())));
   });
 
   testWidgets('boş listeler tek satırlık metin gösterir', (tester) async {

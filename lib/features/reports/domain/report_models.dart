@@ -33,6 +33,44 @@ DateRange lastNDaysRange(DateTime now, int n) => DateRange(
   DateTime(now.year, now.month, now.day),
 );
 
+/// Karşılaştırma için önceki dönem.
+///
+/// Tam takvim ayı ise önceki takvim ayı, değilse hemen önceki aynı uzunlukta aralık.
+/// Aralık bugünü kapsıyorsa (ör. "Bu ay") önceki dönemin yalnızca geçen gün sayısı
+/// kadarı alınır; böylece ayın ilk 18 günü, önceki ayın ilk 18 günüyle kıyaslanır.
+/// Aralık tamamen gelecekteyse null.
+DateRange? comparisonRange(DateRange r, DateTime now) {
+  final today = DateTime(now.year, now.month, now.day);
+  if (r.from.isAfter(today)) return null;
+  final isFullMonth =
+      r.from.day == 1 &&
+      r.to == DateTime(r.from.year, r.from.month + 1, 0);
+  final DateTime prevFrom;
+  final DateTime prevEnd;
+  if (isFullMonth) {
+    prevFrom = DateTime(r.from.year, r.from.month - 1, 1);
+    prevEnd = DateTime(r.from.year, r.from.month, 0);
+  } else {
+    final len = _daysBetween(r.from, r.to) + 1;
+    prevFrom = DateTime(r.from.year, r.from.month, r.from.day - len);
+    prevEnd = DateTime(r.from.year, r.from.month, r.from.day - 1);
+  }
+  final elapsedEnd = r.to.isAfter(today) ? today : r.to;
+  final elapsed = _daysBetween(r.from, elapsedEnd);
+  var prevTo = DateTime(prevFrom.year, prevFrom.month, prevFrom.day + elapsed);
+  if (prevTo.isAfter(prevEnd)) prevTo = prevEnd;
+  return DateRange(prevFrom, prevTo);
+}
+
+int _daysBetween(DateTime a, DateTime b) =>
+    DateTime.utc(b.year, b.month, b.day)
+        .difference(DateTime.utc(a.year, a.month, a.day))
+        .inDays;
+
+/// Önceki döneme göre yüzde değişim; önceki değer 0 ise null.
+double? percentChange(num current, num previous) =>
+    previous == 0 ? null : (current - previous) * 100 / previous;
+
 /// 35 -> "35 %", 35.5 -> "35,5 %".
 String formatPercent(num value) {
   final rounded = (value * 10).round() / 10;
@@ -249,6 +287,9 @@ class AdminReport {
   final AttendanceStats attendance;
   final List<TrainerStats> trainers;
   final List<TopProduct> topProducts;
+
+  /// Paket + ürün satışı (cüzdan yüklemesi ön ödemedir, satışa eklenmez).
+  double get salesTotal => packageSales.total + productSales.total;
 
   factory AdminReport.fromJson(Map<String, dynamic> j) => AdminReport(
     from: j['from'] as String?,

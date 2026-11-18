@@ -104,4 +104,50 @@ void main() {
     expect(attendanceRateOf(0, 0), isNull);
     expect(const AttendanceStats(attended: 1, noShow: 1).attendanceRate, 50);
   });
+
+  group('comparisonRange', () {
+    final now = DateTime(2026, 11, 18, 15);
+
+    test('devam eden ay, önceki ayın aynı gün sayısıyla kıyaslanır', () {
+      final r = comparisonRange(currentMonthRange(now), now)!;
+      expect(r.from, DateTime(2026, 10, 1));
+      expect(r.to, DateTime(2026, 10, 18));
+    });
+
+    test('biten ay, önceki ayın tamamıyla kıyaslanır', () {
+      final r = comparisonRange(previousMonthRange(now), now)!;
+      expect(r.from, DateTime(2026, 9, 1));
+      expect(r.to, DateTime(2026, 9, 30));
+    });
+
+    test('31 günlük ay, 30 günlük ayın sonunu aşmaz', () {
+      final r = comparisonRange(
+        DateRange(DateTime(2026, 10, 1), DateTime(2026, 10, 31)),
+        now,
+      )!;
+      expect(r.to, DateTime(2026, 9, 30));
+    });
+
+    test('son 7 gün, hemen önceki 7 günle kıyaslanır', () {
+      final r = comparisonRange(lastNDaysRange(now, 7), now)!;
+      expect(r.from, DateTime(2026, 11, 5));
+      expect(r.to, DateTime(2026, 11, 11));
+    });
+
+    test('gelecekteki aralık için karşılaştırma yok', () {
+      expect(
+        comparisonRange(
+          DateRange(DateTime(2026, 12, 1), DateTime(2026, 12, 31)),
+          now,
+        ),
+        isNull,
+      );
+    });
+
+    test('percentChange: önceki 0 ise null', () {
+      expect(percentChange(5, 0), isNull);
+      expect(percentChange(150, 100), 50);
+      expect(percentChange(50, 100), -50);
+    });
+  });
 }
