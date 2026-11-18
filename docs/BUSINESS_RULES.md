@@ -258,7 +258,7 @@ Aşağıdaki kararlar stüdyo tarafından onaylandı. 2. madde sonradan F-16 ile
 
 ## 15. Yeni varsayımlar — onay bekliyor (adım 4: ders takvimi ve rezervasyon)
 
-1. Giriş yapmış her aktif kullanıcı tüm planlanmış dersleri (kategori, eğitmen adı, kalan kontenjan) görür; üye ekranı bugünden itibaren **14 günü** listeler (yalnızca ekran sınırı; sunucu daha ileri tarihli derse rezervasyonu engellemez, paket geçerliliği kuralları geçerlidir).
+1. Giriş yapmış her aktif kullanıcı tüm planlanmış dersleri (kategori, eğitmen adı, kalan kontenjan) görür; üye ekranı yalnızca **bugünü ve takip eden 2 günü** listeler (18.11.2026 kararı). Sunucu da üyenin kendi yaptığı rezervasyonu bu pencereyle sınırlar (Europe/Istanbul günü; `BOOKING_WINDOW_CLOSED`). Yönetici üye adına rezervasyon yaparken bu sınır uygulanmaz; paket geçerliliği kuralları her durumda geçerlidir.
 2. Açılmış bir dersin saati/kategorisi/türü **düzenlenemez**; değişiklik için ders iptal edilip yeniden açılır.
 3. Yönetici, ders detayından bir üyeyi derse **ekleyebilir** (üye adına rezervasyon; aynı kurallar ve hak düşümü uygulanır) (R-01).
 4. Eğitmen katılımcıların yalnızca adını görür; rezervasyonları tek tek iptal edemez (yalnızca dersin tamamını iptal edebilir, S-06).
