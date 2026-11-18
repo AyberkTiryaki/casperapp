@@ -5,9 +5,12 @@ import '../../../core/widgets/async_value_view.dart' show isNetworkError;
 DateTime _dt(dynamic v) => DateTime.parse(v as String).toLocal();
 DateTime? _dtOrNull(dynamic v) => v == null ? null : _dt(v);
 
-/// Üye, dersten en geç 2 saat öncesine kadar (sınır dahil) iptal edebilir.
+/// Üye, dersten en geç bu kadar öncesine kadar (sınır dahil) iptal edebilir.
+/// Sunucudaki cancel_reservation kuralıyla aynı olmalıdır.
+const memberCancelCutoff = Duration(hours: 2);
+
 bool canMemberCancel(DateTime startsAt, DateTime now) =>
-    !now.isAfter(startsAt.subtract(const Duration(hours: 2)));
+    !now.isAfter(startsAt.subtract(memberCancelCutoff));
 
 enum ClassType {
   individual('Bireysel', 'individual'),

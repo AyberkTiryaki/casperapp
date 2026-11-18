@@ -45,7 +45,7 @@ void main() {
   // 14 Kas 2026 (Cumartesi) 09:00 İstanbul = 06:00 UTC
   final now = DateTime.utc(2026, 11, 14, 6);
 
-  test('ders hatırlatması dersten 2 saat önce, doğru metinle', () {
+  test('ders hatırlatması dersten 3 saat önce, iptal süresiyle', () {
     // Pzt 16 Kas 2026 10:00 İstanbul = 07:00 UTC
     final start = DateTime.utc(2026, 11, 16, 7);
     final plan = planNotifications(
@@ -54,17 +54,20 @@ void main() {
       packages: const [],
     );
     expect(plan, hasLength(1));
-    expect(plan.single.when, DateTime.utc(2026, 11, 16, 5));
-    expect(plan.single.title, 'Dersin 2 saat sonra');
-    expect(plan.single.body, 'Özel Ders · Pzt 16 Kas 10:00 · Ayşe Eğitmen');
+    expect(plan.single.when, DateTime.utc(2026, 11, 16, 4));
+    expect(plan.single.title, 'Dersin 3 saat sonra');
+    expect(
+      plan.single.body,
+      'İptal için son 1 saat · Özel Ders · Pzt 16 Kas 10:00 · Ayşe Eğitmen',
+    );
   });
 
-  test('geçmiş, iptal ve 2 saatten yakın dersler atlanır', () {
+  test('geçmiş, iptal ve 3 saatten yakın dersler atlanır', () {
     final plan = planNotifications(
       now: now,
       reservations: [
         res('past', now.subtract(const Duration(days: 1))),
-        res('soon', now.add(const Duration(hours: 1))),
+        res('soon', now.add(const Duration(hours: 2, minutes: 30))),
         res('cancelled', now.add(const Duration(days: 2)), status: 'cancelled'),
         res(
           'classcancelled',

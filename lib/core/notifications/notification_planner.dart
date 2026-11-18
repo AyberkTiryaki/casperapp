@@ -73,8 +73,13 @@ String classNotificationBody({
   if (trainerName.isNotEmpty) trainerName,
 ].join(' · ');
 
-/// Hatırlatma, ders başlamadan bu kadar önce gelir.
-const reservationLead = Duration(hours: 2);
+/// Hatırlatma, ders başlamadan bu kadar önce gelir. İptal sınırından
+/// (memberCancelCutoff) önce gelmeli ki üye gelemeyecekse iptal edebilsin (18.11.2026).
+const reservationLead = Duration(hours: 3);
+
+/// Hatırlatma geldiğinde iptal için kalan süre (saat).
+final int _cancelHoursLeft =
+    (reservationLead - memberCancelCutoff).inHours;
 
 /// Paket bitiminden kaç gün önce uyarılır.
 const packageWarnDays = 3;
@@ -94,12 +99,9 @@ List<PlannedNotification> planNotifications({
       PlannedNotification(
         id: reservationReminderId(r.reservationId),
         when: when,
-        title: 'Dersin 2 saat sonra',
-        body: classNotificationBody(
-          categoryName: r.categoryName,
-          startsAt: r.startsAt,
-          trainerName: r.trainerName,
-        ),
+        title: 'Dersin ${reservationLead.inHours} saat sonra',
+        body:
+            'İptal için son $_cancelHoursLeft saat · ${classNotificationBody(categoryName: r.categoryName, startsAt: r.startsAt, trainerName: r.trainerName)}',
       ),
     );
   }
