@@ -9,8 +9,8 @@ void main() {
   });
 
   test('süre içinde oturum açık kalır, aşılınca kapanır', () {
-    expect(isSessionExpired(now.subtract(const Duration(minutes: 29)), now), isFalse);
+    expect(isSessionExpired(now.subtract(const Duration(minutes: 119)), now), isFalse);
     expect(isSessionExpired(now.subtract(sessionIdleTimeout), now), isFalse);
-    expect(isSessionExpired(now.subtract(const Duration(minutes: 31)), now), isTrue);
+    expect(isSessionExpired(now.subtract(const Duration(minutes: 121)), now), isTrue);
   });
 }

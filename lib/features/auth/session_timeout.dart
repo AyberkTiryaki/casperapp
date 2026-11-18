@@ -10,7 +10,7 @@ import '../../core/config/supabase.dart';
 /// Uygulama bu süre boyunca kullanılmazsa (arka planda kalsa, kapatılsa ya da açık
 /// bırakılsa) oturum kapanır; tekrar girişte şifre istenir. E-posta "Beni hatırla"
 /// ile hatırlanır (bkz. remembered_email.dart).
-const sessionIdleTimeout = Duration(minutes: 30);
+const sessionIdleTimeout = Duration(hours: 2);
 
 const _prefsLastActiveKey = 'session_last_active_ms';
 
