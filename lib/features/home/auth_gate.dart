@@ -16,7 +16,6 @@ import '../member/presentation/member_home_screen.dart';
 import '../profile/profile.dart';
 import '../profile/profile_providers.dart';
 import '../trainer/presentation/trainer_home_screen.dart';
-import 'desktop_admin_only.dart';
 import 'role_home_scaffold.dart';
 
 class AuthGate extends ConsumerWidget {
@@ -76,9 +75,6 @@ class AuthGate extends ConsumerWidget {
               action: _LogoutButton(ref: ref),
             ),
           );
-        }
-        if (desktopBlocksRole(profile.role)) {
-          return DesktopAdminOnlyView(signOut: _LogoutButton(ref: ref));
         }
         return switch (profile.role) {
           UserRole.member => MemberHomeScreen(profile: profile),

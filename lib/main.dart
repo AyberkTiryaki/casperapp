@@ -10,6 +10,7 @@ import 'core/notifications/local_notifications.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_mode.dart';
 import 'core/widgets/async_value_view.dart';
+import 'features/auth/session_timeout.dart';
 import 'features/home/auth_gate.dart';
 
 const _locale = Locale('tr', 'TR');
@@ -26,6 +27,7 @@ Future<void> main() async {
     return;
   }
   await initSupabase();
+  await enforceSessionTimeoutOnStartup();
   final notifications = LocalNotifications();
   try {
     await notifications.init();
@@ -68,6 +70,8 @@ class CasperApp extends ConsumerWidget {
       // Varsayılan açık; Profil > Görünüm'den koyu veya sistem seçilebilir
       themeMode: ref.watch(themeModeProvider),
       themeAnimationDuration: const Duration(milliseconds: 350),
+      builder: (context, child) =>
+          SessionActivityWatcher(child: child ?? const SizedBox.shrink()),
       home: const AuthGate(),
     );
   }

@@ -46,7 +46,7 @@ Bu kılavuz, uygulamayı **Yönetici** rolüyle kullanan stüdyo sahibi ve yöne
 
 **Bilgisayarda (Windows) kullanmak**
 
-Stüdyo bilgisayarı için ayrı bir masaüstü uygulaması vardır. **Yalnızca yönetici** içindir; üye veya eğitmen hesabıyla girilirse "Masaüstü uygulaması yönetici içindir" mesajı çıkar.
+Stüdyo bilgisayarı için ayrı bir masaüstü uygulaması vardır. Üye, eğitmen ve yönetici hesaplarının hepsiyle giriş yapılabilir.
 
 1. `Casper-Kurulum-….exe` dosyasını açın.
 2. Windows "Windows bilgisayarınızı korudu" derse **Ek bilgi** → **Yine de çalıştır** deyin. (Dosya kod imzalama sertifikasıyla imzalı olmadığı için çıkar; bir kez sorulur.)

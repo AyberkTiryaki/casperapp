@@ -31,6 +31,7 @@ const _serverCodeMessages = <String, String>{
   'CLASS_AFTER_PACKAGE_END': 'Ders, paketinizin bitiş tarihinden sonra.',
   'CLASS_ALREADY_STARTED': 'Ders başlamış olduğu için bu işlem yapılamaz.',
   'CLASS_CANCELLED': 'Bu ders iptal edilmiş.',
+  'BOOKING_WINDOW_CLOSED': 'Rezervasyon yalnızca bugün ve sonraki 2 günün dersleri için yapılabilir.',
   'CLASS_FULL': 'Ders dolu.',
   'CLASS_NOT_FOUND': 'Ders bulunamadı.',
   'INVALID_CLASS_TIME': 'Ders zamanı geçersiz (geçmişte olamaz).',

@@ -5,6 +5,8 @@ import '../../../core/utils/error_messages.dart';
 import '../../../core/widgets/brand.dart';
 import '../../protocols/presentation/price_list_screen.dart';
 import '../auth_providers.dart';
+import '../remembered_email.dart';
+import '../session_timeout.dart';
 import '../validators.dart';
 import 'forgot_password_screen.dart';
 import 'sign_up_screen.dart';
@@ -23,6 +25,38 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _loading = false;
   bool _obscure = true;
   String? _error;
+  String? _info;
+
+  /// Hatırlanan e-posta: doluysa yalnızca e-posta gösterilir, şifre istenir.
+  String? _remembered;
+  bool _rememberMe = true;
+
+  @override
+  void initState() {
+    super.initState();
+    if (sessionExpiredNotice) {
+      sessionExpiredNotice = false;
+      _info = 'Güvenliğiniz için oturumunuz kapatıldı. Lütfen şifrenizi girin.';
+    }
+    loadRememberedEmail().then((email) {
+      if (!mounted || email == null) return;
+      setState(() {
+        _remembered = email;
+        _email.text = email;
+      });
+    });
+  }
+
+  void _useOtherAccount() {
+    saveRememberedEmail(null);
+    setState(() {
+      _remembered = null;
+      _email.clear();
+      _password.clear();
+      _info = null;
+      _error = null;
+    });
+  }
 
   @override
   void dispose() {
@@ -38,9 +72,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       _error = null;
     });
     try {
-      await ref
-          .read(authRepositoryProvider)
-          .signIn(_email.text.trim(), _password.text);
+      final email = _email.text.trim();
+      await ref.read(authRepositoryProvider).signIn(email, _password.text);
+      await saveRememberedEmail(_rememberMe ? email : null);
     } catch (e) {
       if (mounted) setState(() => _error = friendlyError(e));
     } finally {
@@ -76,17 +110,34 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 32),
-                      TextFormField(
-                        controller: _email,
-                        keyboardType: TextInputType.emailAddress,
-                        autofillHints: const [AutofillHints.email],
-                        textInputAction: TextInputAction.next,
-                        decoration: const InputDecoration(labelText: 'E-posta'),
-                        validator: validateEmail,
-                      ),
+                      if (_info != null) ...[
+                        Text(
+                          _info!,
+                          style: TextStyle(color: t.colorScheme.primary),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                      if (_remembered != null)
+                        _RememberedAccount(
+                          email: _remembered!,
+                          onChange: _loading ? null : _useOtherAccount,
+                        )
+                      else
+                        TextFormField(
+                          controller: _email,
+                          keyboardType: TextInputType.emailAddress,
+                          autofillHints: const [AutofillHints.email],
+                          textInputAction: TextInputAction.next,
+                          decoration: const InputDecoration(
+                            labelText: 'E-posta',
+                          ),
+                          validator: validateEmail,
+                        ),
                       const SizedBox(height: 16),
                       TextFormField(
                         controller: _password,
+                        autofocus: _remembered != null,
                         obscureText: _obscure,
                         autofillHints: const [AutofillHints.password],
                         textInputAction: TextInputAction.done,
@@ -106,6 +157,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         validator: (v) =>
                             (v ?? '').isEmpty ? 'Şifre gerekli.' : null,
                       ),
+                      if (_remembered == null)
+                        CheckboxListTile(
+                          value: _rememberMe,
+                          onChanged: _loading
+                              ? null
+                              : (v) => setState(() => _rememberMe = v ?? true),
+                          title: const Text('Beni hatırla'),
+                          subtitle: const Text(
+                            'Yalnızca e-posta hatırlanır, şifre her girişte istenir.',
+                          ),
+                          controlAffinity: ListTileControlAffinity.leading,
+                          contentPadding: EdgeInsets.zero,
+                          dense: true,
+                        ),
                       if (_error != null) ...[
                         const SizedBox(height: 12),
                         Text(
@@ -164,6 +229,39 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _RememberedAccount extends StatelessWidget {
+  const _RememberedAccount({required this.email, required this.onChange});
+
+  final String email;
+  final VoidCallback? onChange;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 10, 8, 10),
+      decoration: BoxDecoration(
+        color: t.colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.account_circle_outlined, color: t.colorScheme.primary),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              email,
+              style: t.textTheme.bodyLarge,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          TextButton(onPressed: onChange, child: const Text('Farklı hesap')),
+        ],
       ),
     );
   }

@@ -1,4 +1,4 @@
-# Yönetici masaüstü uygulaması: Windows sürümünü derler ve kurulum dosyası (.exe) üretir.
+# Masaüstü uygulaması: Windows sürümünü derler ve kurulum dosyası (.exe) üretir.
 # Kurulum dosyası çalıştırmanın "Artifacts" bölümünden (casper-windows-kurulum) indirilir.
 #
 # Uygulama kodu değiştiğinde main'e gönderimle veya Actions sekmesinden elle başlar.
@@ -7,7 +7,7 @@
 # Not: Kurulum dosyası kod imzalama sertifikasıyla imzalanmaz; ilk açılışta Windows
 # "bilgisayarınızı korudu" uyarısı verir → "Ek bilgi" → "Yine de çalıştır".
 
-name: Windows masaüstü (yönetici)
+name: Windows masaüstü
 
 on:
   push:

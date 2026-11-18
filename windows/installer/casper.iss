@@ -1,5 +1,5 @@
 ; Casper Training Studio — Windows kurulum dosyası (Inno Setup 6)
-; Masaüstü sürümü yalnızca yönetici içindir (bkz. lib/features/home/desktop_admin_only.dart).
+; Masaüstü sürümünde tüm roller (üye, eğitmen, yönetici) giriş yapabilir.
 ;
 ; GitHub Actions (.github/workflows/windows-desktop.yml) derler:
 ;   iscc /DAppVersion=1.0.0 /DBuildNumber=12 windows\installer\casper.iss
@@ -31,7 +31,7 @@ OutputDir=..\..\build\installer
 OutputBaseFilename=Casper-Kurulum-{#AppVersion}-{#BuildNumber}
 SetupIconFile=..\runner\resources\app_icon.ico
 UninstallDisplayIcon={app}\caspertrainingstudio.exe
-UninstallDisplayName=Casper Training Studio (Yönetici)
+UninstallDisplayName=Casper Training Studio
 Compression=lzma2/max
 SolidCompression=yes
 WizardStyle=modern

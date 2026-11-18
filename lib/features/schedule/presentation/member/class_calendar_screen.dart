@@ -13,7 +13,9 @@ import '../../domain/schedule_models.dart';
 import '../shared/schedule_flows.dart';
 import '../shared/schedule_widgets.dart';
 
-const _calendarDays = 14;
+/// Üye yalnızca bugünü ve takip eden 2 günü görür/rezerve eder (18.11.2026 kararı).
+/// Sunucuda da aynı kural var: book_class → BOOKING_WINDOW_CLOSED.
+const _calendarDays = 3;
 const _kMine = '__mine__';
 const _kAll = '__all__';
 
